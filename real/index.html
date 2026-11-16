@@ -7,7 +7,7 @@
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:400 14px/1.5 Montserrat,system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .stage{position:fixed;inset:0;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}.stage.drag{cursor:grabbing}
-.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .stage::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.7) 0,rgba(10,14,26,0) 22%,rgba(10,14,26,0) 58%,rgba(10,14,26,.92) 100%);pointer-events:none}
 .top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;padding:18px clamp(16px,3vw,40px);gap:12px}
 .brand{display:flex;gap:12px;align-items:center}.brand svg{width:22px;height:30px}.brand b{font:600 15px Cinzel,serif;letter-spacing:.32em}.brand small{display:block;font:500 8.5px Montserrat;letter-spacing:.5em;color:var(--gold)}
@@ -34,7 +34,7 @@ a{color:inherit;text-decoration:none}
 @media(max-width:600px){.cap{bottom:calc(140px + env(safe-area-inset-bottom))}.shot{width:112px}.shot img{height:62px}.brand span{display:none}}
 </style></head><body>
 <div class="load" id="ld" style="width:0"></div>
-<div class="stage" id="stage"><img id="im" alt="Hamilton Gate Park дрон зураг"></div>
+<div class="stage" id="stage"><video id="vid" playsinline muted preload="auto"></video></div>
 <div class="top"><a class="brand" href="../"><svg viewBox="0 0 60 80"><defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a47d47"/><stop offset=".35" stop-color="#f1dfae"/><stop offset=".6" stop-color="#b8915a"/><stop offset="1" stop-color="#e3c890"/></linearGradient></defs><g fill="none" stroke="url(#fg)" stroke-width="2.4"><path d="M12 16v48M48 16v48M30 10v60M12 40h36M6 16h12M42 16h12M6 64h12M42 64h12"/></g><path d="M30 2l3 5-3 5-3-5zM30 68l3 5-3 5-3-5z" fill="url(#fg)"/></svg><span><b>HAMILTON</b><small>GATE PARK</small></span></a>
 <div class="tl"><a class="pill" href="../3d/">3D загвар</a><a class="pill" href="../">Нүүр</a></div></div>
 <div class="cap"><div class="eb">Бодит орчин</div><h1 id="ttl"></h1><p id="dsc"></p></div>
@@ -42,30 +42,30 @@ a{color:inherit;text-decoration:none}
 <div class="bar"><div class="scrub"><button class="play" id="pl" aria-label="Тоглуулах"><svg width="14" height="14" viewBox="0 0 14 14" id="pli"><path d="M3 1l10 6-10 6z" fill="currentColor"/></svg></button><input type="range" id="rg" min="0" max="1" value="0" aria-label="Байрлал"></div>
 <div class="shots" id="shots"></div></div>
 <script>
-const SH=[{k:'c',n:32,t:'Төв замаас',d:'Гол замын дагуу барилгын нүүрэн тал, LED дэлгэц.'},
-{k:'e',n:32,t:'Уулзвараас',d:'Уулзварын булангаас подиум ба хоёр цамхаг.'},
-{k:'d',n:32,t:'Ойроос',d:'Подиумын фасад, ногоон дээвэр, LED дэлгэц.'},
-{k:'b',n:24,t:'Агаараас',d:'Хотын төв хэсэгт байрлах цогцолбор.'},
-{k:'a',n:24,t:'Хотын дээрээс',d:'Номин агуулах, Интермед зэрэг тэмдэгт газрууд.'},
-{k:'f',n:20,t:'Хотын панорам',d:'Уулсаар хүрээлэгдсэн хотын дүр төрх.'}];
-const $=id=>document.getElementById(id),im=$('im'),rg=$('rg');let cur=null,idx=0,cache={},playing=false,raf=0,dir=1,lastT=0;
-const src=(k,i)=>`f/${k}/${String(i+1).padStart(2,'0')}.jpg`;
-$('shots').innerHTML=SH.map((s,i)=>`<button class="shot" data-i="${i}"><img src="${src(s.k,0)}" alt="" loading="lazy"><span>${s.t}</span></button>`).join('');
-function show(i){idx=Math.max(0,Math.min(cur.n-1,i));const c=cache[cur.k];const f=c&&c[idx];if(f&&f.complete&&f.naturalWidth)im.src=f.src;else im.src=src(cur.k,idx);rg.value=idx;rg.style.setProperty('--p',(idx/(cur.n-1)*100)+'%')}
-function pick(i){const s=SH[i];cur=s;[...$('shots').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('ttl').textContent=s.t;$('dsc').textContent=s.d;rg.max=s.n-1;
-if(!cache[s.k]){let done=0;cache[s.k]=Array.from({length:s.n},(_,j)=>{const m=new Image();m.onload=m.onerror=()=>{done++;$('ld').style.width=(done/s.n*100)+'%';if(done==s.n){$('ld').style.opacity=0;setTimeout(()=>{$('ld').style.width=0;$('ld').style.opacity=1},600)}};m.src=src(s.k,j);return m})}
-show(0);try{history.replaceState(null,'','#'+s.k)}catch(e){}}
-$('shots').onclick=e=>{const b=e.target.closest('.shot');if(b){stop();pick(+b.dataset.i)}};
-rg.oninput=()=>{stop();show(+rg.value)};
-// drag
-let dx=null,di=0;const st=$('stage');
-st.addEventListener('pointerdown',e=>{dx=e.clientX;di=idx;st.classList.add('drag');stop();$('hint').classList.add('off')});
-addEventListener('pointermove',e=>{if(dx==null)return;const w=st.clientWidth;show(Math.round(di-(e.clientX-dx)/w*cur.n*1.4))});
-addEventListener('pointerup',()=>{dx=null;st.classList.remove('drag')});
-addEventListener('keydown',e=>{if(e.key=='ArrowRight'){stop();show(idx+1)}if(e.key=='ArrowLeft'){stop();show(idx-1)}});
-function tick(t){if(!playing)return;if(t-lastT>110){lastT=t;let n=idx+dir;if(n>=cur.n-1||n<=0)dir=-dir;show(n)}raf=requestAnimationFrame(tick)}
-function stop(){playing=false;cancelAnimationFrame(raf);$('pli').innerHTML='<path d="M3 1l10 6-10 6z" fill="currentColor"/>'}
-$('pl').onclick=()=>{if(playing){stop();return}playing=true;$('pli').innerHTML='<path d="M3 1h3v12H3zM8 1h3v12H8z" fill="currentColor"/>';$('hint').classList.add('off');raf=requestAnimationFrame(tick)};
+const SH=[{k:'c',t:'Төв замаас',d:'Гол замын дагуу барилгын нүүрэн тал, LED дэлгэц.'},
+{k:'e',t:'Уулзвараас',d:'Уулзварын булангаас подиум ба хоёр цамхаг.'},
+{k:'d',t:'Ойроос',d:'Подиумын фасад, ногоон дээвэр, LED дэлгэц.'},
+{k:'b',t:'Агаараас',d:'Хотын төв хэсэгт байрлах цогцолбор.'},
+{k:'a',t:'Хотын дээрээс',d:'Номин агуулах, Интермед зэрэг тэмдэгт газрууд.'},
+{k:'f',t:'Хотын панорам',d:'Уулсаар хүрээлэгдсэн хотын дүр төрх.'}];
+const $=id=>document.getElementById(id),vid=$('vid'),rg=$('rg');let cur=null,drag=false;
+$('shots').innerHTML=SH.map((s,i)=>`<button class="shot" data-i="${i}"><img src="v/${s.k}.jpg" alt="" loading="lazy"><span>${s.t}</span></button>`).join('');
+rg.max=1000;
+function setP(){rg.style.setProperty('--p',(rg.value/10)+'%')}
+function ic(){$('pli').innerHTML=vid.paused?'<path d="M3 1l10 6-10 6z" fill="currentColor"/>':'<path d="M3 1h3v12H3zM8 1h3v12H8z" fill="currentColor"/>'}
+function pick(i){const s=SH[i];cur=s;[...$('shots').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('ttl').textContent=s.t;$('dsc').textContent=s.d;
+$('ld').style.opacity=1;$('ld').style.width='30%';vid.src='v/'+s.k+'.mp4';vid.load();vid.play().catch(()=>{});try{history.replaceState(null,'','#'+s.k)}catch(e){}}
+vid.addEventListener('progress',()=>{try{if(vid.duration&&vid.buffered.length)$('ld').style.width=(vid.buffered.end(vid.buffered.length-1)/vid.duration*100)+'%'}catch(e){}});
+vid.addEventListener('canplaythrough',()=>{$('ld').style.width='100%';setTimeout(()=>{$('ld').style.opacity=0},400)});
+vid.addEventListener('timeupdate',()=>{if(vid.duration&&!drag){rg.value=Math.round(vid.currentTime/vid.duration*1000);setP()}});
+vid.addEventListener('play',ic);vid.addEventListener('pause',ic);vid.addEventListener('ended',()=>{vid.currentTime=0;vid.play().catch(()=>{})});
+$('shots').onclick=e=>{const b=e.target.closest('.shot');if(b)pick(+b.dataset.i)};
+rg.oninput=()=>{if(vid.duration){vid.pause();vid.currentTime=rg.value/1000*vid.duration;setP()}};
+const st=$('stage');let x0=0,t0=0;
+st.addEventListener('pointerdown',e=>{drag=true;x0=e.clientX;t0=vid.currentTime;vid.pause();st.classList.add('drag');$('hint').classList.add('off')});
+addEventListener('pointermove',e=>{if(!drag||!vid.duration)return;vid.currentTime=Math.max(0,Math.min(vid.duration-.05,t0+(x0-e.clientX)/st.clientWidth*vid.duration*1.2));rg.value=Math.round(vid.currentTime/vid.duration*1000);setP()});
+addEventListener('pointerup',()=>{drag=false;st.classList.remove('drag')});
+$('pl').onclick=()=>{vid.paused?vid.play().catch(()=>{}):vid.pause();$('hint').classList.add('off')};
 setTimeout(()=>$('hint').classList.add('off'),3500);
 const h=location.hash.slice(1),hi=SH.findIndex(s=>s.k==h);pick(hi<0?0:hi);
 </script></body></html>

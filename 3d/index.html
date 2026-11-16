@@ -167,9 +167,39 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 .ip-hint{font-size:11px;color:var(--muted)}.ipanel:not(.room) .ip-hint.r,.ipanel.room .ip-hint.d{display:none}
 #ipBack{background:var(--accent);border-color:var(--accent);color:#fff}
 .ipanel.room #ipWin{display:none}
+
+/* real surroundings overlay (drone footage) */
+.rv{position:fixed;inset:0;z-index:2147483600;background:#05070d;display:flex;flex-direction:column}
+.rv[hidden]{display:none}
+.rv-v{position:relative;flex:1;min-height:0;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.rv-v.drag{cursor:grabbing}
+.rv-v video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#05070d}
+.rv-top{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 30px;background:linear-gradient(#05070dcc,#05070d00);pointer-events:none}
+.rv-top>*{pointer-events:auto}
+.rv-t b{display:block;font-weight:800;font-size:16px;color:#f3eee3;letter-spacing:.02em}.rv-t small{color:#c9a66b;font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;font-weight:600}
+.rv-x{background:rgba(10,14,26,.7);border:1px solid rgba(231,207,155,.45);color:#e7cf9b;border-radius:8px;padding:9px 14px;font:600 13px var(--display);cursor:pointer;white-space:nowrap}
+.rv-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;background:rgba(5,7,13,.6);color:#fff;border:1px solid rgba(231,207,155,.4);padding:10px 18px;font:600 11px var(--display);letter-spacing:.24em;pointer-events:none;transition:opacity .6s}
+.rv-hint.off{opacity:0}
+.rv-spin{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border:2px solid rgba(231,207,155,.25);border-top-color:#e7cf9b;border-radius:50%;animation:rvs 1s linear infinite;z-index:2}
+.rv-spin[hidden]{display:none}@keyframes rvs{to{transform:rotate(360deg)}}
+.rv-b{background:#05070d;padding:10px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(231,207,155,.18)}
+.rv-sc{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.rv-pl{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid #c9a66b;background:transparent;color:#e7cf9b;cursor:pointer;font-size:13px}
+.rv-sc input{flex:1;accent-color:#c9a66b}
+.rv-sh{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.rv-sh::-webkit-scrollbar{display:none}
+.rv-sh button{flex:none;width:128px;padding:0;border:1px solid rgba(231,207,155,.25);background:#000;position:relative;cursor:pointer;border-radius:6px;overflow:hidden}
+.rv-sh img{width:100%;height:66px;object-fit:cover;display:block;opacity:.6}.rv-sh button[aria-current="true"]{border-color:#e7cf9b}.rv-sh button[aria-current="true"] img{opacity:1}
+.rv-sh span{position:absolute;left:7px;bottom:5px;color:#fff;font:600 10px var(--display);letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 3px #000}
+.rv-note{color:#8b8a84;font-size:11px;margin-top:8px}
 </style>
 
 <div id="stage"></div>
+<div class="rv" id="rv" hidden role="dialog" aria-label="Бодит орчин">
+ <div class="rv-v" id="rvV"><video id="rvVid" playsinline muted preload="auto"></video><div class="rv-spin" id="rvSpin"></div><div class="rv-hint" id="rvHint">← ЧИРЖ ЭРГҮҮЛНЭ →</div>
+  <div class="rv-top"><div class="rv-t"><small>Бодит орчин · дрон бичлэг</small><b id="rvTtl"></b></div><button class="rv-x" id="rvX">✕ 3D руу буцах</button></div></div>
+ <div class="rv-b"><div class="rv-sc"><button class="rv-pl" id="rvPl" aria-label="Тоглуулах">▶</button><input type="range" id="rvRg" min="0" max="1000" value="0" aria-label="Байрлал"></div>
+ <div class="rv-sh" id="rvSh"></div><div class="rv-note">Бодит дрон бичлэг дээр барилгыг суулгасан дүрслэл.</div></div></div>
+
 
 <nav class="crumbs" id="crumbs" aria-label="Байршил"><div class="crumb-list" id="crumbList"></div>
   <button id="bInfo" class="ic" aria-label="Төслийн мэдээлэл" aria-pressed="false">ⓘ</button><button id="bPresent" class="ic" aria-pressed="false" title="Танилцуулах горим">⛶</button></nav>
@@ -1262,6 +1292,33 @@ renderer.domElement.addEventListener('pointerdown',()=>{tween=null});
 
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h);camera.aspect=w/h;if(!windowView)camera.fov=w<640?58:38;camera.updateProjectionMatrix()}
 addEventListener('resize',resize);resize();
+
+// ---------- real surroundings (drone footage) inside the viewer ----------
+(function(){const BASE='../real/';
+const SH=[['c','Төв замаас'],['e','Уулзвараас'],['d','Ойроос'],['b','Агаараас'],['a','Хотын дээрээс'],['f','Хотын панорам']];
+const rv=document.getElementById('rv'),vid=document.getElementById('rvVid'),rg=document.getElementById('rvRg'),pl=document.getElementById('rvPl'),sp=document.getElementById('rvSpin'),hint=document.getElementById('rvHint');
+const sh=document.getElementById('rvSh');sh.innerHTML=SH.map(([k,t],i)=>`<button data-i="${i}" aria-current="false"><img src="${BASE}v/${k}.jpg" alt="" loading="lazy"><span>${t}</span></button>`).join('');
+let cur=-1,fail=false;
+function pick(i){cur=i;const [k,t]=SH[i];document.getElementById('rvTtl').textContent=t;sh.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current',j==i));
+ sp.hidden=false;fail=false;vid.src=BASE+'v/'+k+'.mp4';vid.load();vid.play().catch(()=>{});setPl()}
+function setPl(){pl.textContent=vid.paused?'▶':'❚❚'}
+vid.addEventListener('canplay',()=>{sp.hidden=true});vid.addEventListener('waiting',()=>{sp.hidden=false});vid.addEventListener('playing',()=>{sp.hidden=true;setPl()});vid.addEventListener('pause',setPl);
+vid.addEventListener('ended',()=>{vid.currentTime=0;vid.play().catch(()=>{})});
+vid.addEventListener('error',()=>{if(fail)return;fail=true;sp.hidden=true;window.open(BASE,'_blank','noopener')});
+vid.addEventListener('timeupdate',()=>{if(vid.duration&&!drag)rg.value=Math.round(vid.currentTime/vid.duration*1000)});
+rg.addEventListener('input',()=>{if(vid.duration){vid.pause();vid.currentTime=rg.value/1000*vid.duration}});
+pl.onclick=()=>{vid.paused?vid.play().catch(()=>{}):vid.pause()};
+sh.onclick=e=>{const b=e.target.closest('button');if(b)pick(+b.dataset.i)};
+const V=document.getElementById('rvV');let drag=false,x0=0,t0=0;
+V.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag=true;x0=e.clientX;t0=vid.currentTime;vid.pause();V.classList.add('drag');hint.classList.add('off')});
+addEventListener('pointermove',e=>{if(!drag||!vid.duration)return;const d=(x0-e.clientX)/V.clientWidth*vid.duration*1.2;vid.currentTime=Math.max(0,Math.min(vid.duration-.05,t0+d));rg.value=Math.round(vid.currentTime/vid.duration*1000)});
+addEventListener('pointerup',()=>{if(drag){drag=false;V.classList.remove('drag')}});
+function open(){rv.hidden=false;hint.classList.remove('off');setTimeout(()=>hint.classList.add('off'),3200);if(cur<0)pick(0);else vid.play().catch(()=>{})}
+function close(){vid.pause();rv.hidden=true}
+document.getElementById('rvX').onclick=close;addEventListener('keydown',e=>{if(e.key==='Escape'&&!rv.hidden)close()});
+const b=document.getElementById('bReal');if(b)b.addEventListener('click',e=>{e.preventDefault();open()});
+})();
+
 (function loop(now){requestAnimationFrame(loop);perfTick(now);
   if(tween){const k=Math.min(1,(now-tween.s)/800),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     camera.position.lerpVectors(tween.p0,tween.p1,e);controls.target.lerpVectors(tween.t0,tween.t1,e);if(k>=1)tween=null}
