@@ -1,0 +1,110 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hamilton Gate Park</title><meta name="description" content="Hamilton Gate Park: оффис, худалдааны талбай, орон сууц. 3D загвар, танилцуулга, тооцоолуур.">
+<meta property="og:title" content="Hamilton Gate Park"><meta property="og:image" content="img/night-wide.jpg"><meta name="theme-color" content="#0a0e1a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--bg2:#10162a;--ink:#f3eee3;--mut:#a9a596;--line:rgba(231,207,155,.22);--gold:#c9a66b;--gold-hi:#e7cf9b;
+--foil:linear-gradient(115deg,#9c7642 0%,#e9d39f 28%,#b8915a 46%,#f3e2b6 62%,#a47d47 82%,#d9bd85 100%);
+--fd:"Cormorant Garamond",Georgia,serif;--fb:Montserrat,system-ui,sans-serif;--fc:Cinzel,Georgia,serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:300 15px/1.7 var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
+.foil{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eb{font:500 11px/1.2 var(--fb);letter-spacing:.42em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:14px}.eb::before{content:"";width:34px;height:1px;background:var(--gold)}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:18px clamp(16px,4vw,48px);transition:background .4s,padding .4s}
+nav.s{background:rgba(10,14,26,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:12px clamp(16px,4vw,48px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}.brand svg{width:22px;height:30px}.brand b{font:600 15px var(--fc);letter-spacing:.32em}.brand small{display:block;font:500 8.5px var(--fb);letter-spacing:.5em;color:var(--gold);margin-top:1px}
+nav .cta{font:500 11px var(--fb);letter-spacing:.24em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold-hi);padding:10px 18px}
+nav .cta:hover{background:var(--gold);color:var(--bg)}
+/* hero */
+.hero{position:relative;height:100svh;min-height:600px;display:flex;align-items:flex-end;overflow:hidden}
+.hero .bg{position:absolute;inset:-4%;background:url(img/night-wide.jpg) 60% 50%/cover;animation:kb 26s ease-in-out infinite alternate}
+@keyframes kb{to{transform:scale(1.08) translate(-1.5%,-1%)}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.55) 0,rgba(10,14,26,.1) 30%,rgba(10,14,26,.35) 60%,var(--bg) 100%),linear-gradient(90deg,rgba(10,14,26,.75) 0,rgba(10,14,26,.2) 50%,transparent 75%)}
+.hero .in{position:relative;z-index:2;width:100%;max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) clamp(56px,9vh,96px)}
+.mono{width:44px;height:58px;margin-bottom:22px}
+.hero h1{margin:0;font:600 clamp(46px,10vw,124px)/.92 var(--fc);letter-spacing:.12em}
+.hero .sub{font:500 clamp(11px,1.5vw,15px) var(--fb);letter-spacing:.9em;color:var(--gold-hi);margin:14px 0 26px 4px}
+.hero p{font:italic 400 clamp(19px,2.4vw,26px)/1.4 var(--fd);max-width:560px;color:#e9e3d4;margin:0 0 32px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:12px;font:500 11.5px var(--fb);letter-spacing:.24em;text-transform:uppercase;padding:16px 26px;border:1px solid var(--gold);transition:.3s}
+.btn.f{background:var(--foil);color:#1a1408;border-color:transparent}.btn.f:hover{filter:brightness(1.08)}.btn.o{color:var(--gold-hi)}.btn.o:hover{background:rgba(201,166,107,.12)}
+.scroll{position:absolute;right:clamp(16px,4vw,48px);bottom:40px;z-index:2;font:500 10px var(--fb);letter-spacing:.4em;writing-mode:vertical-rl;color:var(--gold);display:flex;align-items:center;gap:14px}.scroll::after{content:"";width:1px;height:60px;background:linear-gradient(var(--gold),transparent);animation:sc 2.2s infinite}
+@keyframes sc{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@media(max-width:640px){.scroll{display:none}}
+/* stats */
+.stats{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats div{padding:34px 10px;text-align:center;border-left:1px solid var(--line)}.stats div:first-child{border-left:0}
+.stats b{display:block;font:500 clamp(34px,5vw,56px)/1 var(--fd)}.stats span{font:500 10.5px var(--fb);letter-spacing:.28em;text-transform:uppercase;color:var(--mut)}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.stats div:nth-child(3){border-left:0}.stats div:nth-child(n+3){border-top:1px solid var(--line)}}
+/* sections */
+.sec{max-width:1280px;margin:0 auto;padding:clamp(70px,11vw,140px) clamp(16px,4vw,48px)}
+.sec h2{font:400 clamp(36px,5.6vw,68px)/1.04 var(--fd);margin:18px 0 18px;max-width:900px}.sec h2 i{color:var(--gold-hi)}
+.lead{font:400 clamp(17px,1.8vw,20px)/1.6 var(--fd);color:#d8d2c3;max-width:620px;margin:0}
+/* intro split */
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(30px,6vw,90px);align-items:center}
+.split .ph{aspect-ratio:4/5;background:center/cover;position:relative}.split .ph::after{content:"";position:absolute;inset:14px;border:1px solid rgba(231,207,155,.45);pointer-events:none}
+@media(max-width:800px){.split{grid-template-columns:1fr}.split .ph{aspect-ratio:4/3}}
+/* experiences */
+.xp{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:50px}
+.card{position:relative;overflow:hidden;min-height:340px;display:flex;align-items:flex-end;grid-column:span 4;isolation:isolate;border:1px solid var(--line)}
+.card.w{grid-column:span 8;min-height:460px}.card.h{grid-column:span 4;min-height:460px}
+.card .im{position:absolute;inset:0;background:center/cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1);z-index:-2}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.05) 20%,rgba(10,14,26,.6) 55%,rgba(10,14,26,.97) 100%);z-index:-1}
+.card:hover .im{transform:scale(1.06)}
+.card .tx{padding:26px;width:100%}.card .n{font:500 11px var(--fb);letter-spacing:.3em;color:var(--gold)}
+.card h3{font:500 clamp(26px,2.8vw,36px)/1.1 var(--fd);margin:8px 0 6px}.card p{margin:0;color:#cfc9b9;font-size:13.5px;max-width:420px}
+.card .go{display:inline-flex;gap:10px;align-items:center;margin-top:16px;font:500 10.5px var(--fb);letter-spacing:.28em;text-transform:uppercase;color:var(--gold-hi)}.card .go::after{content:"";width:28px;height:1px;background:currentColor;transition:width .4s}.card:hover .go::after{width:52px}
+@media(max-width:900px){.card,.card.w,.card.h{grid-column:span 6;min-height:340px}}
+@media(max-width:600px){.xp{gap:10px}.card,.card.w,.card.h{grid-column:span 12;min-height:300px}}
+/* location band */
+.band{position:relative;min-height:80vh;display:flex;align-items:center;background:url(img/location.jpg) center/cover}
+@supports (-webkit-touch-callout:none){.band{background-attachment:scroll}}
+.band::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,14,26,.94) 0,rgba(10,14,26,.6) 55%,rgba(10,14,26,.15))}
+.band .sec{position:relative;width:100%}
+.pts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:40px;max-width:760px}.pts b{display:block;font:500 34px var(--fd);color:var(--gold-hi)}.pts span{font-size:12.5px;color:#cfc9b9}
+@media(max-width:600px){.pts{grid-template-columns:1fr}}
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:230px;gap:10px;margin-top:44px}
+.gal div{background:center/cover;filter:saturate(.95)}.gal div:nth-child(1){grid-column:span 2;grid-row:span 2}.gal div:nth-child(4){grid-column:span 2}
+@media(max-width:700px){.gal{grid-template-columns:1fr 1fr;grid-auto-rows:150px}.gal div:nth-child(4){grid-column:span 2}}
+/* closing */
+.close{text-align:center;border-top:1px solid var(--line)}.close .eb{justify-content:center}.close .eb::after{content:"";width:34px;height:1px;background:var(--gold)}.close h2{margin-left:auto;margin-right:auto}.close .btns{justify-content:center;margin-top:30px}
+footer{border-top:1px solid var(--line);padding:30px clamp(16px,4vw,48px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);letter-spacing:.06em;max-width:1280px;margin:0 auto}
+.rv{opacity:0;transform:translateY(28px);transition:opacity 1s,transform 1s cubic-bezier(.2,.7,.2,1)}.rv.on{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.hero .bg,.scroll::after{animation:none}.rv{opacity:1;transform:none;transition:none}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a47d47"/><stop offset=".35" stop-color="#f1dfae"/><stop offset=".6" stop-color="#b8915a"/><stop offset="1" stop-color="#e3c890"/></linearGradient>
+<symbol id="mono" viewBox="0 0 60 80"><g fill="none" stroke="url(#fg)" stroke-width="2.4"><path d="M12 16v48M48 16v48M30 10v60M12 40h36M6 16h12M42 16h12M6 64h12M42 64h12"/></g><path d="M30 2l3 5-3 5-3-5zM30 68l3 5-3 5-3-5z" fill="url(#fg)"/></symbol></defs></svg>
+<nav id="nav"><a class="brand" href="#top"><svg><use href="#mono"/></svg><span><b>HAMILTON</b><small>GATE PARK</small></span></a><a class="cta" href="3d/">3D үзэх</a></nav>
+<header class="hero" id="top"><div class="bg"></div><div class="in"><svg class="mono"><use href="#mono"/></svg>
+<h1 class="foil">HAMILTON</h1><div class="sub">GATE PARK</div><p>Хотын төвд, цэцэрлэгт хүрээлэн дунд оршох оффис, худалдаа, орон сууцны цогцолбор.</p>
+<div class="btns"><a class="btn f" href="3d/">3D загвар нээх</a><a class="btn o" href="book/">Танилцуулга ном</a></div></div><div class="scroll">ДООШОО</div></header>
+<section class="stats rv"><div><b class="foil">25</b><span>давхар оффис</span></div><div><b class="foil">20</b><span>давхар орон сууц</span></div><div><b class="foil">36×12</b><span>м 3D дэлгэц</span></div><div><b class="foil">10%</b><span>урьдчилгаа</span></div></section>
+<section class="sec"><div class="split"><div class="rv"><div class="eb">Төсөл</div><h2>Ажил, амьдрал, <i>амралт</i> нэг дор</h2><p class="lead">Hamilton Gate Park бол бизнес төв, худалдааны подиум, тансаг орон сууц, хотын хамгийн том 3D LED дэлгэцийг нэг цогцолборт нэгтгэсэн төсөл юм. Доорх хэрэгслүүдээр төслийг өөрийн нүдээр судлаарай.</p></div>
+<div class="ph rv" style="background-image:url(img/facade-blue.jpg)"></div></div></section>
+<section class="sec" style="padding-top:0" id="xp"><div class="rv"><div class="eb">Танилцуулга</div><h2>Төслийг <i>өөрөө</i> судлах</h2></div>
+<div class="xp">
+<a class="card w rv" href="3d/"><div class="im" style="background-image:url(img/viewer-3d.jpg)"></div><div class="tx"><div class="n">01</div><h3>3D загвар</h3><p>Барилгыг тойрон эргүүлж, давхар бүрийн өрөө, талбайг сонгон харна. Цонхоор ямар үзэмж, хэдэн цаг нар тусахыг шалгаарай.</p><span class="go">Нээх</span></div></a>
+<a class="card h rv" href="book/"><div class="im" style="background-image:url(img/hero.jpg)"></div><div class="tx"><div class="n">02</div><h3>Танилцуулга ном</h3><p>24 хуудас бүхий тансаг танилцуулгыг хуудас эргүүлэн үзэх.</p><span class="go">Унших</span></div></a>
+<a class="card rv" href="planner/"><div class="im" style="background-image:url(img/office-night.jpg)"></div><div class="tx"><div class="n">03</div><h3>Оффис төлөвлөгч</h3><p>Таны баг хэдэн хүнтэй вэ? Ширээ, хурлын өрөө хэрхэн багтахыг харна.</p><span class="go">Төлөвлөх</span></div></a>
+<a class="card rv" href="calc/"><div class="im" style="background-image:url(img/towers-dusk.jpg)"></div><div class="tx"><div class="n">04</div><h3>Хөрөнгө оруулалт</h3><p>Урьдчилгаа, сарын төлөлт, түрээсийн өгөөжийг тооцох.</p><span class="go">Тооцох</span></div></a>
+<a class="card rv" href="led/"><div class="im" style="background-image:url(img/screen.jpg)"></div><div class="tx"><div class="n">05</div><h3>3D LED дэлгэц</h3><p>Таны брэнд 36×12 м дэлгэц дээр өдөр, шөнө хэрхэн харагдахыг туршина.</p><span class="go">Турших</span></div></a>
+<a class="card w rv" href="compare/"><div class="im" style="background-image:url(img/residence.jpg)"></div><div class="tx"><div class="n">06</div><h3>Өрөө харьцуулагч</h3><p>3 хүртэлх сонголтыг талбай, үнэ, сарын төлөлт, өгөөжөөр нь зэрэгцүүлэн харьцуулах.</p><span class="go">Харьцуулах</span></div></a>
+<a class="card h rv" href="book/"><div class="im" style="background-image:url(img/garden-walk.jpg)"></div><div class="tx"><div class="n">07</div><h3>Цэцэрлэгт орчин</h3><p>Алхалтын зам, пергол, хүүхдийн тоглоомын талбай.</p><span class="go">Үзэх</span></div></a>
+</div></section>
+<section class="band"><div class="sec"><div class="rv"><div class="eb">Байршил</div><h2>Хотын <i>зүрхэнд</i></h2><p class="lead">Энхтайвны гүүр, хотын төв, Богд хан уулын үзэмж бүгд таны цонхны цаана.</p></div>
+<div class="pts rv"><div><b>Төв</b><span>Хотын төвийн бизнесийн бүс</span></div><div><b>Гүүр</b><span>Энхтайвны гүүрний ойролцоо</span></div><div><b>Уул</b><span>Богд хан уул руу харсан үзэмж</span></div></div></div></section>
+<section class="sec"><div class="rv"><div class="eb">Галерей</div><h2>Нарийн <i>мэдрэмж</i></h2></div>
+<div class="gal rv"><div style="background-image:url(img/night-wide.jpg)"></div><div style="background-image:url(img/pergola.jpg)"></div><div style="background-image:url(img/office-night.jpg)"></div><div style="background-image:url(img/garden-walk.jpg)"></div></div></section>
+<section class="sec close"><div class="rv"><div class="eb">Захиалга</div><h2>Ердөө <i>10%</i> урьдчилгаагаар</h2><p class="lead" style="margin:0 auto">Оффис, худалдааны талбай 30–600 м². Өөрт тохирохыг 3D загвараас сонгоод манай борлуулалтын албатай холбогдоорой.</p>
+<div class="btns"><a class="btn f" href="3d/">Талбай сонгох</a><a class="btn o" href="calc/">Төлбөр тооцох</a></div><p id="contact" class="lead" style="margin:26px auto 0;font-size:18px"></p></div></section>
+<footer><span>© Hamilton Gate Park</span><span>Зураг, үнэ, тооцоо нь танилцуулгын зориулалттай.</span></footer>
+<script>
+const CONTACT='';// ж: 'Борлуулалтын алба · 7700 0000'
+if(CONTACT)document.getElementById('contact').textContent=CONTACT;
+const nav=document.getElementById('nav');addEventListener('scroll',()=>nav.classList.toggle('s',scrollY>40),{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script></body></html>

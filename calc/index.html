@@ -1,0 +1,180 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0}</style></head><body><title>Hamilton өгөөжийн тооцоолуур</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: inputs rail left, verdict + figures + 10-year chart right; stacks on phones. */
+:root{
+  --bg:#eef0f5;--panel:#ffffff;--ink:#17203f;--muted:#5f6784;--faint:#8a90a8;--line:#d9dce6;--grid:#e8eaf1;
+  --gold:#a8834f;--ok:#2f7d5b;--warn:#b5462f;
+  --s1:#2a4a9b;--s2:#b07a2e;--s3:#2f8f6b;
+  --f-display:"Cormorant Garamond",Georgia,serif;--f-body:"Montserrat",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1226;--panel:#151b34;--ink:#eef0f7;--muted:#a3a9c2;--faint:#7d84a2;--line:#2a3255;--grid:#222a4a;
+  --gold:#d2ad73;--ok:#5fc095;--warn:#ec7b62;--s1:#6c8be6;--s2:#b98843;--s3:#46a67c;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1226;--panel:#151b34;--ink:#eef0f7;--muted:#a3a9c2;--faint:#7d84a2;--line:#2a3255;--grid:#222a4a;
+  --gold:#d2ad73;--ok:#5fc095;--warn:#ec7b62;--s1:#6c8be6;--s2:#b98843;--s3:#46a67c;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:2px 0 0;text-wrap:balance}
+h1 i{color:var(--gold);font-weight:500}
+.grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.rail,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.rail{display:flex;flex-direction:column;gap:16px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bg);border-radius:10px;padding:4px}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 12.5px var(--f-body);padding:8px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.f label output{font-family:var(--f-mono);letter-spacing:0;text-transform:none;color:var(--ink);font-size:13px}
+.num{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--bg);overflow:hidden}
+.num input{flex:1;min-width:0;width:0;border:0;background:transparent;color:var(--ink);font:600 15px var(--f-mono);padding:9px 10px;font-variant-numeric:tabular-nums}
+.num span{padding:0 8px 0 4px;font-size:12px;color:var(--muted);white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chips button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:3px 9px;font:500 11.5px var(--f-mono);cursor:pointer}
+.chips button:hover{border-color:var(--gold)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.two>.f,.f{min-width:0}
+.sep{border:0;border-top:1px solid var(--line);margin:2px 0}
+.ex{font-size:11.5px;color:var(--muted);margin:0;background:color-mix(in srgb,var(--gold) 12%,transparent);border-radius:8px;padding:8px 10px}
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+@media (max-width:640px){.hero{grid-template-columns:minmax(0,1fr)}}
+.big{display:flex;flex-direction:column;gap:4px}
+.big .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.big .v{font-family:var(--f-mono);font-size:clamp(28px,4vw,40px);font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.big .s{font-size:13px;color:var(--muted)}
+.pill{align-self:flex-start;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:4px}
+.pill.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.pill.bad{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.rows{display:flex;flex-direction:column}
+.rows div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.rows div:last-child{border-bottom:0}
+.rows b{white-space:nowrap;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600}
+.rows .t{border-top:1px solid var(--ink);border-bottom:0;margin-top:2px}
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.figs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.fig b{font-family:var(--f-mono);font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
+.fig span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chart-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.chart-h h2{font-family:var(--f-display);font-size:24px;font-weight:600;margin:0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend svg{width:18px;height:8px}
+.chartbox{position:relative}
+svg.ch{width:100%;height:auto;display:block;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.15);min-width:190px}
+.tip b{font-family:var(--f-mono)}.tip div{display:flex;justify-content:space-between;gap:12px}
+.tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+details{font-size:12.5px;color:var(--muted)}summary{cursor:pointer;font-weight:600;color:var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}th,td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}th:first-child,td:first-child{text-align:left}
+.tw{overflow-x:auto}
+.note{font-size:11.5px;color:var(--muted);margin:0}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <div><span class="eyebrow">Hamilton Gate Park · Хөрөнгө оруулалт</span><h1>Таны талбай <i>хэдэн жилд өгөөжөө өгөх вэ?</i></h1></div>
+  <div class="grid">
+    <aside class="rail" aria-label="Тооцооны өгөгдөл">
+      <div class="seg" role="group" aria-label="Талбайн төрөл"><button data-k="off" aria-pressed="true">Оффис</button><button data-k="com" aria-pressed="false">Худалдааны талбай</button></div>
+      <div class="f"><label for="area">Талбай</label><div class="num"><input id="area" type="number" min="20" max="700" step="0.1" value="84.2" inputmode="decimal"><span>м²</span></div>
+        <div class="chips" id="areaChips"></div></div>
+      <div class="f"><label for="price">Худалдах үнэ</label><div class="num"><input id="price" type="number" step="50000" value="6500000" inputmode="numeric"><span>₮ / м²</span></div></div>
+      <div class="f"><label for="dp">Урьдчилгаа <output id="dpV">10%</output></label><input id="dp" type="range" min="10" max="100" step="5" value="10"></div>
+      <div class="two"><div class="f"><label for="rate">Зээлийн хүү</label><div class="num"><input id="rate" type="number" step="0.5" value="16" inputmode="decimal"><span>%/жил</span></div></div>
+        <div class="f"><label for="yrs">Хугацаа</label><div class="num"><input id="yrs" type="number" min="1" max="20" value="10" inputmode="numeric"><span>жил</span></div></div></div>
+      <hr class="sep">
+      <div class="f"><label for="rent">Түрээсийн үнэ</label><div class="num"><input id="rent" type="number" step="1000" value="55000" inputmode="numeric"><span>₮ / м² / сар</span></div></div>
+      <div class="two"><div class="f"><label for="vac">Сул байх</label><div class="num"><input id="vac" type="number" min="0" max="60" value="8" inputmode="numeric"><span>%</span></div></div>
+        <div class="f"><label for="fee">Үйлчилгээний зардал</label><div class="num"><input id="fee" type="number" step="500" value="4000" inputmode="numeric"><span>₮/м²</span></div></div></div>
+      <div class="f"><label for="grow">Үнэ цэнийн өсөлт</label><div class="num"><input id="grow" type="number" step="0.5" value="5" inputmode="decimal"><span>% / жил</span></div></div>
+      <p class="ex">Үнэ, түрээс, хүүгийн анхны утгууд нь жишээ. Hamilton-ы бодит үнийн жагсаалтаар солиод тооцоолно уу.</p>
+    </aside>
+
+    <section class="main">
+      <div class="hero">
+        <div class="card big"><span class="k">Сарын цэвэр мөнгөн урсгал</span><span class="v" id="cf">0</span><span class="s" id="cfS"></span><span class="pill ok" id="cfP"></span></div>
+        <div class="card rows" id="month"></div>
+      </div>
+      <div class="figs">
+        <div class="fig"><b id="fPrice">0</b><span>Нийт үнэ</span></div>
+        <div class="fig"><b id="fDown">0</b><span>Урьдчилгаа</span></div>
+        <div class="fig"><b id="fYield">0</b><span>Цэвэр түрээсийн өгөөж</span></div>
+        <div class="fig"><b id="fPay">0</b><span>Өгөөжөө өгөх хугацаа</span></div>
+      </div>
+      <div class="card">
+        <div class="chart-h"><h2 id="chT">10 жилийн төсөөлөл</h2>
+          <div class="legend"><span><svg viewBox="0 0 18 8"><line x1="0" y1="4" x2="18" y2="4" stroke="var(--s1)" stroke-width="2"/></svg>Хөрөнгийн үнэ цэнэ</span><span><svg viewBox="0 0 18 8"><line x1="0" y1="4" x2="18" y2="4" stroke="var(--s2)" stroke-width="2"/></svg>Зээлийн үлдэгдэл</span><span><svg viewBox="0 0 18 8"><line x1="0" y1="4" x2="18" y2="4" stroke="var(--s3)" stroke-width="2" stroke-dasharray="4 3"/></svg>Хуримтлагдсан цэвэр мөнгө</span></div></div>
+        <div class="chartbox" id="chartbox"><svg class="ch" id="chart" role="img" aria-label="Хөрөнгийн үнэ цэнэ, зээлийн үлдэгдэл, хуримтлагдсан мөнгөний 10 жилийн төсөөлөл"></svg><div class="tip" id="tip" hidden></div></div>
+        <details><summary>Хүснэгтээр харах</summary><div class="tw"><table id="tbl"></table></div></details>
+      </div>
+      <p class="note">Тооцоо ойролцоо: татвар, даатгал, засварын зардал, инфляцыг оруулаагүй. Зээлийг сар бүр тэнцүү төлбөртэй гэж тооцсон. Хуримтлагдсан цэвэр мөнгө нь урьдчилгааг хасаад, түрээсийн цэвэр орлогоос зээлийн төлбөрийг хассан дүн.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const PRESET={off:{price:6500000,rent:55000,areas:[41.6,69.3,84.2,92.5,160.8,321.8],area:84.2},com:{price:8500000,rent:85000,areas:[30,60,120,250,450,600],area:120}};
+let kind='off';
+const fmt=v=>{const a=Math.abs(v),s=v<0?'−':'';if(a>=1e9)return s+(a/1e9).toFixed(2)+' тэрбум ₮';if(a>=1e6)return s+(a/1e6).toFixed(a>=1e8?0:1)+' сая ₮';return s+Math.round(a).toLocaleString('en-US')+' ₮'};
+const short=v=>{const a=Math.abs(v),s=v<0?'−':'';if(a>=1e9)return s+(a/1e9).toFixed(a>=1e10?0:1)+' тэр';if(a>=1e6)return s+Math.round(a/1e6)+' сая';return a<1?'0':s+Math.round(a/1e3)+'k'};
+const val=id=>Math.max(0,parseFloat($(id).value)||0);
+function chips(){$('areaChips').innerHTML=PRESET[kind].areas.map(a=>`<button type="button" data-a="${a}">${a} м²</button>`).join('');
+  $('areaChips').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('area').value=b.dataset.a;calc()})}
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{kind=b.dataset.k;document.querySelectorAll('.seg button').forEach(o=>o.setAttribute('aria-pressed',o===b));
+  const p=PRESET[kind];$('price').value=p.price;$('rent').value=p.rent;$('area').value=p.area;chips();calc()});
+function model(){const A=val('area'),P=A*val('price'),dp=val('dp')/100,D=P*dp,L=P-D,r=val('rate')/100/12,n=Math.max(1,Math.round(val('yrs')))*12;
+  const M=L<=0?0:r>0?L*r/(1-Math.pow(1+r,-n)):L/n;
+  const gross=A*val('rent'),rent=gross*(1-Math.min(.95,val('vac')/100)),fee=A*val('fee'),net=rent-fee,cf=net-M;
+  const yrsN=Math.max(10,Math.ceil(n/12)),g=val('grow')/100,pts=[];let bal=L,cum=-D;
+  for(let y=0;y<=yrsN;y++){if(y>0){for(let m=0;m<12;m++){if(bal>0){const it=bal*r,pr=Math.min(bal,M-it);bal-=pr;cum+=net-M}else cum+=net}}
+    pts.push({y,val:P*Math.pow(1+g,y),bal:Math.max(0,bal),cum})}
+  const payback=net>0?P/(net*12):Infinity;
+  return {A,P,D,L,M,gross,rent,fee,net,cf,pts,payback,n}}
+function calc(){const m=model();$('dpV').textContent=$('dp').value+'%';
+  $('cf').textContent=(m.cf>=0?'+':'')+fmt(m.cf);$('cf').style.color=m.cf>=0?'var(--ok)':'var(--warn)';
+  $('cfS').textContent=m.L>0?`Түрээсийн цэвэр орлогоос зээлийн төлбөрийг хассан дүн`:`Зээлгүй, бүтэн төлсөн тохиолдолд`;
+  const p=$('cfP');if(m.cf>=0){p.className='pill ok';p.textContent='Түрээс нь зээлээ өөрөө төлнө'}else{p.className='pill bad';p.textContent=`Сард ${fmt(-m.cf)} нэмж төлнө`}
+  $('month').innerHTML=`<div><span>Түрээсийн орлого (сул байх хувийг хассан)</span><b>${fmt(m.rent)}</b></div><div><span>Үйлчилгээний зардал</span><b>−${fmt(m.fee)}</b></div><div><span>Зээлийн сарын төлбөр</span><b>−${fmt(m.M)}</b></div><div class="t"><span>Сарын үлдэгдэл</span><b>${(m.cf>=0?'':'−')+fmt(Math.abs(m.cf))}</b></div>`;
+  $('fPrice').textContent=fmt(m.P);$('fDown').textContent=fmt(m.D);$('fYield').textContent=(m.P?(m.net*12/m.P*100):0).toFixed(1)+'%';
+  $('fPay').textContent=isFinite(m.payback)?m.payback.toFixed(1)+' жил':'—';
+  $('chT').textContent=`${m.pts.length-1} жилийн төсөөлөл`;chart(m);table(m)}
+const SER=[['val','Хөрөнгийн үнэ цэнэ','var(--s1)',''],['bal','Зээлийн үлдэгдэл','var(--s2)',''],['cum','Хуримтлагдсан цэвэр мөнгө','var(--s3)','5 4']];
+function chart(m){const svg=$('chart'),W=Math.max(320,$('chartbox').clientWidth),H=Math.round(Math.min(360,Math.max(240,W*.42))),pl=58,pr=118,pt=14,pb=30;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);const pts=m.pts,N=pts.length-1;
+  let lo=Math.min(0,...pts.map(p=>p.cum)),hi=Math.max(...pts.map(p=>Math.max(p.val,p.bal,p.cum)));if(hi<=lo)hi=lo+1;
+  const step=Math.pow(10,Math.floor(Math.log10((hi-lo)/4))),nice=[1,2,2.5,5,10].map(k=>k*step).find(s=>(hi-lo)/s<=5)||step*10;
+  lo=Math.floor(lo/nice)*nice;hi=Math.ceil(hi/nice)*nice;
+  const X=i=>pl+(W-pl-pr)*i/N,Y=v=>pt+(H-pt-pb)*(1-(v-lo)/(hi-lo));let s='';
+  for(let v=lo;v<=hi+1;v+=nice){s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v===0?'var(--faint)':'var(--grid)'}" stroke-width="1"/><text x="${pl-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="JetBrains Mono, monospace">${short(v)}</text>`}
+  for(let i=0;i<=N;i+=(N>12||W<560)?2:1)s+=`<text x="${X(i)}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="JetBrains Mono, monospace">${i}</text>`;
+  s+=`<text x="${W-pr+6}" y="${H-10}" font-size="11" fill="var(--muted)">жил</text>`;
+  const ends=[];
+  SER.forEach(([k,,c,d])=>{s+=`<path d="${pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p[k]).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${d?` stroke-dasharray="${d}"`:''}/>`;
+    ends.push({k,c,y:Y(pts[N][k]),v:pts[N][k]})});
+  ends.sort((a,b)=>a.y-b.y);for(let i=1;i<ends.length;i++)if(ends[i].y-ends[i-1].y<26)ends[i].y=ends[i-1].y+26;
+  ends.forEach(e=>{const lab=SER.find(x=>x[0]===e.k)[1];s+=`<circle cx="${X(N)}" cy="${Y(pts[N][e.k])}" r="4" fill="${e.c}" stroke="var(--panel)" stroke-width="2"/><text x="${X(N)+10}" y="${e.y-2}" font-size="11" fill="var(--muted)">${lab.split(' ')[0]}</text><text x="${X(N)+10}" y="${e.y+11}" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="JetBrains Mono, monospace">${short(e.v)}</text>`});
+  s+=`<line id="xh" x1="0" x2="0" y1="${pt}" y2="${H-pb}" stroke="var(--faint)" stroke-width="1" visibility="hidden"/><g id="dots"></g><rect x="${pl}" y="${pt}" width="${W-pl-pr}" height="${H-pt-pb}" fill="transparent" id="hit"/>`;
+  svg.innerHTML=s;const tip=$('tip'),hit=svg.querySelector('#hit'),xh=svg.querySelector('#xh'),dots=svg.querySelector('#dots');
+  const move=e=>{const r=svg.getBoundingClientRect(),sx=(e.clientX-r.left)*W/r.width,i=Math.max(0,Math.min(N,Math.round((sx-pl)/(W-pl-pr)*N))),p=pts[i];
+    xh.setAttribute('x1',X(i));xh.setAttribute('x2',X(i));xh.setAttribute('visibility','visible');
+    dots.innerHTML=SER.map(([k,,c])=>`<circle cx="${X(i)}" cy="${Y(p[k])}" r="4.5" fill="${c}" stroke="var(--panel)" stroke-width="2"/>`).join('');
+    tip.innerHTML=`<div style="margin-bottom:4px"><b>${i}-р жил</b></div>`+SER.map(([k,l,c])=>`<div><span><i style="background:${c}"></i>${l}</span><b>${short(p[k])}</b></div>`).join('');
+    tip.hidden=false;const px=X(i)/W*r.width;tip.style.left=Math.min(px+12,r.width-tip.offsetWidth-4)+'px';tip.style.top='8px'};
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',()=>{tip.hidden=true;xh.setAttribute('visibility','hidden');dots.innerHTML=''})}
+function table(m){$('tbl').innerHTML=`<thead><tr><th>Жил</th>${SER.map(s=>`<th>${s[1]}</th>`).join('')}</tr></thead><tbody>${m.pts.map(p=>`<tr><td>${p.y}</td><td>${fmt(p.val)}</td><td>${fmt(p.bal)}</td><td>${fmt(p.cum)}</td></tr>`).join('')}</tbody>`}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(calc,120)});
+chips();calc();
+})();
+</script>
+<a href="../" aria-label="Нүүр хуудас" style="position:fixed;left:12px;bottom:12px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 10px;background:rgba(10,14,26,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(231,207,155,.45);color:#e7cf9b;font:600 10px/1 Montserrat,system-ui,sans-serif;letter-spacing:.28em;text-decoration:none;border-radius:2px">&#8592; HAMILTON</a></body></html>

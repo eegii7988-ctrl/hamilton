@@ -1,0 +1,326 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0}</style></head><body><title>Hamilton Gate Park танилцуулга</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: a hardcover brochure lying open on a dark desk under a soft light. Two square pages per spread, page stacks at the fore-edges,
+   the leaf turns from the spine with a travelling shadow. One page at a time on a phone. */
+:root{
+  --desk:#0a1229; --desk-2:#1a2652;
+  --paper:#f8f5ef; --paper-2:#ece5d8; --edge:#ddd5c5;
+  --ink:#1c2442; --navy:#24346b; --navy-2:#1a2754; --gold:#b48c55; --gold-hi:#e7cf9b; --muted:#6c6f7c;
+  --f-mark:"Cinzel","Cormorant Garamond",Georgia,serif;
+  --f-display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --f-body:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --foil:linear-gradient(115deg,#9c7642 0%,#e9d39f 28%,#b8915a 46%,#f3e2b6 62%,#a47d47 82%,#d9bd85 100%);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .32 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:radial-gradient(70% 60% at 50% 42%,var(--desk-2) 0%,#121c3e 45%,var(--desk) 100%);color:var(--paper);font-family:var(--f-body);overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:var(--grain);opacity:.08;mix-blend-mode:overlay}
+.app{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding-block:12px}
+.stage{position:relative;width:min(1180px,100% - 120px,(100dvh - 140px) * 2);aspect-ratio:2/1;perspective:2800px;--lt:0px;--rt:10px}
+.stage::before{content:"";position:absolute;left:4%;right:4%;bottom:-5%;height:12%;background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.55),rgba(0,0,0,0));filter:blur(8px);z-index:0}
+.stage.closed::before{left:27%;right:27%}.stage.back::before{left:27%;right:27%}
+.stage.closed .book::after{left:50%}.stage.back .book::after{right:50%}
+.stage .book{transition:transform .8s cubic-bezier(.42,.06,.32,1)}.stage.closed .book{transform:translateX(-25%)}.stage.back .book{transform:translateX(25%)}
+.book{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;z-index:1}
+.slot{position:relative;overflow:hidden}
+.slot.empty{visibility:hidden}
+/* fore-edge page stacks */
+.edge{position:absolute;top:.6%;bottom:.6%;z-index:0;background:repeating-linear-gradient(90deg,#f1ece2 0 1px,#cdc4b3 1px 2px);box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.edge.l{left:calc(-1 * var(--lt));width:var(--lt);border-radius:3px 0 0 3px}
+.edge.r{left:100%;width:var(--rt);border-radius:0 3px 3px 0}
+/* spine: gutter shading + soft fold highlight */
+.slot.l::after,.slot.r::after{content:"";position:absolute;top:0;bottom:0;width:14%;pointer-events:none;z-index:8}
+.slot.l::after{right:0;background:linear-gradient(90deg,rgba(0,0,0,0) 0%,rgba(40,30,15,.10) 55%,rgba(20,12,0,.30) 96%,rgba(255,255,255,.08) 100%)}
+.slot.r::after{left:0;background:linear-gradient(270deg,rgba(0,0,0,0) 0%,rgba(40,30,15,.09) 55%,rgba(20,12,0,.26) 96%,rgba(255,255,255,.08) 100%)}
+.slot.solo::after{display:none}
+/* light falling across the open book */
+.book::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:9;background:radial-gradient(90% 120% at 30% 0%,rgba(255,250,235,.10),rgba(0,0,0,0) 60%),linear-gradient(180deg,rgba(0,0,0,0) 70%,rgba(0,0,0,.08))}
+/* turning leaf */
+.leaf{position:absolute;top:0;bottom:0;width:50%;transform-style:preserve-3d;z-index:20;transition:transform 1s cubic-bezier(.42,.06,.32,1)}
+.leaf .face{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden}
+.leaf .back{transform:rotateY(180deg)}
+.leaf .face::after{content:"";position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0}
+.leaf.fwd .front::after{background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.35));animation:shadeA 1s ease-in-out}
+.leaf.fwd .back::after{background:linear-gradient(270deg,rgba(0,0,0,.05),rgba(0,0,0,.35));animation:shadeB 1s ease-in-out}
+.leaf.bwd .front::after{background:linear-gradient(270deg,rgba(0,0,0,.05),rgba(0,0,0,.35));animation:shadeA 1s ease-in-out}
+.leaf.bwd .back::after{background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.35));animation:shadeB 1s ease-in-out}
+@keyframes shadeA{0%{opacity:0}50%{opacity:1}100%{opacity:1}}
+@keyframes shadeB{0%{opacity:1}50%{opacity:1}100%{opacity:0}}
+.cast{position:absolute;top:0;bottom:0;width:50%;z-index:15;pointer-events:none;animation:cast 1s ease-in-out forwards}
+@keyframes cast{0%{opacity:0}45%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.leaf{transition-duration:.01s}.leaf .face::after,.cast{animation:none}}
+
+/* ---------- page ---------- */
+.page{position:absolute;inset:0;background:var(--paper);color:var(--ink);container-type:inline-size;overflow:hidden}
+.page.paper::before{content:"";position:absolute;inset:0;background:var(--grain),radial-gradient(120% 90% at 70% 20%,#fbf9f4,#f1ebe0);background-blend-mode:multiply;opacity:1;z-index:0}
+.page *{margin:0}
+.page>*{position:relative;z-index:1}
+.page>.img,.page>.lineart{position:absolute}
+.pad{position:absolute!important;inset:0;padding:9cqw 9cqw 11cqw;display:flex;flex-direction:column;gap:3cqw}
+.folio{position:absolute!important;bottom:4.2cqw;left:9cqw;right:9cqw;display:flex;justify-content:space-between;align-items:center;font:500 1.45cqw/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);z-index:4}
+.folio b{font:500 2.2cqw/1 var(--f-display);color:var(--gold);letter-spacing:.04em;display:inline-flex;gap:1.2cqw;align-items:center}
+.folio b::before{content:"";width:5cqw;height:1px;background:currentColor;opacity:.7}
+.on-img .folio{color:rgba(255,255,255,.82)}.on-img .folio b{color:var(--gold-hi)}
+.eyebrow{font:600 1.55cqw/1.2 var(--f-body);letter-spacing:.34em;text-transform:uppercase;color:var(--gold);display:flex;gap:1.6cqw;align-items:center}
+.eyebrow::before{content:"";width:1.3cqw;height:1.3cqw;flex:none;background:currentColor;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.h1{font:400 8cqw/.98 var(--f-display);color:var(--navy);text-wrap:balance;letter-spacing:-.01em}
+.h1 i{font-style:italic;color:var(--gold)}
+.h2{font:400 6cqw/1.02 var(--f-display);color:var(--navy);text-wrap:balance}
+.h2 i{font-style:italic;color:var(--gold)}
+.lede{font:300 2.3cqw/1.75 var(--f-body);color:#3a4058;max-width:66cqw}
+.rule{height:1px;background:var(--gold);width:14cqw;opacity:.8}
+.img{position:absolute;inset:0;background-size:cover;background-position:center}
+.gloss::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.10) 48%,rgba(255,255,255,0) 60%)}
+.shade-top>.img::after,.shade-bot>.img::after{content:"";position:absolute;inset:0}
+.shade-top>.img::after{background:linear-gradient(180deg,rgba(9,16,38,.78),rgba(9,16,38,0) 50%)}
+.shade-bot>.img::after{background:linear-gradient(0deg,rgba(9,16,38,.82),rgba(9,16,38,0) 55%)}
+.over{position:absolute!important;z-index:3;color:#fff}
+.over .eyebrow{color:var(--gold-hi)}
+.over .h1,.over .h2{color:#fff}
+.over .h1 i{color:var(--gold-hi)}
+.cap{font:400 1.75cqw/1.55 var(--f-body);color:var(--muted)}
+.cap b{display:block;font:500 2.6cqw/1.2 var(--f-display);color:var(--navy);margin-bottom:.4cqw}
+.big-no{position:absolute!important;right:6cqw;top:3cqw;font:300 34cqw/1 var(--f-display);color:transparent;-webkit-text-stroke:1px rgba(180,140,85,.45);letter-spacing:-.04em;z-index:0!important;pointer-events:none}
+.lineart{position:absolute;right:-2cqw;bottom:-1cqw;width:64cqw;color:var(--gold);opacity:.22;z-index:0}
+.framed{position:relative;box-shadow:0 1.8cqw 3.6cqw rgba(20,30,60,.22)}
+.framed::before{content:"";position:absolute;inset:-1.4cqw 1.4cqw 1.4cqw -1.4cqw;border:1px solid rgba(180,140,85,.7);z-index:-1}
+.framed .img{position:absolute}
+
+/* cover: navy cloth board with gold foil */
+.cover{background:radial-gradient(120% 100% at 30% 20%,#2c3f7c,var(--navy-2) 70%);color:#fff}
+.cover::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.35;mix-blend-mode:soft-light;z-index:0}
+.cover .frame{position:absolute!important;inset:5.5cqw;border:1px solid rgba(214,182,128,.55)}
+.cover .frame::after{content:"";position:absolute;inset:1.3cqw;border:1px solid rgba(214,182,128,.25)}
+.mark{position:absolute!important;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2cqw;text-align:center}
+.foil{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .25cqw .25cqw rgba(0,0,0,.35))}
+.mono{width:11cqw;height:auto;filter:drop-shadow(0 .3cqw .3cqw rgba(0,0,0,.35))}
+.word{font:600 8.6cqw/1 var(--f-mark);letter-spacing:.08em;margin-top:3cqw}
+.sub{font:500 2.1cqw/1 var(--f-body);letter-spacing:1em;margin-right:-1em;color:#d9dcea}
+.tag{position:absolute!important;left:0;right:0;bottom:12cqw;text-align:center;font:400 1.75cqw/1 var(--f-body);letter-spacing:.3em;color:#d6c39e}
+.tag i{font:italic 400 2.6cqw/1 var(--f-display);letter-spacing:.02em;text-transform:none;color:#fff}
+.slot.cover-slot{border-radius:.3% 1.2% 1.2% .3%/.3% 1.2% 1.2% .3%}
+
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(36,52,107,.18)}
+.stat{padding:2.8cqw 0 2.6cqw;border-bottom:1px solid rgba(36,52,107,.18);display:flex;flex-direction:column;gap:.6cqw}
+.stat:nth-child(odd){padding-right:3cqw;border-right:1px solid rgba(36,52,107,.18)}
+.stat:nth-child(even){padding-left:3.4cqw}
+.stat b{font:400 10cqw/.9 var(--f-display);color:var(--navy);font-variant-numeric:lining-nums tabular-nums}
+.stat b sup{font-size:.35em;color:var(--gold);vertical-align:top;margin-left:.4cqw}
+.stat span{font:500 1.7cqw/1.35 var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.list{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw 4cqw;font:400 2cqw/1.4 var(--f-body);color:var(--ink);padding:0}
+.list li{list-style:none;display:flex;gap:1.6cqw;align-items:center}
+.list li::before{content:"";flex:none;width:1.2cqw;height:1.2cqw;background:var(--gold);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.feat{display:flex;flex-direction:column;gap:2cqw;padding:0}
+.feat li{list-style:none;display:grid;grid-template-columns:6cqw 1fr;gap:2cqw;align-items:baseline;border-top:1px solid rgba(36,52,107,.15);padding-top:2cqw}
+.feat li em{font:italic 400 3.6cqw/1 var(--f-display);color:var(--gold)}
+.feat li div{font:300 2.05cqw/1.6 var(--f-body);color:#3a4058}
+.feat li div b{display:block;font:500 3cqw/1.15 var(--f-display);color:var(--navy);margin-bottom:.5cqw}
+.quote{background:radial-gradient(120% 100% at 70% 30%,#2c3f7c,var(--navy-2) 70%);color:#fff}
+.quote::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.3;mix-blend-mode:soft-light}
+.btn3d{align-self:flex-start;display:inline-flex;gap:1.6cqw;align-items:center;font:600 1.8cqw/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:#fff;background:var(--navy);padding:2.3cqw 3.6cqw;text-decoration:none;border:1px solid var(--navy)}
+.btn3d:hover,.btn3d:focus-visible{background:var(--gold);border-color:var(--gold);outline:none}
+.contact{display:flex;flex-direction:column;gap:3.4cqw}
+.contact dt{font:600 1.6cqw/1 var(--f-body);letter-spacing:.28em;text-transform:uppercase;color:#d8bd8c;margin-bottom:1.2cqw}
+.contact dd{font:300 2.5cqw/1.55 var(--f-body);color:#fff;margin:0}
+.contact dd.big{font:400 7cqw/1 var(--f-display);letter-spacing:.02em;user-select:all}
+
+/* ---------- controls ---------- */
+.nav{position:absolute;top:50%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;border:1px solid rgba(231,207,155,.35);background:rgba(10,18,41,.6);color:var(--gold-hi);font:300 24px/1 var(--f-display);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(6px)}
+.nav:hover,.nav:focus-visible{background:var(--gold);border-color:var(--gold);color:#fff;outline:none}
+.nav[disabled]{opacity:.2;cursor:default}
+.prev{left:-62px}.next{right:-62px}
+.bar{display:flex;gap:10px;align-items:center;font:500 13px/1 var(--f-body);color:#c9cde0;flex-wrap:wrap;justify-content:center}
+.bar button{font:600 11px/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:#e9ecf6;background:transparent;border:1px solid rgba(231,207,155,.3);border-radius:999px;padding:11px 16px;cursor:pointer}
+.bar button:hover,.bar button:focus-visible{border-color:var(--gold);color:#fff;outline:none}
+.count{min-width:96px;text-align:center;font:400 18px/1 var(--f-display);font-variant-numeric:lining-nums tabular-nums;letter-spacing:.06em;color:var(--gold-hi)}
+.progress{width:min(420px,70vw);height:1px;background:rgba(255,255,255,.12);position:relative}
+.progress i{position:absolute;left:0;top:0;bottom:0;background:var(--gold);transition:width .6s}
+.toc{position:fixed;inset:0 auto 0 0;width:min(330px,86vw);background:rgba(8,14,32,.96);border-right:1px solid rgba(231,207,155,.18);z-index:50;padding:calc(20px + env(safe-area-inset-top,0px)) 16px 18px max(16px,env(safe-area-inset-left,0px));overflow-y:auto;display:flex;flex-direction:column;gap:8px;transform:translateX(-105%);transition:transform .35s}
+.toc.open{transform:none}
+.toc h2{font:400 26px/1 var(--f-display);color:var(--gold-hi);padding:4px 4px 14px}
+.toc button{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center;text-align:left;background:transparent;border:1px solid transparent;border-radius:6px;padding:6px;color:#e9ecf6;cursor:pointer;font:500 13px/1.3 var(--f-body)}
+.toc button:hover,.toc button:focus-visible,.toc button[aria-current="true"]{border-color:rgba(214,182,128,.6);outline:none}
+.toc .th{width:76px;height:50px;background-size:cover;background-position:center;background-color:var(--navy)}
+.toc small{display:block;color:#8f96b3;font-size:11px;letter-spacing:.12em;margin-top:3px}
+.hint{font:400 12px/1.4 var(--f-body);color:#7f87a6;text-align:center}
+
+@media (max-width:760px){
+  .stage{width:min(100% - 8px,(100dvh - 190px));aspect-ratio:1/1}
+  .book{grid-template-columns:1fr}
+  .edge{display:none}
+  .slot{box-shadow:0 22px 44px rgba(0,0,0,.5)}
+  .slot.l::after,.slot.r::after{display:none}
+  .nav{top:auto;bottom:-62px;transform:none}
+  .prev{left:0}.next{right:0}
+  .app{gap:78px}
+  .hint{display:none}
+}
+</style>
+
+<div class="app">
+  <div class="stage" id="stage" aria-roledescription="брошур">
+    <div class="book" id="book"></div>
+    <button class="nav prev" id="prev" aria-label="Өмнөх хуудас">‹</button>
+    <button class="nav next" id="next" aria-label="Дараах хуудас">›</button>
+  </div>
+  <div class="bar">
+    <button id="bToc" aria-expanded="false">Агуулга</button>
+    <span class="count" id="count" aria-live="polite"></span>
+    <button id="bFull">Бүтэн дэлгэц</button>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+  <p class="hint">Хуудсыг эргүүлэхдээ сум, хуудасны зах дээр дарах эсвэл гулсуулна уу.</p>
+</div>
+<nav class="toc" id="toc" aria-label="Агуулга"><h2>Агуулга</h2></nav>
+
+<script>
+(function(){
+const ART3D='https://eegii7988-ctrl.github.io/hamilton/3d/';
+const img=(f,pos,extra)=>`<div class="img" style="background-image:url(img/${f});${pos?'background-position:'+pos+';':''}${extra||''}"></div>`;
+const folio=(n,sec)=>`<div class="folio"><span>Hamilton Gate Park</span><span style="display:flex;gap:2.4cqw;align-items:center">${sec}<b>${String(n).padStart(2,'0')}</b></span></div>`;
+const mono=`<svg class="mono" viewBox="0 0 60 80" aria-hidden="true"><defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a47d47"/><stop offset=".35" stop-color="#f1dfae"/><stop offset=".6" stop-color="#b8915a"/><stop offset="1" stop-color="#e3c890"/></linearGradient></defs>
+  <g fill="none" stroke="url(#fg)" stroke-width="2.4"><path d="M12 16v48M48 16v48M30 10v60M12 40h36M6 16h12M42 16h12M6 64h12M42 64h12"/></g><path d="M30 2l3 5-3 5-3-5zM30 68l3 5-3 5-3-5z" fill="url(#fg)"/></svg>`;
+// thin line drawing of the complex: podium, residence and office towers with floor lines
+const lineart=(()=>{let d='M2 96H198M10 96V70H190V96M10 78H190';
+  for(let y=70;y>14;y-=4)d+=`M24 ${y}H72`;d+='M24 70V14H72V70M24 14Q24 10 28 10H68Q72 10 72 14';
+  for(let y=70;y>0;y-=3.6)d+=`M118 ${y.toFixed(1)}H176`;d+='M118 70V0M176 70V0';for(let x=126;x<176;x+=8)d+=`M${x} 70V0`;
+  return `<svg class="lineart" viewBox="0 0 200 100" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width=".35"/></svg>`})();
+const P=[
+ {t:'Нүүр',th:null,cover:true,h:()=>`<div class="page cover"><div class="frame"></div><div class="mark">${mono}<div class="word foil">HAMILTON</div><div class="sub">GATE PARK</div></div>
+   <div class="tag">TIMELESS SPACES <i>for</i> GRANDEUR EXISTENCE</div></div>`},
+ {t:'Цогц шийдэл',th:'hero.jpg',h:n=>`<div class="page on-img shade-top gloss">${img('hero.jpg','0% 50%','background-size:200% 100%')}
+   <div class="over" style="left:9cqw;top:9cqw;right:9cqw;display:flex;flex-direction:column;gap:2.6cqw"><div class="eyebrow">Hamilton Gate Park</div>
+   <div class="h1">Бизнес тауэр, орон сууц, үйлчилгээ <i>цогц шийдэл</i></div></div>${folio(n,'Танилцуулга')}</div>`},
+ {t:'Цогц шийдэл',th:'hero.jpg',h:n=>`<div class="page on-img shade-bot gloss">${img('hero.jpg','100% 50%','background-size:200% 100%')}
+   <div class="over" style="left:9cqw;right:9cqw;bottom:12cqw;display:flex;flex-direction:column;gap:1.4cqw"><div class="eyebrow">Байршил</div><div style="font:300 2.3cqw/1.6 var(--f-body)">ХУД, 2-р хороо, 19-р хорооллын төв зам дагуу</div></div>${folio(n,'Танилцуулга')}</div>`},
+ {t:'Төслийн бүтэц',th:'elevation.jpg',h:n=>`<div class="page paper">${lineart}<div class="pad"><div class="eyebrow">Төслийн бүтэц</div>
+   <div class="h2">Нэг подиум дээр <i>ажил, амьдрал, амралт</i></div>
+   <p class="lede">Оффисын цамхаг, орон сууцны цамхаг хоёр нь шоппинг молл, ногоон дээвэр бүхий нэг подиум дээр байрлана.</p>
+   <div class="stats"><div class="stat"><b>25</b><span>давхар оффис</span></div><div class="stat"><b>20</b><span>давхар орон сууц</span></div>
+   <div class="stat"><b>5</b><span>давхар үйлчилгээний төв</span></div><div class="stat"><b>240</b><span>автозогсоол</span></div></div>
+   <ul class="list"><li>Хүүхдийн тоглоомын талбай</li><li>Фитнесс, иога</li><li>Ресторан, кафе</li><li>Монголын анхны 3D дэлгэц</li></ul></div>${folio(n,'Төслийн бүтэц')}</div>`},
+ {t:'Төслийн бүтэц',th:'elevation.jpg',h:n=>`<div class="page on-img gloss">${img('elevation.jpg')}${folio(n,'Төслийн бүтэц')}</div>`},
+ {t:'Байршил',th:'location.jpg',h:n=>`<div class="page paper"><div class="big-no">01</div>${lineart}<div class="pad"><div class="eyebrow">01 · Байршил</div>
+   <div class="h2">Хотын <i>А зэрэглэлийн</i> байршил</div>
+   <p class="lede">Бизнесийн төв цэгт байрлах, үнэ цэнээ хадгалах хөрөнгө.</p>
+   <ul class="feat"><li><em>i</em><div><b>Чингисийн өргөн чөлөө дагуу</b>ХУД, 2-р хороо, 19-р хороолол.</div></li>
+   <li><em>ii</em><div><b>120 мянгатын хөшөөнөөс 600 м</b>Хотын төв, Баянзүрх дүүрэг рүү шууд холбогдоно.</div></li>
+   <li><em>iii</em><div><b>Энхтайвны гүүрэнд ойр</b>Яармаг, нисэх онгоцны буудал руу гарах гол зам.</div></li></ul></div>${folio(n,'Байршил')}</div>`},
+ {t:'Байршил',th:'location.jpg',h:n=>`<div class="page on-img gloss">${img('location.jpg','34% 50%')}${folio(n,'Байршил')}</div>`},
+ {t:'Бизнес тауэр',th:'office-night.jpg',h:n=>`<div class="page on-img shade-top gloss">${img('office-night.jpg')}
+   <div class="over" style="left:9cqw;top:9cqw;right:28cqw;display:flex;flex-direction:column;gap:2cqw"><div class="eyebrow">02 · Оффис</div><div class="h1">Бизнес <i>тауэр</i></div></div>${folio(n,'Бизнес тауэр')}</div>`},
+ {t:'Бизнес тауэр',th:'office-sunset.jpg',h:n=>`<div class="page paper"><div class="big-no">02</div><div class="pad"><div class="eyebrow">25 давхар оффис</div>
+   <div class="h2">Хотын дээгүүр харагдах <i>ажлын орчин</i></div>
+   <div class="framed" style="height:36cqw;margin:1.4cqw 0 1cqw 1.4cqw">${img('office-sunset.jpg','50% 38%')}</div>
+   <ul class="feat"><li><em>i</em><div><b>Шилэн фасад</b>Давхар бүрийг тойрсон цагаан хүрээтэй, булангаараа муруйсан шилэн фасад.</div></li>
+   <li><em>ii</em><div><b>Дээд давхрын дэнж</b>Цамхгийн оройд ногоон байгууламжтай задгай дэнж.</div></li></ul></div>${folio(n,'Бизнес тауэр')}</div>`},
+ {t:'Орон сууц',th:'towers-dusk.jpg',h:n=>`<div class="page paper"><div class="big-no">03</div>${lineart}<div class="pad"><div class="eyebrow">Резиденс</div>
+   <div class="h2">20 давхар <i>дээд зэрэглэлийн</i> орон сууц</div>
+   <p class="lede">Цагаан фасад, булангийн муруй шилэн цонх нь өрөөнүүдэд өргөн харагдац, нарны гэрэл оруулна.</p>
+   <div class="framed" style="flex:1;min-height:0;margin:1.4cqw 0 0 1.4cqw">${img('towers-dusk.jpg','50% 45%')}</div></div>${folio(n,'Орон сууц')}</div>`},
+ {t:'Орон сууц',th:'residence.jpg',h:n=>`<div class="page on-img gloss">${img('residence.jpg')}${folio(n,'Орон сууц')}</div>`},
+ {t:'Нар жаргах үе',th:'panorama.jpg',h:n=>`<div class="page on-img shade-top gloss">${img('panorama.jpg','0% 50%','background-size:200% 100%')}
+   <div class="over" style="left:9cqw;top:9cqw;right:9cqw;display:flex;flex-direction:column;gap:2cqw"><div class="eyebrow">Timeless spaces</div><div class="h1">Үе дамжих <i>орон зай</i></div></div>${folio(n,'Нар жаргах үе')}</div>`},
+ {t:'Нар жаргах үе',th:'panorama.jpg',h:n=>`<div class="page on-img shade-bot gloss">${img('panorama.jpg','100% 50%','background-size:200% 100%')}
+   <div class="over" style="left:9cqw;right:9cqw;bottom:12cqw"><div style="font:300 2.3cqw/1.6 var(--f-body)">Цагаан подиум, ногоон дээвэр, гэрэлтэх дэлгэц нь цогцолборыг хотын шинэ тэмдэг болгоно.</div></div>${folio(n,'Нар жаргах үе')}</div>`},
+ {t:'Дээврийн цэцэрлэг',th:'garden-aerial.jpg',h:n=>`<div class="page on-img shade-top gloss">${img('garden-aerial.jpg')}
+   <div class="over" style="left:9cqw;top:9cqw;right:9cqw;display:flex;flex-direction:column;gap:2cqw"><div class="eyebrow">04 · Ногоон байгууламж</div><div class="h1">Дээврийн <i>цэцэрлэг</i></div></div>${folio(n,'Дээврийн цэцэрлэг')}</div>`},
+ {t:'Дээврийн цэцэрлэг',th:'garden-walk.jpg',h:n=>`<div class="page paper"><div class="pad" style="gap:2.8cqw">
+   <div class="eyebrow">Подиумын дээвэр</div>
+   <p style="font:italic 400 4.2cqw/1.25 var(--f-display);color:var(--navy);text-wrap:balance">“Шилэн дээвэр лобби хэсгийн дээвэр ашиглалттай талбай дээр гарч ирнэ.”</p>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4cqw;flex:1;min-height:0;padding:1.4cqw 0 0 1.4cqw">
+     <figure style="display:flex;flex-direction:column;gap:2.2cqw;min-height:0"><div class="framed" style="flex:1">${img('garden-walk.jpg')}</div><figcaption class="cap"><b>Амрах хэсэг</b>Ногоон байгууламж, алхалтын зам</figcaption></figure>
+     <figure style="display:flex;flex-direction:column;gap:2.2cqw;min-height:0"><div class="framed" style="flex:1">${img('kids.jpg','40% 50%')}</div><figcaption class="cap"><b>Хүүхдийн талбай</b>Тоосжилтоос хол, агаарт хүүхдээ салхилуулах, бялдаржуулах хэсэг</figcaption></figure>
+   </div></div>${folio(n,'Дээврийн цэцэрлэг')}</div>`},
+ {t:'Үйлчилгээний төв',th:'pergola.jpg',h:n=>`<div class="page on-img shade-bot gloss">${img('pergola.jpg','30% 50%')}
+   <div class="over" style="left:9cqw;right:9cqw;bottom:12cqw;display:flex;flex-direction:column;gap:2cqw"><div class="eyebrow">05 · Үйлчилгээ</div><div class="h1">Подиум ба <i>шоппинг молл</i></div></div>${folio(n,'Үйлчилгээний төв')}</div>`},
+ {t:'Үйлчилгээний төв',th:'pergola.jpg',h:n=>`<div class="page paper"><div class="big-no">05</div>${lineart}<div class="pad"><div class="eyebrow">5 давхар үйлчилгээний төв</div>
+   <div class="h2">Өдөр тутмын хэрэгцээ <i>нэг дор</i></div>
+   <ul class="feat"><li><em>i</em><div><b>5 м өндөр таазтай шоппинг молл</b>Өргөн, гэгээлэг худалдааны орон зай.</div></li>
+   <li><em>ii</em><div><b>Монголын анхны 3D дэлгэц</b>Подиумын буланг ороосон том дэлгэц.</div></li>
+   <li><em>iii</em><div><b>Ресторан, кафе · Фитнесс, иога</b>Ажлын өмнө ба дараа амрах, хооллох газар.</div></li>
+   <li><em>iv</em><div><b>240 автозогсоол</b>Газар доорх зогсоол.</div></li></ul></div>${folio(n,'Үйлчилгээний төв')}</div>`},
+ {t:'3D дэлгэц',th:'screen.jpg',h:n=>`<div class="page on-img shade-bot gloss">${img('screen.jpg','62% 50%')}
+   <div class="over" style="left:9cqw;right:9cqw;bottom:12cqw;display:flex;flex-direction:column;gap:2cqw"><div class="eyebrow">06 · Widescreen</div><div class="h1">Монголын анхны <i>3D дэлгэц</i></div></div>${folio(n,'3D дэлгэц')}</div>`},
+ {t:'3D дэлгэц',th:'night-wide.jpg',h:n=>`<div class="page paper"><div class="big-no">06</div><div class="pad"><div class="eyebrow">Хамгийн том хэмжээтэй</div>
+   <div class="h2">Хотын анхаарлыг татах <i>36 × 12 м</i></div>
+   <p class="lede">Подиумын буланг ороосон муруй дэлгэц нь өдөр шөнөгүй уулзварын урсгалд харагдана. Брэндүүдэд сурталчилгааны онцгой боломж.</p>
+   <div class="framed" style="flex:1;min-height:0;margin:1.4cqw 0 0 1.4cqw">${img('night-wide.jpg','55% 60%')}</div></div>${folio(n,'3D дэлгэц')}</div>`},
+ {t:'Захиалах нөхцөл',th:'facade-blue.jpg',h:n=>`<div class="page paper"><div class="big-no">07</div>${lineart}<div class="pad"><div class="eyebrow">07 · Захиалах нөхцөл</div>
+   <div class="h2">Ердөө <i>10%-ийн</i> урьдчилгаатай</div>
+   <p class="lede">Хамгийн бага урьдчилгаа төлбөрөөр оффисоо захиалах боломж.</p>
+   <div class="stats"><div class="stat"><b>10%</b><span>урьдчилгаа</span></div><div class="stat"><b>30–600</b><span>м² худалдааны талбай</span></div></div>
+   <ul class="feat"><li><em>i</em><div><b>Ашигтай байршилд сайн талбайг түрүүлж сонго</b>Худалдаа, үйлчилгээний 30–600 м² талбайг санал болгож байна.</div></li>
+   <li><em>ii</em><div><b>Борлуулалтын оффис</b>Хан-Уул дүүрэг, 15-р хороо, Режис Плэйс 3 давхар.</div></li></ul></div>${folio(n,'Захиалах нөхцөл')}</div>`},
+ {t:'Захиалах нөхцөл',th:'facade-blue.jpg',h:n=>`<div class="page on-img gloss">${img('facade-blue.jpg','50% 50%')}${folio(n,'Захиалах нөхцөл')}</div>`},
+ {t:'3D-ээр үзэх',th:'viewer-3d.jpg',h:n=>`<div class="page paper"><div class="big-no">08</div><div class="pad"><div class="eyebrow">Интерактив</div>
+   <div class="h2">Барилгыг <i>3D орчинд</i> үзэх</div>
+   <div class="framed" style="height:34cqw;margin:1.4cqw 0 1cqw 1.4cqw">${img('viewer-3d.jpg')}</div>
+   <p class="lede">Цогцолборыг тойрон эргэж, давхраа сонгоод, айлын дотор алхаж үзнэ үү. Өдөр, шөнийн гэрэлтүүлгийг сольж харах боломжтой.</p>
+   <a class="btn3d" href="${ART3D}" target="_blank" rel="noopener">3D загварыг нээх ›</a></div>${folio(n,'3D')}</div>`},
+ {t:'Timeless spaces',th:null,h:n=>`<div class="page quote"><div class="mark" style="gap:3.4cqw;padding:12cqw">${mono}
+   <div class="rule"></div><div style="font:italic 400 7cqw/1.12 var(--f-display);color:#fff;text-wrap:balance">Timeless spaces <span class="foil">for</span> grandeur existence</div><div class="rule"></div></div></div>`},
+ {t:'Холбоо барих',th:null,cover:true,h:()=>`<div class="page cover"><div class="frame"></div><div class="pad" style="padding:13cqw 12cqw;justify-content:center">
+   <div class="word foil" style="font-size:6.4cqw;margin:0 0 1.2cqw">HAMILTON</div><div class="sub" style="text-align:left;margin-bottom:5.4cqw">GATE PARK</div>
+   <dl class="contact"><div><dt>Борлуулалтын алба</dt><dd class="big">+976 7711-7477</dd></div>
+   <div><dt>Төслийн байршил</dt><dd>ХУД, 2-р хороо, 19-р хорооллын төв зам дагуу</dd></div>
+   <div><dt>Борлуулалтын оффис</dt><dd>Хан-Уул дүүрэг, 15-р хороо, Режис Плэйс 3 давхар</dd></div></dl></div></div>`},
+];
+const N=P.length,maxS=Math.ceil(N/2);
+const book=document.getElementById('book'),stage=document.getElementById('stage'),count=document.getElementById('count'),prog=document.getElementById('prog');
+const mq=matchMedia('(max-width:760px)');let single=mq.matches,s=0,p=0,busy=false;
+const pageHTML=i=>i>=0&&i<N?P[i].h(i+1):'';
+function slot(cls,i,solo){const d=document.createElement('div');d.className='slot '+cls+(i<0||i>=N?' empty':'')+(solo?' solo':'')+(i>=0&&i<N&&P[i].cover?' cover-slot':'');d.innerHTML=pageHTML(i);return d}
+// page stacks: thickness follows how far through the book the reader is
+function edges(){const tot=Math.max(4,Math.round(stage.clientWidth/90)),f=single?p/(N-1):s/maxS,lt=Math.round(tot*f),rt=Math.round(tot*(1-f));
+  stage.style.setProperty('--lt',(s===0&&!single?0:lt)+'px');stage.style.setProperty('--rt',(s>=maxS&&!single?0:rt)+'px');
+  stage.classList.toggle('closed',!single&&s===0);stage.classList.toggle('back',!single&&s>=maxS)}
+function render(){book.innerHTML='';
+  if(single){book.appendChild(slot('r',p,true));count.textContent=`${p+1} / ${N}`;prog.style.width=((p+1)/N*100)+'%'}
+  else{const solo=s===0||s>=maxS;book.appendChild(slot('l',2*s-1,solo));book.appendChild(slot('r',2*s,solo));
+    const el=document.createElement('div');el.className='edge l';book.appendChild(el);const er=document.createElement('div');er.className='edge r';book.appendChild(er);
+    if(s===0)el.hidden=true;if(s>=maxS)er.hidden=true;
+    const lab=[2*s-1,2*s].filter(i=>i>=0&&i<N).map(i=>i+1);count.textContent=`${lab.join('–')} / ${N}`;prog.style.width=(Math.min(N,2*s+1)/N*100)+'%';
+    if(s>=maxS){el.hidden=false;el.style.left='calc(50% - var(--lt))'}}
+  edges();
+  document.getElementById('prev').disabled=single?p===0:s===0;document.getElementById('next').disabled=single?p>=N-1:s>=maxS;
+  tocBtns.forEach(b=>b.setAttribute('aria-current','false'));const cur=single?[p]:[2*s-1,2*s];cur.forEach(i=>{if(tocBtns[i])tocBtns[i].setAttribute('aria-current','true')})}
+function turn(dir){if(busy)return;
+  if(single){const np=p+dir;if(np<0||np>=N)return;busy=true;const leaf=document.createElement('div');leaf.className='leaf';leaf.style.cssText='left:0;width:100%;transform-origin:'+(dir>0?'0 50%':'100% 50%')+';transition:transform .7s cubic-bezier(.42,.06,.32,1),opacity .7s';
+    leaf.innerHTML=`<div class="face">${pageHTML(p)}</div>`;p=np;render();book.appendChild(leaf);requestAnimationFrame(()=>requestAnimationFrame(()=>{leaf.style.transform=`rotateY(${dir>0?-100:100}deg)`;leaf.style.opacity='.2'}));
+    setTimeout(()=>{leaf.remove();busy=false},720);return}
+  const ns=s+dir;if(ns<0||ns>maxS)return;busy=true;
+  const leaf=document.createElement('div');leaf.className='leaf '+(dir>0?'fwd':'bwd');const cast=document.createElement('div');cast.className='cast';
+  if(dir>0){leaf.style.left='50%';leaf.style.transformOrigin='0 50%';leaf.innerHTML=`<div class="face front">${pageHTML(2*s)}</div><div class="face back">${pageHTML(2*s+1)}</div>`;
+    const r=book.children[1];r.innerHTML=pageHTML(2*s+2);r.classList.toggle('empty',2*s+2>=N);r.classList.toggle('cover-slot',!!(P[2*s+2]&&P[2*s+2].cover));
+    cast.style.left='50%';cast.style.background='linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 70%)'}
+  else{leaf.style.left='0';leaf.style.transformOrigin='100% 50%';leaf.innerHTML=`<div class="face front">${pageHTML(2*s-1)}</div><div class="face back">${pageHTML(2*s-2)}</div>`;
+    const l=book.children[0];l.innerHTML=pageHTML(2*s-3);l.classList.toggle('empty',2*s-3<0);
+    cast.style.left='0';cast.style.background='linear-gradient(270deg,rgba(0,0,0,.35),rgba(0,0,0,0) 70%)'}
+  book.appendChild(cast);book.appendChild(leaf);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{leaf.style.transform=`rotateY(${dir>0?-180:180}deg)`}));
+  let fired=false;const done=()=>{if(fired)return;fired=true;s=ns;render();busy=false};leaf.addEventListener('transitionend',done,{once:true});setTimeout(done,1150)}
+function goPage(i){if(single)p=i;else s=Math.ceil(i/2);render();closeToc()}
+document.getElementById('prev').onclick=()=>turn(-1);document.getElementById('next').onclick=()=>turn(1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown')turn(1);else if(e.key==='ArrowLeft'||e.key==='PageUp')turn(-1);else if(e.key==='Escape')closeToc()});
+let sx=null;stage.addEventListener('pointerdown',e=>{if(e.target.closest('a,button'))return;sx=e.clientX});
+stage.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx;sx=null;if(Math.abs(dx)>40){turn(dx<0?1:-1);return}
+  if(e.target.closest('a,button'))return;const r=stage.getBoundingClientRect();turn(e.clientX>r.left+r.width/2?1:-1)});
+mq.addEventListener('change',()=>{const cur=single?p:Math.max(0,2*s-1);single=mq.matches;if(single)p=cur;else s=Math.ceil(cur/2);render()});
+addEventListener('resize',edges);
+const toc=document.getElementById('toc'),bToc=document.getElementById('bToc');const tocBtns=[];
+P.forEach((pg,i)=>{if(i>0&&P[i-1].t===pg.t){tocBtns.push(tocBtns[i-1]);return}const b=document.createElement('button');
+  b.innerHTML=`<span class="th" style="${pg.th?`background-image:url(img/${pg.th})`:''}"></span><span>${pg.t}<small>Хуудас ${i+1}</small></span>`;b.onclick=()=>goPage(i);toc.appendChild(b);tocBtns.push(b)});
+function closeToc(){toc.classList.remove('open');bToc.setAttribute('aria-expanded','false')}
+bToc.onclick=()=>{const o=!toc.classList.contains('open');toc.classList.toggle('open',o);bToc.setAttribute('aria-expanded',o)};
+document.getElementById('bFull').onclick=()=>{try{const r=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();r&&r.catch&&r.catch(()=>{})}catch(e){}};
+render();
+})();
+</script>
+<a href="../" aria-label="Нүүр хуудас" style="position:fixed;left:12px;bottom:12px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 10px;background:rgba(10,14,26,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(231,207,155,.45);color:#e7cf9b;font:600 10px/1 Montserrat,system-ui,sans-serif;letter-spacing:.28em;text-decoration:none;border-radius:2px">&#8592; HAMILTON</a></body></html>

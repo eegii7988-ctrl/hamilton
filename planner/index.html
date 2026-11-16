@@ -1,0 +1,228 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0}</style></head><body><title>Hamilton оффис төлөвлөгч</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: control rail on the left, a large architectural floor plan on the right; one column on phones. */
+:root{
+  --bg:#eef0f5;--panel:#ffffff;--ink:#17203f;--muted:#5f6784;--line:#d9dce6;
+  --navy:#1b2550;--gold:#a8834f;--gold-2:#c9a46a;--ok:#2f7d5b;--warn:#b5462f;
+  --floor:#fbfaf7;--wall:#1b2550;--glass:#5b8fd0;--room:#f2ece0;--meet:#e7edf8;--kitchen:#eef4ea;--desk:#ffffff;--chair:#9aa3bd;--spare:#c3c8d6;
+  --f-display:"Cormorant Garamond",Georgia,serif;--f-body:"Montserrat",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1226;--panel:#151b34;--ink:#eef0f7;--muted:#a3a9c2;--line:#2a3255;
+  --navy:#c9d3ff;--gold:#d2ad73;--gold-2:#e3c48f;--ok:#5fc095;--warn:#ec7b62;
+  --floor:#1a2140;--wall:#dfe4ff;--glass:#7fb0ee;--room:#2a2a33;--meet:#22305a;--kitchen:#203528;--desk:#2b345c;--chair:#7c86a8;--spare:#3a4268;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1226;--panel:#151b34;--ink:#eef0f7;--muted:#a3a9c2;--line:#2a3255;
+  --navy:#c9d3ff;--gold:#d2ad73;--gold-2:#e3c48f;--ok:#5fc095;--warn:#ec7b62;
+  --floor:#1a2140;--wall:#dfe4ff;--glass:#7fb0ee;--room:#2a2a33;--meet:#22305a;--kitchen:#203528;--desk:#2b345c;--chair:#7c86a8;--spare:#3a4268;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:0;color:var(--ink);text-wrap:balance}
+h1 i{color:var(--gold);font-weight:500}
+.link3d{font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none;border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:999px}
+.link3d:hover{border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.units{max-height:220px}}
+.rail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:18px}
+.field{display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+.lbl b{font-family:var(--f-mono);font-size:20px;letter-spacing:0;color:var(--ink);text-transform:none}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);border-radius:10px;padding:4px}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 12px var(--f-body);padding:8px 4px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.checks{display:flex;flex-direction:column;gap:6px}
+.checks label{display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer}
+.checks input{accent-color:var(--gold);width:16px;height:16px}
+.checks select{margin-left:auto;font:500 12.5px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+.units{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto;padding-right:2px}
+.unit{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit}
+.unit:hover{border-color:var(--gold-2)}
+.unit[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+.unit .a{font-family:var(--f-mono);font-weight:600;font-size:15px;grid-row:span 2}
+.unit .n{font-weight:600;font-size:12.5px}
+.unit .f{font-size:11.5px;color:var(--muted);grid-column:2}
+.unit .c{grid-row:span 2;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.c.fit{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.c.tight{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--f-mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.plan{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.plan-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.plan-h h2{font-family:var(--f-display);font-size:26px;font-weight:600;margin:0}
+.plan-h h2 small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:500;margin-left:8px}
+.verdict{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+.verdict.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.verdict.bad{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+canvas{width:100%;display:block;border-radius:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:14px;height:10px;border-radius:2px;border:1px solid var(--line)}
+.note{font-size:11.5px;color:var(--muted);margin:0}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="eyebrow">Hamilton Gate Park · Бизнес тауэр</span>
+      <h1>Таны компани <i>энд багтах уу?</i></h1></div>
+    <a class="link3d" id="link3d" href="https://eegii7988-ctrl.github.io/hamilton/3d/" target="_blank" rel="noopener">Энэ оффисыг 3D-д үзэх ›</a>
+  </header>
+  <div class="grid">
+    <aside class="rail" aria-label="Тохиргоо">
+      <div class="field"><div class="lbl">Ажилтны тоо <b id="hcV">12</b></div>
+        <input type="range" id="hc" min="2" max="60" value="12" aria-label="Ажилтны тоо"></div>
+      <div class="field"><div class="lbl">Ажлын хэв маяг</div>
+        <div class="seg" id="style" role="group" aria-label="Ажлын хэв маяг">
+          <button data-s="open" aria-pressed="false">Нээлттэй</button><button data-s="mixed" aria-pressed="true">Холимог</button><button data-s="private" aria-pressed="false">Кабинтай</button></div>
+        <p class="hint" id="styleHint"></p></div>
+      <div class="field"><div class="lbl">Нэмэлт өрөө</div>
+        <div class="checks">
+          <label><input type="checkbox" id="oRec" checked> Хүлээн авах хэсэг</label>
+          <label><input type="checkbox" id="oDir" checked> Захирлын өрөө</label>
+          <label><input type="checkbox" id="oMeet" checked> Хурлын өрөө <select id="meetSize" aria-label="Хурлын өрөөний хэмжээ"><option value="6">6 хүн</option><option value="10">10 хүн</option></select></label>
+          <label><input type="checkbox" id="oKit" checked> Гал тогоо, амралт</label>
+        </div></div>
+      <div class="field"><div class="lbl">Оффисын өрөө <span id="fitCount" style="text-transform:none;letter-spacing:0"></span></div>
+        <div class="units" id="units"></div></div>
+    </aside>
+    <section class="main">
+      <div class="stats">
+        <div class="stat"><b id="sDesk">0</b><span>ажлын байр</span></div>
+        <div class="stat"><b id="sPer">0</b><span>м² / хүн</span></div>
+        <div class="stat"><b id="sMeet">0</b><span>хурлын суудал</span></div>
+        <div class="stat"><b id="sArea">0</b><span>нийт м²</span></div>
+      </div>
+      <div class="plan">
+        <div class="plan-h"><h2 id="pTitle">O-3<small id="pFloors"></small></h2><span class="verdict ok" id="verdict"></span></div>
+        <canvas id="cv" aria-label="Оффисын байршлын план"></canvas>
+        <div class="legend"><span><i style="background:var(--desk)"></i>Ажлын ширээ</span><span><i style="background:var(--spare);border-style:dashed"></i>Сул ширээ</span><span><i style="background:var(--meet)"></i>Хурлын өрөө</span><span><i style="background:var(--room)"></i>Захирал / кабин</span><span><i style="background:var(--kitchen)"></i>Гал тогоо</span></div>
+        <p class="note">План нь өрөөний талбайг тэгш өнцөгт хэлбэрт шилжүүлсэн ойролцоо зураглал. Дээд тал нь шилэн фасад, доод талын голд орох хаалга. Багана, ариун цэврийн өрөөг тооцоогүй.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+// office unit types from the Hamilton model: [label, m², bbox w, bbox d, floors]
+const TYPES=[["O-7",39.4,8.7,5.7,[11]],["O-1",41.6,6.7,6.7,[7,8,9,10]],["O-1",42.3,5.7,6.7,[12]],["O-5",45.3,6.7,8.7,[7,8,9,10]],["O-6",45.3,6.7,8.7,[7,8,9,10]],["O-4",45.6,6.7,9.7,[11]],["O-5",45.6,5.7,8.7,[11]],["O-5",45.6,6.7,8.7,[12]],["O-6",45.6,6.7,8.7,[12]],["O-8",69.3,9.7,6.7,[7,8,9,10]],["O-3",69.3,10.7,7.7,[7,8,9,10]],["O-3",69.7,10.7,7.7,[12]],["O-2",69.8,11.7,6.7,[11]],["O-8",70.1,9.7,8.7,[12]],["O-7",81,10.7,9.7,[7,8,9,10]],["O-4",81.3,9.7,10.7,[7,8,9,10]],["O-6",81.7,11.7,10.7,[11]],["O-7",81.7,10.7,10.7,[12]],["O-3",82,10.7,9.7,[11]],["O-4",82,9.7,10.7,[12]],["O-9",83.5,9.7,8.7,[7,8,9,10]],["O-2",83.9,11.7,10.7,[7,8,9,10]],["O-9",84.2,9.7,8.7,[12]],["O-1",84.2,14.7,9.7,[13,14,15,16,17,18,19,20,21]],["O-2",84.7,11.7,10.7,[12]],["O-3",92.5,8.7,8.7,[13,14,15,16,17,18,19,20,21]],["O-1",114.4,13.7,9.7,[11]],["O-4",159.1,11.7,14.7,[13,14,15,16,17,18,19,20,21]],["O-2",160.8,13.7,15.7,[13,14,15,16,17,18,19,20,21]],["O-1",321.8,28.7,18.7,[22]],["O-1",321.8,28.7,16.7,[23]],["O-2",355.6,26.7,16.7,[22]],["O-2",355.6,27.7,16.7,[23]]];
+const ART='https://eegii7988-ctrl.github.io/hamilton/3d/';
+const STYLE={open:{hint:'Урт ширээн эгнээ, ~6 м² нэг хүнд. Стартап, борлуулалтын баг.',gap:.9,every:6},
+  mixed:{hint:'Багаар нь 4 ширээтэй бүлэг, хооронд нь чөлөө. ~8 м² нэг хүнд.',gap:1.2,every:4},
+  private:{hint:'Фасадын дагуу 2 хүний кабинууд, үлдсэн хэсэг нь нээлттэй.',gap:1.2,every:4,cabins:true}};
+const $=id=>document.getElementById(id);
+const st={hc:12,style:'mixed',rec:true,dir:true,meet:true,meetN:6,kit:true,sel:null};
+const fl=f=>f.length>1?`${f[0]}–${f[f.length-1]}-р давхар`:`${f[0]}-р давхар`;
+
+// ---- layout engine (metres). Facade along y=0, entrance in the bottom wall.
+function dims(t){const k=Math.sqrt(t[1]/(t[2]*t[3]));let W=t[2]*k,D=t[3]*k;if(D>W)[W,D]=[D,W];return {W,D}}
+function layout(t,o){const {W,D}=dims(t),R=[],desks=[],furn=[];let meetSeats=0;const warn=[];
+  const side=[];if(o.dir)side.push({k:'dir',h:3.4});if(o.meet)side.push({k:'meet',h:o.meetN>6?4.6:3.2});if(o.kit)side.push({k:'kit',h:2.6});
+  let cw=side.length?Math.min(3.6,Math.max(2.8,W*.32)):0,y=0;
+  if(W-cw<3.2&&side.length){while(side.length&&W-cw<3.2){side.pop()}if(!side.length)cw=0;warn.push('Талбай багатай тул зарим өрөөг хассан.')}
+  for(const s of side){if(y+s.h>D-.2){warn.push('Нэмэлт өрөө бүгд багтсангүй.');break}
+    const r={k:s.k,x:0,y,w:cw,h:s.h};R.push(r);y+=s.h;if(s.k==='meet')meetSeats=o.meetN>6?10:6}
+  if(side.length&&y<D){R.push({k:'store',x:0,y,w:cw,h:D-y})}
+  // reception corner at bottom-right of the open area
+  let rec=null;if(o.rec){const rw=Math.min(3.4,(W-cw)*.45),rh=Math.min(2.6,D*.3);rec={k:'rec',x:W-rw,y:D-rh,w:rw,h:rh};R.push(rec)}
+  const x0=cw+.5,x1=W-.4,y0=.45,y1=D-1.3;const S=STYLE[o.style];
+  // cabins along the facade
+  let yy=y0;if(S.cabins&&x1-x0>3){const cwid=3.1,ch=3.4;let cx=x0;while(cx+cwid<=x1+.01&&yy+ch<y1){const c={k:'cab',x:cx,y:0,w:cwid,h:ch+y0};R.push(c);
+      desks.push({x:cx+.3,y:y0+.2,w:1.2,h:.65,f:1,cb:1},{x:cx+cwid-1.5,y:y0+.2,w:1.2,h:.65,f:1,cb:1});cx+=cwid}if(cx>x0)yy=y0+ch+.9}
+  // desk rows: back-to-back benches, chairs on both sides
+  const dw=1.3,dd=.7,rowH=dd*2+1.5,gap=S.gap;
+  for(let ry=yy;ry+rowH<=y1+.01;ry+=rowH+.4){let cx=x0,n=0;
+    while(cx+dw<=x1+.01){const a={x:cx,y:ry+.75,w:dw,h:dd,f:1},b={x:cx,y:ry+.75+dd,w:dw,h:dd,f:-1};
+      const hit=r=>rec&&r.x<rec.x+rec.w+.3&&r.x+r.w>rec.x-.3&&r.y<rec.y+rec.h+.6&&r.y+r.h+.75>rec.y;
+      if(!hit(a))desks.push(a);if(!hit(b))desks.push(b);n++;cx+=dw;if(n%(S.every/2)===0)cx+=gap}}
+  return {W,D,R,desks,meetSeats,warn}}
+function capacity(t){return layout(t,st).desks.length}
+
+// ---- drawing
+const cv=$('cv'),ctx=cv.getContext('2d');let last=null;
+function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function draw(L){last=L;const cssW=cv.clientWidth||800,pad=34,sc=Math.min((cssW-pad*2)/L.W,520/L.D,60),cssH=Math.round(L.D*sc+pad*2+8);
+  const dpr=Math.min(2,window.devicePixelRatio||1);cv.width=cssW*dpr;cv.height=cssH*dpr;cv.style.height=cssH+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
+  const C={floor:tok('--floor'),wall:tok('--wall'),glass:tok('--glass'),room:tok('--room'),meet:tok('--meet'),kit:tok('--kitchen'),desk:tok('--desk'),chair:tok('--chair'),spare:tok('--spare'),muted:tok('--muted'),gold:tok('--gold'),ink:tok('--ink'),panel:tok('--panel')};
+  ctx.clearRect(0,0,cssW,cssH);const ox=(cssW-L.W*sc)/2,oy=pad,X=v=>ox+v*sc,Y=v=>oy+v*sc,S=v=>v*sc;
+  ctx.fillStyle=C.floor;ctx.fillRect(X(0),Y(0),S(L.W),S(L.D));
+  // rooms
+  const fills={dir:C.room,cab:C.room,meet:C.meet,kit:C.kit,rec:null,store:null};
+  const names={dir:'Захирал',cab:'Кабин',meet:L.meetSeats>6?'Хурал · 10':'Хурал · 6',kit:'Гал тогоо',rec:'Хүлээн авах',store:'Агуулах'};
+  ctx.font=`600 ${Math.max(10,Math.min(13,S(.32)))}px Montserrat, system-ui, sans-serif`;ctx.textBaseline='top';
+  for(const r of L.R){if(fills[r.k]){ctx.fillStyle=fills[r.k];ctx.fillRect(X(r.x),Y(r.y),S(r.w),S(r.h))}
+    ctx.strokeStyle=C.wall;ctx.lineWidth=r.k==='rec'?1:1.6;ctx.setLineDash(r.k==='rec'?[4,4]:[]);ctx.strokeRect(X(r.x),Y(r.y),S(r.w),S(r.h));ctx.setLineDash([]);
+    ctx.fillStyle=C.muted;if(r.k==='cab'){ctx.textBaseline='bottom';ctx.fillText(names[r.k],X(r.x)+6,Y(r.y+r.h)-5);ctx.textBaseline='top'}else ctx.fillText(names[r.k],X(r.x)+6,Y(r.y)+(r.y===0?S(.5):6));
+    drawFurn(r,{X,Y,S,C})}
+  // desks
+  const occ=L.desks.slice(0,st.hc);
+  L.desks.forEach((d,i)=>{const on=i<st.hc;ctx.fillStyle=on?C.desk:C.spare;ctx.strokeStyle=on?C.wall:C.muted;ctx.lineWidth=.9;ctx.setLineDash(on?[]:[3,3]);
+    rr(X(d.x)+1,Y(d.y),S(d.w)-2,S(d.h),2);ctx.fill();ctx.stroke();ctx.setLineDash([]);
+    if(on){ctx.fillStyle=C.wall;ctx.fillRect(X(d.x+d.w/2-.25),Y(d.f>0?d.y+.06:d.y+d.h-.1),S(.5),Math.max(1.5,S(.04)));
+      ctx.fillStyle=C.chair;ctx.beginPath();ctx.arc(X(d.x+d.w/2),Y(d.cb?d.y+d.h+.38:d.f>0?d.y-.38:d.y+d.h+.38),S(.26),0,7);ctx.fill()}});
+  // outer walls, facade glass, entrance
+  ctx.strokeStyle=C.wall;ctx.lineWidth=Math.max(3,S(.18));
+  const ew=1.1,ex=L.W/2+(L.R.some(r=>r.k==='rec')?-.6:0);
+  ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(0),Y(L.D));ctx.lineTo(X(ex-ew/2),Y(L.D));ctx.moveTo(X(ex+ew/2),Y(L.D));ctx.lineTo(X(L.W),Y(L.D));ctx.lineTo(X(L.W),Y(0));ctx.stroke();
+  ctx.strokeStyle=C.glass;ctx.lineWidth=Math.max(3,S(.14));ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(L.W),Y(0));ctx.stroke();
+  ctx.lineWidth=1;for(let m=1.5;m<L.W;m+=1.5){ctx.beginPath();ctx.moveTo(X(m),Y(0)-4);ctx.lineTo(X(m),Y(0)+4);ctx.stroke()}
+  ctx.strokeStyle=C.muted;ctx.lineWidth=1;ctx.beginPath();ctx.arc(X(ex-ew/2),Y(L.D),S(ew),-Math.PI/2,0);ctx.stroke();
+  ctx.fillStyle=C.glass;ctx.font='600 11px Montserrat, system-ui, sans-serif';ctx.textBaseline='bottom';ctx.textAlign='center';
+  ctx.fillText('ШИЛЭН ФАСАД · ЦОНХ',X(L.W/2),Y(0)-7);ctx.fillStyle=C.muted;ctx.textBaseline='top';ctx.fillText('Орох хаалга',X(ex),Y(L.D)+6);
+  // dimensions
+  ctx.font='500 11px "JetBrains Mono", monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+  ctx.save();ctx.translate(X(L.W)+14,Y(L.D/2));ctx.rotate(Math.PI/2);ctx.textAlign='center';ctx.fillText(L.D.toFixed(1)+' м',0,0);ctx.restore();
+  ctx.textAlign='left';ctx.fillText('0',ox,cssH-12);ctx.fillStyle=C.ink;ctx.fillRect(ox+10,cssH-14,S(2),3);ctx.fillStyle=C.muted;ctx.fillText('2 м',ox+14+S(2),cssH-12);
+  ctx.textAlign='right';ctx.fillText(L.W.toFixed(1)+' м',X(L.W),cssH-12);ctx.textAlign='left';
+  return occ.length}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
+function chair(X,Y,S,C,x,y){ctx.fillStyle=C.chair;ctx.beginPath();ctx.arc(X(x),Y(y),S(.24),0,7);ctx.fill()}
+function drawFurn(r,{X,Y,S,C}){ctx.lineWidth=.9;ctx.strokeStyle=C.wall;const cx=r.x+r.w/2,cy=r.y+r.h/2;
+  if(r.k==='meet'){const n=r.h>4?10:6,tw=Math.min(r.w-1.6,1.1),th=Math.min(r.h-1.6,n>6?3.2:2);ctx.fillStyle=C.desk;rr(X(cx-tw/2),Y(cy-th/2+.2),S(tw),S(th),S(.3));ctx.fill();ctx.stroke();
+    const per=n/2;for(let i=0;i<per;i++){const yy=cy-th/2+.2+th*(i+.5)/per;chair(X,Y,S,C,cx-tw/2-.35,yy);chair(X,Y,S,C,cx+tw/2+.35,yy)}}
+  if(r.k==='dir'){ctx.fillStyle=C.desk;rr(X(cx-.8),Y(r.y+1.1),S(1.6),S(.8),2);ctx.fill();ctx.stroke();chair(X,Y,S,C,cx,r.y+.75);chair(X,Y,S,C,cx-.4,r.y+2.25);chair(X,Y,S,C,cx+.4,r.y+2.25)}
+  if(r.k==='kit'){ctx.fillStyle=C.desk;ctx.fillRect(X(r.x+.1),Y(r.y+r.h-.75),S(r.w-.2),S(.6));ctx.strokeRect(X(r.x+.1),Y(r.y+r.h-.75),S(r.w-.2),S(.6));
+    ctx.beginPath();ctx.arc(X(cx),Y(r.y+1.1),S(.45),0,7);ctx.fill();ctx.stroke();chair(X,Y,S,C,cx-.75,r.y+1.1);chair(X,Y,S,C,cx+.75,r.y+1.1)}
+  if(r.k==='rec'){ctx.fillStyle=C.room;rr(X(r.x+.3),Y(r.y+.5),S(Math.min(2.2,r.w-.6)),S(.7),S(.2));ctx.fill();ctx.stroke();
+    ctx.fillStyle=C.desk;ctx.beginPath();ctx.arc(X(r.x+.3+Math.min(2.2,r.w-.6)/2),Y(r.y+1.65),S(.35),0,7);ctx.fill();ctx.stroke()}}
+
+// ---- UI
+function render(){const opts=TYPES.map((t,i)=>({t,i,cap:capacity(t)}));
+  const fits=opts.filter(o=>o.cap>=st.hc);if(st.sel==null||!opts[st.sel])st.sel=(fits[0]||opts[opts.length-1]).i;
+  $('fitCount').textContent=`${fits.length} төрөл багтана`;
+  $('units').innerHTML=opts.map(o=>{const t=o.t,ok=o.cap>=st.hc;return `<button class="unit" data-i="${o.i}" aria-pressed="${o.i===st.sel}"><span class="a">${t[1].toFixed(0)}<small style="font-size:10px"> м²</small></span><span class="n">${t[0]}</span><span class="c ${ok?'fit':'tight'}">${ok?'Багтана':o.cap+' хүн хүртэл'}</span><span class="f">${fl(t[4])}</span></button>`}).join('');
+  $('units').querySelectorAll('.unit').forEach(b=>b.onclick=()=>{st.sel=+b.dataset.i;render()});
+  {const box=$('units'),cur=box.querySelector('[aria-pressed="true"]');if(cur&&(cur.offsetTop<box.scrollTop||cur.offsetTop+cur.offsetHeight>box.scrollTop+box.clientHeight))box.scrollTop=cur.offsetTop-box.offsetTop-8}
+  const t=TYPES[st.sel],L=layout(t,st),placed=Math.min(st.hc,L.desks.length);draw(L);
+  $('pTitle').innerHTML=`${t[0]} · ${t[1]} м²<small>${fl(t[4])}</small>`;
+  $('sDesk').textContent=`${placed}/${L.desks.length}`;$('sPer').textContent=(t[1]/Math.max(1,st.hc)).toFixed(1);$('sMeet').textContent=L.meetSeats;$('sArea').textContent=t[1].toFixed(1);
+  const v=$('verdict');if(L.desks.length>=st.hc){v.className='verdict ok';v.textContent=`${st.hc} ажилтан багтана · ${L.desks.length-st.hc} сул ширээ`}
+  else{v.className='verdict bad';v.textContent=`${L.desks.length} хүн хүртэл багтана. Илүү том өрөө сонгоно уу.`}
+  if(L.warn.length){v.textContent+=' · '+L.warn[0]}
+  $('link3d').href=`${ART}#u=${encodeURIComponent('off-'+t[4][0]+'-'+t[0])}`;
+  $('styleHint').textContent=STYLE[st.style].hint;$('hcV').textContent=st.hc}
+$('hc').oninput=e=>{st.hc=+e.target.value;st.sel=null;render()};
+document.querySelectorAll('#style button').forEach(b=>b.onclick=()=>{st.style=b.dataset.s;document.querySelectorAll('#style button').forEach(o=>o.setAttribute('aria-pressed',o===b));st.sel=null;render()});
+[['oRec','rec'],['oDir','dir'],['oMeet','meet'],['oKit','kit']].forEach(([id,k])=>$(id).onchange=e=>{st[k]=e.target.checked;st.sel=null;render()});
+$('meetSize').onchange=e=>{st.meetN=+e.target.value;render()};
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>last&&draw(last),120)});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>last&&draw(last));
+new MutationObserver(()=>last&&draw(last)).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+document.fonts&&document.fonts.ready.then(()=>last&&draw(last));
+render();
+})();
+</script>
+<a href="../" aria-label="Нүүр хуудас" style="position:fixed;left:12px;bottom:12px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 10px;background:rgba(10,14,26,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(231,207,155,.45);color:#e7cf9b;font:600 10px/1 Montserrat,system-ui,sans-serif;letter-spacing:.28em;text-decoration:none;border-radius:2px">&#8592; HAMILTON</a></body></html>

@@ -1,0 +1,125 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0}</style></head><body><title>Hamilton 3D дэлгэц</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the street scene is the stage; a slim control strip below it. Dark-first, like a screen at night. */
+:root{
+  --bg:#0b1022;--panel:#141a33;--ink:#eef0f7;--muted:#a3a9c2;--line:#2a3255;--gold:#d2ad73;--accent:#6c8be6;color-scheme:dark;
+  --f-display:"Cormorant Garamond",Georgia,serif;--f-body:"Montserrat",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef0f5;--panel:#ffffff;--ink:#17203f;--muted:#5f6784;--line:#d9dce6;--gold:#a8834f;--accent:#2a4a9b;color-scheme:light}}
+:root[data-theme="light"]{--bg:#eef0f5;--panel:#ffffff;--ink:#17203f;--muted:#5f6784;--line:#d9dce6;--gold:#a8834f;--accent:#2a4a9b;color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 28px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.05;margin:2px 0 0;text-wrap:balance}
+h1 i{color:var(--gold);font-weight:500}
+.spec{display:flex;gap:18px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.spec b{display:block;font-size:18px;color:var(--ink)}
+.stage{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000}
+.stage canvas{display:block;width:100%;height:auto}
+.badge{position:absolute;left:12px;top:12px;background:rgba(10,14,30,.7);color:#fff;font-size:11.5px;font-weight:600;letter-spacing:.08em;padding:5px 10px;border-radius:999px;backdrop-filter:blur(6px)}
+.controls{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
+.grp{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.seg{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 12.5px var(--f-body);padding:7px 12px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.up{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--gold);color:var(--ink);border-radius:10px;padding:8px 14px;font-weight:600;font-size:12.5px;cursor:pointer}
+.up input{position:absolute;width:1px;height:1px;opacity:0}
+.up:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+input[type=range]{accent-color:var(--gold);width:160px}
+.hint{font-size:12px;color:var(--muted);margin:0;flex-basis:100%}
+.hint b{color:var(--ink);font-family:var(--f-mono)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><span class="eyebrow">Hamilton Gate Park · Widescreen</span><h1>Таны брэнд <i>36 × 12 метрт</i></h1></div>
+    <div class="spec"><span><b>432 м²</b>дэлгэцийн талбай</span><span><b>3 : 1</b>харьцаа</span><span><b>24/7</b>уулзварт харагдана</span></div>
+  </header>
+  <div class="stage"><canvas id="cv" aria-label="Подиумын булангийн 3D дэлгэц дээрх сурталчилгааны төсөөлөл"></canvas><span class="badge" id="badge">ӨДӨР · УУЛЗВАРААС</span></div>
+  <div class="controls">
+    <div class="grp"><span class="lbl">Үзэх цэг</span><div class="seg" id="scene"><button data-s="day" aria-pressed="true">Өдөр · гудамжнаас</button><button data-s="night" aria-pressed="false">Шөнө · дээрээс</button></div></div>
+    <div class="grp"><span class="lbl">Жишээ контент</span><div class="seg" id="sample"><button data-k="brand" aria-pressed="true">Брэнд</button><button data-k="wave" aria-pressed="false">Давалгаа</button><button data-k="sale" aria-pressed="false">Хямдрал</button></div></div>
+    <div class="grp"><span class="lbl">Өөрийн контент</span><label class="up">⇪ Зураг эсвэл видео оруулах<input type="file" id="file" accept="image/*,video/*"></label></div>
+    <div class="grp"><span class="lbl">Гэрэлтэлт</span><input type="range" id="glow" min="0" max="100" value="60" aria-label="Гэрэлтэлт"></div>
+    <p class="hint">Хамгийн сайн харагдах хэмжээ: <b>3600 × 1200 px</b> (3:1). Өөр харьцаатай зургийг дэлгэцэнд дүүргэж тайрна. Файл таны төхөөрөмжөөс гарахгүй, зөвхөн энэ хуудсанд харагдана.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+// screen outline in each photo: matching points on the top and bottom edge, u = 0..1 across the 36 m width
+const SCENES={
+  day:{src:'img/day.jpg',badge:'ӨДӨР · УУЛЗВАРААС',u:[0,.37,.74,.77,.8,1],
+    top:[[652,520],[1056,432],[1455,345],[1505,333],[1565,342],[1730,452]],
+    bot:[[652,860],[1056,844],[1440,818],[1490,810],[1545,812],[1730,840]],night:false},
+  night:{src:'img/night.jpg',badge:'ШӨНӨ · ДЭЭРЭЭС',u:[0,.8,.86,.9,1],
+    top:[[535,450],[845,462],[885,462],[905,456],[912,460]],
+    bot:[[540,562],[830,610],[870,604],[895,595],[912,575]],night:true}};
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const ad=document.createElement('canvas');ad.width=1200;ad.height=400;const ax=ad.getContext('2d');
+const glowC=document.createElement('canvas'),gx=glowC.getContext('2d');
+let scene='day',sample='brand',userImg=null,userVid=null,photo={},glow=.6,t0=performance.now();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+Object.entries(SCENES).forEach(([k,s])=>{const im=new Image();im.onload=()=>{photo[k]=im;if(k===scene)size()};im.src=s.src});
+function size(){const im=photo[scene];if(!im)return;cv.width=im.naturalWidth;cv.height=im.naturalHeight;glowC.width=cv.width/4;glowC.height=cv.height/4}
+const lerp=(a,b,k)=>a+(b-a)*k;
+function at(s,arr,u){let i=1;while(i<s.u.length-1&&u>s.u[i])i++;const k=(u-s.u[i-1])/(s.u[i]-s.u[i-1]);return [lerp(arr[i-1][0],arr[i][0],k),lerp(arr[i-1][1],arr[i][1],k)]}
+// affine-map one source triangle onto a destination triangle
+function tri(g,img,s0,s1,s2,d0,d1,d2){g.save();g.beginPath();
+  const cx=(d0[0]+d1[0]+d2[0])/3,cy=(d0[1]+d1[1]+d2[1])/3,e=p=>[p[0]+(p[0]-cx)*.02,p[1]+(p[1]-cy)*.02];const a=e(d0),b=e(d1),c=e(d2);
+  g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.lineTo(c[0],c[1]);g.closePath();g.clip();
+  const den=s0[0]*(s1[1]-s2[1])+s1[0]*(s2[1]-s0[1])+s2[0]*(s0[1]-s1[1]);
+  const m11=(d0[0]*(s1[1]-s2[1])+d1[0]*(s2[1]-s0[1])+d2[0]*(s0[1]-s1[1]))/den,m12=(d0[1]*(s1[1]-s2[1])+d1[1]*(s2[1]-s0[1])+d2[1]*(s0[1]-s1[1]))/den;
+  const m21=(d0[0]*(s2[0]-s1[0])+d1[0]*(s0[0]-s2[0])+d2[0]*(s1[0]-s0[0]))/den,m22=(d0[1]*(s2[0]-s1[0])+d1[1]*(s0[0]-s2[0])+d2[1]*(s1[0]-s0[0]))/den;
+  const dx=(d0[0]*(s1[0]*s2[1]-s2[0]*s1[1])+d1[0]*(s2[0]*s0[1]-s0[0]*s2[1])+d2[0]*(s0[0]*s1[1]-s1[0]*s0[1]))/den;
+  const dy=(d0[1]*(s1[0]*s2[1]-s2[0]*s1[1])+d1[1]*(s2[0]*s0[1]-s0[0]*s2[1])+d2[1]*(s0[0]*s1[1]-s1[0]*s0[1]))/den;
+  g.transform(m11,m12,m21,m22,dx,dy);g.drawImage(img,0,0);g.restore()}
+function warp(g,s,sc){const N=48,W=ad.width,H=ad.height,R=4;
+  for(let i=0;i<N;i++){const u0=i/N,u1=(i+1)/N;
+    for(let j=0;j<R;j++){const v0=j/R,v1=(j+1)/R,P=(u,v)=>{const a=at(s,s.top,u),b=at(s,s.bot,u);return [lerp(a[0],b[0],v)*sc,lerp(a[1],b[1],v)*sc]};
+      const A=P(u0,v0),B=P(u1,v0),C=P(u1,v1),D=P(u0,v1),sa=[u0*W,v0*H],sb=[u1*W,v0*H],sc2=[u1*W,v1*H],sd=[u0*W,v1*H];
+      tri(g,ad,sa,sb,sc2,A,B,C);tri(g,ad,sa,sc2,sd,A,C,D)}}}
+// ---- sample content, drawn into the 3:1 ad canvas
+function drawAd(t){const W=ad.width,H=ad.height;ax.save();
+  if(userVid&&userVid.readyState>=2)cover(userVid,userVid.videoWidth,userVid.videoHeight);
+  else if(userImg)cover(userImg,userImg.naturalWidth,userImg.naturalHeight);
+  else if(sample==='brand'){const g=ax.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0e1638');g.addColorStop(1,'#25386f');ax.fillStyle=g;ax.fillRect(0,0,W,H);
+    for(let i=0;i<14;i++){ax.strokeStyle=`rgba(210,173,115,${.08+.05*Math.sin(t*.8+i)})`;ax.lineWidth=2;ax.beginPath();ax.arc(W*.5,H*1.4,120+i*42+((t*30)%42),Math.PI*1.05,Math.PI*1.95);ax.stroke()}
+    const sh=ax.createLinearGradient(0,0,W,0),p=(t*.15)%1.6-.3;sh.addColorStop(Math.max(0,p),'#b8915a');sh.addColorStop(Math.min(1,Math.max(0,p+.12)),'#fff3cf');sh.addColorStop(Math.min(1,Math.max(0,p+.24)),'#b8915a');
+    ax.fillStyle=sh;ax.font='600 150px "Cormorant Garamond", Georgia, serif';ax.textAlign='center';ax.textBaseline='middle';ax.fillText('HAMILTON',W/2,H*.45);
+    ax.fillStyle='rgba(255,255,255,.85)';ax.font='600 26px Montserrat, sans-serif';ax.fillText('G A T E   P A R K',W/2,H*.72)}
+  else if(sample==='wave'){const g=ax.createLinearGradient(0,0,0,H);g.addColorStop(0,'#bfe6ff');g.addColorStop(1,'#0a5fa8');ax.fillStyle=g;ax.fillRect(0,0,W,H);
+    for(let k=0;k<6;k++){ax.fillStyle=`rgba(${20+k*20},${110+k*20},${190+k*10},${.35+k*.08})`;ax.beginPath();ax.moveTo(0,H);
+      for(let x=0;x<=W;x+=10)ax.lineTo(x,H*(.35+k*.1)+Math.sin(x*.012+t*(1.2+k*.25)+k)*22+Math.sin(x*.031-t*1.7)*8);ax.lineTo(W,H);ax.fill()}}
+  else{ax.fillStyle='#d6283d';ax.fillRect(0,0,W,H);const o=(t*120)%80;ax.fillStyle='rgba(255,255,255,.08)';for(let x=-80;x<W+80;x+=80){ax.beginPath();ax.moveTo(x+o,0);ax.lineTo(x+o+40,0);ax.lineTo(x+o-160,H);ax.lineTo(x+o-200,H);ax.fill()}
+    ax.fillStyle='#fff';ax.textAlign='left';ax.textBaseline='alphabetic';ax.font='800 200px Montserrat, sans-serif';ax.fillText('−50%',70,H*.74);
+    ax.font='700 46px Montserrat, sans-serif';ax.fillText('ТАНЫ БРЭНД ЭНД',W*.6,H*.45);ax.font='500 30px Montserrat, sans-serif';ax.fillStyle='rgba(255,255,255,.85)';ax.fillText('Hamilton Gate Park · 1-р давхар',W*.6,H*.62)}
+  ax.restore()}
+function cover(src,w,h){const W=ad.width,H=ad.height,s=Math.max(W/w,H/h);ax.drawImage(src,(W-w*s)/2,(H-h*s)/2,w*s,h*s)}
+function frame(now){requestAnimationFrame(frame);const im=photo[scene];if(!im)return;const s=SCENES[scene],t=reduce?2:(now-t0)/1000;
+  drawAd(t);ctx.globalCompositeOperation='source-over';ctx.drawImage(im,0,0);warp(ctx,s,1);
+  // light spill: a blurred copy of the screen added on top
+  if(glow>0){gx.clearRect(0,0,glowC.width,glowC.height);warp(gx,s,.25);ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=glow*(s.night?.9:.45);
+    ctx.filter=`blur(${s.night?10:6}px)`;ctx.drawImage(glowC,0,0,cv.width,cv.height);ctx.filter='none';ctx.restore()}
+  // slight screen pixel texture + edge highlight to sit into the photo
+  ctx.save();ctx.globalAlpha=.9;ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=3;ctx.beginPath();s.u.forEach((u,i)=>{const p=s.top[i];i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])});ctx.stroke();
+  ctx.beginPath();s.u.forEach((u,i)=>{const p=s.bot[i];i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])});ctx.stroke();ctx.restore()}
+document.querySelectorAll('#scene button').forEach(b=>b.onclick=()=>{scene=b.dataset.s;document.querySelectorAll('#scene button').forEach(o=>o.setAttribute('aria-pressed',o===b));
+  document.getElementById('badge').textContent=SCENES[scene].badge;size()});
+document.querySelectorAll('#sample button').forEach(b=>b.onclick=()=>{sample=b.dataset.k;userImg=null;if(userVid){userVid.pause();userVid=null}
+  document.querySelectorAll('#sample button').forEach(o=>o.setAttribute('aria-pressed',o===b))});
+document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);
+  document.querySelectorAll('#sample button').forEach(o=>o.setAttribute('aria-pressed','false'));
+  if(f.type.startsWith('video')){userImg=null;const v=document.createElement('video');v.src=url;v.muted=true;v.loop=true;v.playsInline=true;v.play().catch(()=>{});userVid=v}
+  else{if(userVid){userVid.pause();userVid=null}const im=new Image();im.onload=()=>{userImg=im};im.src=url}};
+document.getElementById('glow').oninput=e=>{glow=e.target.value/100};
+requestAnimationFrame(frame);
+})();
+</script>
+<a href="../" aria-label="Нүүр хуудас" style="position:fixed;left:12px;bottom:12px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 10px;background:rgba(10,14,26,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(231,207,155,.45);color:#e7cf9b;font:600 10px/1 Montserrat,system-ui,sans-serif;letter-spacing:.28em;text-decoration:none;border-radius:2px">&#8592; HAMILTON</a></body></html>
