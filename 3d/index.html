@@ -136,7 +136,7 @@ body.selling .card{left:auto;right:max(16px,env(safe-area-inset-right,0px));top:
 .sales{top:calc(62px + env(safe-area-inset-top,0px))}
 .card .acts .primary{flex:1;background:var(--accent);border-color:var(--accent);color:#fff;padding:10px 12px;font-size:13.5px}.card .acts .ic{flex:none}
 body.selling .floors{display:none}
-.bar .grp button{padding:9px 16px;font-size:13.5px}#bHome{font-weight:700}
+.bar .grp button{padding:9px 16px;font-size:13.5px}#bReal{display:inline-block;padding:9px 16px;font-size:13.5px;font-weight:600;text-decoration:none;border-radius:8px;background:linear-gradient(115deg,#9c7642,#e9d39f 40%,#b8915a 70%,#d9bd85);color:#1a1408;white-space:nowrap}#bHome{font-weight:700}
 .ip-tabs{flex:none}.ip-tabs button{padding:7px 12px;font-size:12.5px}
 .ipanel:not(.room) .ip-rooms{display:none}.ipanel.p2d .ip-hint{display:none}
 .plan2d{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:70px 16px 150px;background:rgba(8,14,24,.55)}
@@ -221,7 +221,7 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 <nav class="floors" aria-label="Давхар сонгох"><div class="fl-title">Давхар</div><div class="fl-list" id="flList"></div></nav>
 
 <div class="bar">
-  <div class="grp"><button id="bHome">Барилга</button><button id="bUnits" aria-pressed="false">Борлуулалт</button></div>
+  <div class="grp"><button id="bHome">Барилга</button><button id="bUnits" aria-pressed="false">Борлуулалт</button></div><div class="grp"><a id="bReal" href="../real/">◉ Бодит орчин</a></div>
   <span hidden><button id="bOverview"></button><button id="bSpin" aria-pressed="true"></button><button id="bIn"></button><button id="bOut"></button></span>
 </div>
 <div class="plan2d" id="plan2d" hidden><canvas id="p2c" width="800" height="600" aria-label="Айлын 2D план"></canvas></div>

@@ -1,0 +1,71 @@
+<!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hamilton · Бодит орчин</title><meta name="theme-color" content="#0a0e1a">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--ink:#f3eee3;--mut:#a9a596;--line:rgba(231,207,155,.28);--gold:#c9a66b;--gold-hi:#e7cf9b;--foil:linear-gradient(115deg,#9c7642 0%,#e9d39f 28%,#b8915a 46%,#f3e2b6 62%,#a47d47 82%,#d9bd85 100%)}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:400 14px/1.5 Montserrat,system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.stage{position:fixed;inset:0;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}.stage.drag{cursor:grabbing}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.7) 0,rgba(10,14,26,0) 22%,rgba(10,14,26,0) 58%,rgba(10,14,26,.92) 100%);pointer-events:none}
+.top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;padding:18px clamp(16px,3vw,40px);gap:12px}
+.brand{display:flex;gap:12px;align-items:center}.brand svg{width:22px;height:30px}.brand b{font:600 15px Cinzel,serif;letter-spacing:.32em}.brand small{display:block;font:500 8.5px Montserrat;letter-spacing:.5em;color:var(--gold)}
+.tl{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font:500 10.5px Montserrat;letter-spacing:.22em;text-transform:uppercase;border:1px solid var(--line);background:rgba(10,14,26,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:10px 14px;color:var(--gold-hi);cursor:pointer}
+.pill:hover{border-color:var(--gold)}
+.cap{position:fixed;left:clamp(16px,3vw,40px);bottom:calc(150px + env(safe-area-inset-bottom));z-index:5;max-width:560px;pointer-events:none}
+.eb{font:500 10.5px Montserrat;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);display:flex;gap:12px;align-items:center}.eb::before{content:"";width:30px;height:1px;background:var(--gold)}
+.cap h1{font:400 clamp(30px,4.6vw,54px)/1.05 "Cormorant Garamond",serif;margin:10px 0 6px}.cap p{margin:0;color:#d8d2c3;font-size:13px}
+.hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;font:500 11px Montserrat;letter-spacing:.3em;text-transform:uppercase;color:#fff;background:rgba(10,14,26,.55);padding:14px 22px;border:1px solid var(--line);transition:opacity .6s;display:flex;gap:14px;align-items:center}
+.hint.off{opacity:0}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:0 clamp(16px,3vw,40px) calc(16px + env(safe-area-inset-bottom))}
+.scrub{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.scrub input{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:linear-gradient(90deg,var(--gold) var(--p,0%),rgba(255,255,255,.25) var(--p,0%));outline:none}
+.scrub input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold-hi);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--gold)}
+.scrub input::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--gold-hi);border:3px solid var(--bg)}
+.play{width:40px;height:40px;border-radius:50%;border:1px solid var(--gold);background:rgba(10,14,26,.6);color:var(--gold-hi);cursor:pointer;display:grid;place-items:center;flex:none}
+.shots{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.shots::-webkit-scrollbar{display:none}
+.shot{flex:none;width:138px;cursor:pointer;border:1px solid var(--line);background:#000;position:relative;padding:0;color:inherit;font:inherit;text-align:left}
+.shot img{width:100%;height:72px;object-fit:cover;display:block;opacity:.65;transition:opacity .3s}.shot:hover img,.shot.on img{opacity:1}
+.shot span{position:absolute;left:8px;bottom:6px;font:500 9.5px Montserrat;letter-spacing:.2em;text-transform:uppercase;text-shadow:0 1px 3px #000}
+.shot.on{border-color:var(--gold-hi)}.shot.on::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;background:var(--foil)}
+.load{position:fixed;left:0;top:0;height:2px;background:var(--foil);z-index:9;transition:width .2s,opacity .5s}
+@media(max-width:600px){.cap{bottom:calc(140px + env(safe-area-inset-bottom))}.shot{width:112px}.shot img{height:62px}.brand span{display:none}}
+</style></head><body>
+<div class="load" id="ld" style="width:0"></div>
+<div class="stage" id="stage"><img id="im" alt="Hamilton Gate Park дрон зураг"></div>
+<div class="top"><a class="brand" href="../"><svg viewBox="0 0 60 80"><defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a47d47"/><stop offset=".35" stop-color="#f1dfae"/><stop offset=".6" stop-color="#b8915a"/><stop offset="1" stop-color="#e3c890"/></linearGradient></defs><g fill="none" stroke="url(#fg)" stroke-width="2.4"><path d="M12 16v48M48 16v48M30 10v60M12 40h36M6 16h12M42 16h12M6 64h12M42 64h12"/></g><path d="M30 2l3 5-3 5-3-5zM30 68l3 5-3 5-3-5z" fill="url(#fg)"/></svg><span><b>HAMILTON</b><small>GATE PARK</small></span></a>
+<div class="tl"><a class="pill" href="../3d/">3D загвар</a><a class="pill" href="../">Нүүр</a></div></div>
+<div class="cap"><div class="eb">Бодит орчин</div><h1 id="ttl"></h1><p id="dsc"></p></div>
+<div class="hint" id="hint">← Чирж эргүүлнэ →</div>
+<div class="bar"><div class="scrub"><button class="play" id="pl" aria-label="Тоглуулах"><svg width="14" height="14" viewBox="0 0 14 14" id="pli"><path d="M3 1l10 6-10 6z" fill="currentColor"/></svg></button><input type="range" id="rg" min="0" max="1" value="0" aria-label="Байрлал"></div>
+<div class="shots" id="shots"></div></div>
+<script>
+const SH=[{k:'c',n:32,t:'Төв замаас',d:'Гол замын дагуу барилгын нүүрэн тал, LED дэлгэц.'},
+{k:'e',n:32,t:'Уулзвараас',d:'Уулзварын булангаас подиум ба хоёр цамхаг.'},
+{k:'d',n:32,t:'Ойроос',d:'Подиумын фасад, ногоон дээвэр, LED дэлгэц.'},
+{k:'b',n:24,t:'Агаараас',d:'Хотын төв хэсэгт байрлах цогцолбор.'},
+{k:'a',n:24,t:'Хотын дээрээс',d:'Номин агуулах, Интермед зэрэг тэмдэгт газрууд.'},
+{k:'f',n:20,t:'Хотын панорам',d:'Уулсаар хүрээлэгдсэн хотын дүр төрх.'}];
+const $=id=>document.getElementById(id),im=$('im'),rg=$('rg');let cur=null,idx=0,cache={},playing=false,raf=0,dir=1,lastT=0;
+const src=(k,i)=>`f/${k}/${String(i+1).padStart(2,'0')}.jpg`;
+$('shots').innerHTML=SH.map((s,i)=>`<button class="shot" data-i="${i}"><img src="${src(s.k,0)}" alt="" loading="lazy"><span>${s.t}</span></button>`).join('');
+function show(i){idx=Math.max(0,Math.min(cur.n-1,i));const c=cache[cur.k];const f=c&&c[idx];if(f&&f.complete&&f.naturalWidth)im.src=f.src;else im.src=src(cur.k,idx);rg.value=idx;rg.style.setProperty('--p',(idx/(cur.n-1)*100)+'%')}
+function pick(i){const s=SH[i];cur=s;[...$('shots').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('ttl').textContent=s.t;$('dsc').textContent=s.d;rg.max=s.n-1;
+if(!cache[s.k]){let done=0;cache[s.k]=Array.from({length:s.n},(_,j)=>{const m=new Image();m.onload=m.onerror=()=>{done++;$('ld').style.width=(done/s.n*100)+'%';if(done==s.n){$('ld').style.opacity=0;setTimeout(()=>{$('ld').style.width=0;$('ld').style.opacity=1},600)}};m.src=src(s.k,j);return m})}
+show(0);try{history.replaceState(null,'','#'+s.k)}catch(e){}}
+$('shots').onclick=e=>{const b=e.target.closest('.shot');if(b){stop();pick(+b.dataset.i)}};
+rg.oninput=()=>{stop();show(+rg.value)};
+// drag
+let dx=null,di=0;const st=$('stage');
+st.addEventListener('pointerdown',e=>{dx=e.clientX;di=idx;st.classList.add('drag');stop();$('hint').classList.add('off')});
+addEventListener('pointermove',e=>{if(dx==null)return;const w=st.clientWidth;show(Math.round(di-(e.clientX-dx)/w*cur.n*1.4))});
+addEventListener('pointerup',()=>{dx=null;st.classList.remove('drag')});
+addEventListener('keydown',e=>{if(e.key=='ArrowRight'){stop();show(idx+1)}if(e.key=='ArrowLeft'){stop();show(idx-1)}});
+function tick(t){if(!playing)return;if(t-lastT>110){lastT=t;let n=idx+dir;if(n>=cur.n-1||n<=0)dir=-dir;show(n)}raf=requestAnimationFrame(tick)}
+function stop(){playing=false;cancelAnimationFrame(raf);$('pli').innerHTML='<path d="M3 1l10 6-10 6z" fill="currentColor"/>'}
+$('pl').onclick=()=>{if(playing){stop();return}playing=true;$('pli').innerHTML='<path d="M3 1h3v12H3zM8 1h3v12H8z" fill="currentColor"/>';$('hint').classList.add('off');raf=requestAnimationFrame(tick)};
+setTimeout(()=>$('hint').classList.add('off'),3500);
+const h=location.hash.slice(1),hi=SH.findIndex(s=>s.k==h);pick(hi<0?0:hi);
+</script></body></html>

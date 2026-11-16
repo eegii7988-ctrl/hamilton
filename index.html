@@ -20,6 +20,7 @@ nav .cta:hover{background:var(--gold);color:var(--bg)}
 /* hero */
 .hero{position:relative;height:100svh;min-height:600px;display:flex;align-items:flex-end;overflow:hidden}
 .hero .bg{position:absolute;inset:-4%;background:url(img/night-wide.jpg) 60% 50%/cover;animation:kb 26s ease-in-out infinite alternate}
+.vbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}.hero::after{z-index:1}
 @keyframes kb{to{transform:scale(1.08) translate(-1.5%,-1%)}}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.55) 0,rgba(10,14,26,.1) 30%,rgba(10,14,26,.35) 60%,var(--bg) 100%),linear-gradient(90deg,rgba(10,14,26,.75) 0,rgba(10,14,26,.2) 50%,transparent 75%)}
 .hero .in{position:relative;z-index:2;width:100%;max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) clamp(56px,9vh,96px)}
@@ -49,14 +50,14 @@ nav .cta:hover{background:var(--gold);color:var(--bg)}
 /* experiences */
 .xp{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:50px}
 .card{position:relative;overflow:hidden;min-height:340px;display:flex;align-items:flex-end;grid-column:span 4;isolation:isolate;border:1px solid var(--line)}
-.card.w{grid-column:span 8;min-height:460px}.card.h{grid-column:span 4;min-height:460px}
+.card.w{grid-column:span 8;min-height:460px}.card.full{grid-column:span 12;min-height:520px}.card.h{grid-column:span 4;min-height:460px}
 .card .im{position:absolute;inset:0;background:center/cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1);z-index:-2}
 .card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.05) 20%,rgba(10,14,26,.6) 55%,rgba(10,14,26,.97) 100%);z-index:-1}
 .card:hover .im{transform:scale(1.06)}
 .card .tx{padding:26px;width:100%}.card .n{font:500 11px var(--fb);letter-spacing:.3em;color:var(--gold)}
 .card h3{font:500 clamp(26px,2.8vw,36px)/1.1 var(--fd);margin:8px 0 6px}.card p{margin:0;color:#cfc9b9;font-size:13.5px;max-width:420px}
 .card .go{display:inline-flex;gap:10px;align-items:center;margin-top:16px;font:500 10.5px var(--fb);letter-spacing:.28em;text-transform:uppercase;color:var(--gold-hi)}.card .go::after{content:"";width:28px;height:1px;background:currentColor;transition:width .4s}.card:hover .go::after{width:52px}
-@media(max-width:900px){.card,.card.w,.card.h{grid-column:span 6;min-height:340px}}
+@media(max-width:900px){.card.full{grid-column:span 12}.card,.card.w,.card.h{grid-column:span 6;min-height:340px}}
 @media(max-width:600px){.xp{gap:10px}.card,.card.w,.card.h{grid-column:span 12;min-height:300px}}
 /* location band */
 .band{position:relative;min-height:80vh;display:flex;align-items:center;background:url(img/location.jpg) center/cover}
@@ -78,9 +79,9 @@ footer{border-top:1px solid var(--line);padding:30px clamp(16px,4vw,48px);displa
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a47d47"/><stop offset=".35" stop-color="#f1dfae"/><stop offset=".6" stop-color="#b8915a"/><stop offset="1" stop-color="#e3c890"/></linearGradient>
 <symbol id="mono" viewBox="0 0 60 80"><g fill="none" stroke="url(#fg)" stroke-width="2.4"><path d="M12 16v48M48 16v48M30 10v60M12 40h36M6 16h12M42 16h12M6 64h12M42 64h12"/></g><path d="M30 2l3 5-3 5-3-5zM30 68l3 5-3 5-3-5z" fill="url(#fg)"/></symbol></defs></svg>
 <nav id="nav"><a class="brand" href="#top"><svg><use href="#mono"/></svg><span><b>HAMILTON</b><small>GATE PARK</small></span></a><a class="cta" href="3d/">3D үзэх</a></nav>
-<header class="hero" id="top"><div class="bg"></div><div class="in"><svg class="mono"><use href="#mono"/></svg>
+<header class="hero" id="top"><div class="bg"></div><video class="vbg" autoplay muted loop playsinline preload="auto" poster="img/drone.jpg"><source src="img/drone.mp4" type="video/mp4"></video><div class="in"><svg class="mono"><use href="#mono"/></svg>
 <h1 class="foil">HAMILTON</h1><div class="sub">GATE PARK</div><p>Хотын төвд, цэцэрлэгт хүрээлэн дунд оршох оффис, худалдаа, орон сууцны цогцолбор.</p>
-<div class="btns"><a class="btn f" href="3d/">3D загвар нээх</a><a class="btn o" href="book/">Танилцуулга ном</a></div></div><div class="scroll">ДООШОО</div></header>
+<div class="btns"><a class="btn f" href="3d/">3D загвар нээх</a><a class="btn o" href="real/">Бодит орчинд үзэх</a></div></div><div class="scroll">ДООШОО</div></header>
 <section class="stats rv"><div><b class="foil">25</b><span>давхар оффис</span></div><div><b class="foil">20</b><span>давхар орон сууц</span></div><div><b class="foil">36×12</b><span>м 3D дэлгэц</span></div><div><b class="foil">10%</b><span>урьдчилгаа</span></div></section>
 <section class="sec"><div class="split"><div class="rv"><div class="eb">Төсөл</div><h2>Ажил, амьдрал, <i>амралт</i> нэг дор</h2><p class="lead">Hamilton Gate Park бол бизнес төв, худалдааны подиум, тансаг орон сууц, хотын хамгийн том 3D LED дэлгэцийг нэг цогцолборт нэгтгэсэн төсөл юм. Доорх хэрэгслүүдээр төслийг өөрийн нүдээр судлаарай.</p></div>
 <div class="ph rv" style="background-image:url(img/facade-blue.jpg)"></div></div></section>
@@ -88,11 +89,12 @@ footer{border-top:1px solid var(--line);padding:30px clamp(16px,4vw,48px);displa
 <div class="xp">
 <a class="card w rv" href="3d/"><div class="im" style="background-image:url(img/viewer-3d.jpg)"></div><div class="tx"><div class="n">01</div><h3>3D загвар</h3><p>Барилгыг тойрон эргүүлж, давхар бүрийн өрөө, талбайг сонгон харна. Цонхоор ямар үзэмж, хэдэн цаг нар тусахыг шалгаарай.</p><span class="go">Нээх</span></div></a>
 <a class="card h rv" href="book/"><div class="im" style="background-image:url(img/hero.jpg)"></div><div class="tx"><div class="n">02</div><h3>Танилцуулга ном</h3><p>24 хуудас бүхий тансаг танилцуулгыг хуудас эргүүлэн үзэх.</p><span class="go">Унших</span></div></a>
-<a class="card rv" href="planner/"><div class="im" style="background-image:url(img/office-night.jpg)"></div><div class="tx"><div class="n">03</div><h3>Оффис төлөвлөгч</h3><p>Таны баг хэдэн хүнтэй вэ? Ширээ, хурлын өрөө хэрхэн багтахыг харна.</p><span class="go">Төлөвлөх</span></div></a>
-<a class="card rv" href="calc/"><div class="im" style="background-image:url(img/towers-dusk.jpg)"></div><div class="tx"><div class="n">04</div><h3>Хөрөнгө оруулалт</h3><p>Урьдчилгаа, сарын төлөлт, түрээсийн өгөөжийг тооцох.</p><span class="go">Тооцох</span></div></a>
-<a class="card rv" href="led/"><div class="im" style="background-image:url(img/screen.jpg)"></div><div class="tx"><div class="n">05</div><h3>3D LED дэлгэц</h3><p>Таны брэнд 36×12 м дэлгэц дээр өдөр, шөнө хэрхэн харагдахыг туршина.</p><span class="go">Турших</span></div></a>
-<a class="card w rv" href="compare/"><div class="im" style="background-image:url(img/residence.jpg)"></div><div class="tx"><div class="n">06</div><h3>Өрөө харьцуулагч</h3><p>3 хүртэлх сонголтыг талбай, үнэ, сарын төлөлт, өгөөжөөр нь зэрэгцүүлэн харьцуулах.</p><span class="go">Харьцуулах</span></div></a>
-<a class="card h rv" href="book/"><div class="im" style="background-image:url(img/garden-walk.jpg)"></div><div class="tx"><div class="n">07</div><h3>Цэцэрлэгт орчин</h3><p>Алхалтын зам, пергол, хүүхдийн тоглоомын талбай.</p><span class="go">Үзэх</span></div></a>
+<a class="card full rv" href="real/"><div class="im" style="background-image:url(img/drone.jpg)"></div><div class="tx"><div class="n">03</div><h3>Бодит орчин</h3><p>Дроноор авсан бодит бичлэг дээр барилгыг хотын орчинтой нь хамт чирж эргүүлэн харах.</p><span class="go">Үзэх</span></div></a>
+<a class="card rv" href="planner/"><div class="im" style="background-image:url(img/office-night.jpg)"></div><div class="tx"><div class="n">04</div><h3>Оффис төлөвлөгч</h3><p>Таны баг хэдэн хүнтэй вэ? Ширээ, хурлын өрөө хэрхэн багтахыг харна.</p><span class="go">Төлөвлөх</span></div></a>
+<a class="card rv" href="calc/"><div class="im" style="background-image:url(img/towers-dusk.jpg)"></div><div class="tx"><div class="n">05</div><h3>Хөрөнгө оруулалт</h3><p>Урьдчилгаа, сарын төлөлт, түрээсийн өгөөжийг тооцох.</p><span class="go">Тооцох</span></div></a>
+<a class="card rv" href="led/"><div class="im" style="background-image:url(img/screen.jpg)"></div><div class="tx"><div class="n">06</div><h3>3D LED дэлгэц</h3><p>Таны брэнд 36×12 м дэлгэц дээр өдөр, шөнө хэрхэн харагдахыг туршина.</p><span class="go">Турших</span></div></a>
+<a class="card w rv" href="compare/"><div class="im" style="background-image:url(img/residence.jpg)"></div><div class="tx"><div class="n">07</div><h3>Өрөө харьцуулагч</h3><p>3 хүртэлх сонголтыг талбай, үнэ, сарын төлөлт, өгөөжөөр нь зэрэгцүүлэн харьцуулах.</p><span class="go">Харьцуулах</span></div></a>
+<a class="card h rv" href="book/"><div class="im" style="background-image:url(img/garden-walk.jpg)"></div><div class="tx"><div class="n">08</div><h3>Цэцэрлэгт орчин</h3><p>Алхалтын зам, пергол, хүүхдийн тоглоомын талбай.</p><span class="go">Үзэх</span></div></a>
 </div></section>
 <section class="band"><div class="sec"><div class="rv"><div class="eb">Байршил</div><h2>Хотын <i>зүрхэнд</i></h2><p class="lead">Энхтайвны гүүр, хотын төв, Богд хан уулын үзэмж бүгд таны цонхны цаана.</p></div>
 <div class="pts rv"><div><b>Төв</b><span>Хотын төвийн бизнесийн бүс</span></div><div><b>Гүүр</b><span>Энхтайвны гүүрний ойролцоо</span></div><div><b>Уул</b><span>Богд хан уул руу харсан үзэмж</span></div></div></div></section>
