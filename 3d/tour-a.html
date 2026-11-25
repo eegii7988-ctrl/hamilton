@@ -999,7 +999,7 @@ function b64buf(t) { const b = atob(t), u = new Uint8Array(b.length); for (let i
 function fb(name, obj, ks) { (drawn[name] ||= []).push([obj, ks]); return obj; }
 // a soft cover stays up until furniture, floors and baked light are in, so nothing pops in on screen
 let pend = 0, veilUp = true;
-function liftVeil() { if (!veilUp) return; veilUp = false; dirty = true; requestAnimationFrame(() => requestAnimationFrame(() => { const v = document.getElementById('veil'); v.classList.add('gone'); setTimeout(() => v.remove(), 1300); })); }
+function liftVeil() { if (!veilUp) return; veilUp = false; dirty = true; warmUntil = performance.now() + 3000; requestAnimationFrame(() => requestAnimationFrame(() => { const v = document.getElementById('veil'); v.classList.add('gone'); setTimeout(() => v.remove(), 1300); })); }
 const hold = () => { pend++; }, release = () => { if (--pend <= 0) liftVeil(); };
 setTimeout(liftVeil, 9000); setTimeout(() => { if (pend <= 0) liftVeil(); }, 400);
 /* ---------------- LIVING (A-2) ---------------- */
@@ -1841,6 +1841,7 @@ timeReady = true; setNorth(Q.get('north') ? +Q.get('north') : +CFG.planUpFaces);
   scene.updateMatrixWorld(true);
   const skip = new Set([sky, ground, ...floors, ...rugs.map(r => r.mesh), ...arts.map(a => a.mesh)]);
   for (const [o] of styleOnly) o.traverse(c => skip.add(c));
+  for (const k in drawn) for (const [o] of drawn[k]) o.traverse(c => skip.add(c)); // stand-ins must stay hideable
   labelGroup.traverse(c => skip.add(c)); marker.traverse(c => skip.add(c));
   const buckets = new Map(), wallsArr = [];
   scene.traverse(o => {
@@ -1967,6 +1968,7 @@ aoPass.render = (...a) => {
 };
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.14, 0.5, 1.0);
 composer.addPass(rPass); composer.addPass(aoPass); composer.addPass(bloom); composer.addPass(new OutputPass());
+let fxAuto = false, warmUntil = 0;
 let fxOn = Q.get('fx') === '1' || (Q.get('fx') !== '0' && !matchMedia('(pointer: coarse)').matches), slowT = 0;
 // thin glass can return NaN in a float target (invisible on the 8-bit canvas, but it blacks out whole windows here): clamp it
 for (const m of [M.glass, M.showerGlass, M.glassware]) m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace(/}\s*$/, '\tif (any(isnan(gl_FragColor)) || any(isinf(gl_FragColor))) gl_FragColor = vec4(1.0, 1.0, 1.0, 0.0);\n}'); };
@@ -2015,14 +2017,19 @@ function tick() {
   const rc = fly ? flyCam : (mode === 'walk' || mode === 'tour') ? cam : dollCam;
   if (fxOn) { rPass.camera = rc; aoPass.camera = rc; composer.render(dt); } else renderer.render(scene, rc);
   // adaptive resolution (only measured while actually rendering)
+  // quality only adapts on real, steady walking: never while loading, compiling or flying (those slow frames are one-offs)
+  if (veilUp || fly || performance.now() < warmUntil) { fAcc = 0; fN = 0; return; }
   fAcc += dt; fN++; sinceUp += dt;
-  if (fAcc > 1.2) {
+  if (fAcc > 1.5) {
     const fps = fN / fAcc;
-    if (fps < 34 && fxOn && (slowT += fAcc) > 2) { fxOn = false; dirty = true; }
-    else if (fps < 40 && dpr > 0.85) { dpr = Math.max(0.85, dpr - 0.15); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
-    else if (fps < 40 && dpr > 0.7) { dpr = Math.max(0.7, dpr - 0.15); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
-    else if (fps > 56 && dpr < maxDpr && sinceUp > 5) { dpr = Math.min(maxDpr, dpr + 0.1); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
-    if (fps >= 34) slowT = 0;
+    if (fps < 40 && dpr > 1) { dpr = Math.max(1, dpr - 0.1); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
+    else if (fps < 26 && fxOn && (slowT += fAcc) > 4) { fxOn = false; fxAuto = true; dirty = true; }
+    else if (fps < 30 && !fxOn && dpr > 0.8) { dpr = Math.max(0.8, dpr - 0.1); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
+    else if (fps > 55 && sinceUp > 5) {
+      if (dpr < maxDpr) { dpr = Math.min(maxDpr, dpr + 0.1); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
+      else if (!fxOn && fxAuto) { fxOn = true; fxAuto = false; dirty = true; sinceUp = 0; }
+    }
+    if (fps >= 26) slowT = 0;
     fAcc = 0; fN = 0;
   }
 }
