@@ -1662,7 +1662,7 @@ const STYLES = {
       leather: { color: 0x5a2f1f }, curtain: { color: 0xcdb99a }, shade: { color: 0xf0dcbc, emissive: 0xffc282 },
       pot: { color: 0x6b2333 }, potWhite: { color: 0xe8dcc8, roughness: 0.4 }, charger: { color: 0xcdb07a, metalness: 1, roughness: 0.24 },
       flowerA: { color: 0x8e2c40 }, flowerB: { color: 0xf0d6cc }, olive: { color: 0x6f7d5c },
-      bedding: F(0xf2e9dc, 0.8, 0.4), sofaA: V(0xcbb79a), sofaB: V(0x6b2333), acc1: V(0xcdb07a), acc2: V(0xd9a7a0), acc3: V(0x3e2a20),
+      bedding: F(0xf2e9dc, 0.8, 0.4), sofaA: V(0xcbb79a), sofaB: V(0x9a6a45), acc1: V(0xcdb07a), acc2: V(0xd9a7a0), acc3: V(0x3e2a20),
       head1: V(0x6b2333), head2: V(0xcbb79a), head3: V(0x8a5a4a), throw1: V(0xcdb07a), throw2: V(0x6b2333), throw3: V(0xd9a7a0),
       chairFab: V(0xcbb79a), accChair: V(0x6b2333), outdoor: F(0xe4d6c0), napkin: V(0x6b2333), towel: F(0xf0e6d6), runner: V(0x5a2230),
     },
@@ -1909,10 +1909,7 @@ if (REAL) (async () => {
   hold();
   const loader = new GLTFLoader(), base = 'models/';
   const SET = {
-    sofa_03: [[447, 320, PI / 2, 0, [1, 1, 1], true, ['lux']]],
     modern_coffee_table_01: [[605, 320, 0]],
-    dining_chair_02: [[485, 500, 0, 0, [1, 1, 1], false, ['lux']], [575, 500, 0, 0, [1, 1, 1], false, ['lux']], [485, 620, PI, 0, [1, 1, 1], false, ['lux']], [575, 620, PI, 0, [1, 1, 1], false, ['lux']]],
-    mid_century_lounge_chair: [[160, 860, PI / 2 + 0.35]],
     modern_arm_chair_01: [[130, 320, PI * 0.55], [225, 175, PI * 0.15]],
     potted_plant_01: [[725, 180, 0.4, 0, [1.15, 1.15, 1.15], false], [240, 975, 1.2, 0, [1, 1, 1], false]],
     potted_plant_04: [[600, 290, 0, 0.39, [1.2, 1.2, 1.2], false]],
