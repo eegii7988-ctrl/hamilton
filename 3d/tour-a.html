@@ -697,7 +697,10 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(190, 32, 16), new THREE.Shad
 scene.add(sky);
 
 /* ---------------- windows & doors ---------------- */
-const winLights = [];
+// Only the lights nearest the viewer are live: a fixed pool is re-aimed as you move, so every pixel shades a few lights instead of all
+// of them, and the shader never recompiles (the light count stays constant). Baked light covers the rest of the home.
+const winSpots = [], winLights = [];
+for (let i = 0; i < 2; i++) { const r = new THREE.RectAreaLight(0xe4eeff, 0, 1, 1); r.userData.k = 0; scene.add(r); winLights.push(r); }
 function windowUnit(axis, c, t, a, b, sill, head, { mull = 1, inward = 1, frost = false, light = 1 } = {}) {
   const g = new THREE.Group(); const w = L(b - a), h = head - sill, fw = 0.05, fd = 0.07, ym = (sill + head) / 2;
   if (axis === 'h') g.position.set(X((a + b) / 2), ym, Z(c)); else { g.position.set(X(c), ym, Z((a + b) / 2)); g.rotation.y = PI / 2; }
@@ -709,9 +712,9 @@ function windowUnit(axis, c, t, a, b, sill, head, { mull = 1, inward = 1, frost 
   mesh(new THREE.PlaneGeometry(w - 0.02, h - 0.02), frost ? M.frost : M.glass, 0, 0, 0, g, { cast: false, recv: false });
   const sd = L(t) / 2 + 0.04; bx(g, w + 0.1, 0.03, sd, M.trim, 0, -h / 2 + 0.015 - 0.0, inward * sd / 2, { cast: false }); // interior stool
   if (light) {
-    const rl = new THREE.RectAreaLight(0xe4eeff, 3.2 * light, w * 0.95, h * 0.95);
+    const rl = new THREE.RectAreaLight(); rl.userData = { w: w * 0.95, h: h * 0.95, k: light };
     const n = axis === 'h' ? new THREE.Vector3(0, 0, inward) : new THREE.Vector3(inward, 0, 0);
-    rl.position.copy(g.position).addScaledVector(n, L(t) / 2 + 0.03); rl.lookAt(rl.position.clone().add(n)); scene.add(rl); winLights.push(rl);
+    rl.position.copy(g.position).addScaledVector(n, L(t) / 2 + 0.03); rl.lookAt(rl.position.clone().add(n)); winSpots.push(rl);
   }
   return g;
 }
@@ -875,8 +878,18 @@ function pendant(px, py, yb, type = 'dome', parent = scene) {
   sph(parent, 0.045, M.bulb, x, yb + 0.06, z, { cast: false });
   glowAt(parent, x, yb + (type === 'dome' ? 0.03 : 0.12), z, type === 'dome' ? 0.75 : 0.95);
 }
-const lights = [];
-function bulbLight(px, py, y, cd = 6, color = 0xffd7a8) { const l = new THREE.PointLight(color, cd, 7, 2); l.userData.base = cd; l.position.set(X(px), y, Z(py)); scene.add(l); lights.push(l); }
+const lights = [], bulbs = [];
+for (let i = 0; i < 4; i++) { const l = new THREE.PointLight(0xffd7a8, 0, 7, 2); l.userData.base = 0; scene.add(l); lights.push(l); }
+function bulbLight(px, py, y, cd = 6) { bulbs.push({ p: new THREE.Vector3(X(px), y, Z(py)), base: cd }); }
+let lampScale = 1, winScale = 0; const poolAt = new THREE.Vector3(1e9, 0, 0);
+function assignLights(at, force) {
+  if (!force && at.distanceToSquared(poolAt) < 0.09) return; poolAt.copy(at);
+  const near = bulbs.slice().sort((a, b) => a.p.distanceToSquared(at) - b.p.distanceToSquared(at));
+  lights.forEach((l, i) => { const b = near[i]; if (b) { l.position.copy(b.p); l.userData.base = b.base; } else l.userData.base = 0; l.intensity = l.userData.base * lampScale; });
+  const wn = winSpots.slice().sort((a, b) => a.position.distanceToSquared(at) - b.position.distanceToSquared(at));
+  winLights.forEach((r, i) => { const w = wn[i]; if (w) { r.position.copy(w.position); r.quaternion.copy(w.quaternion); r.width = w.userData.w; r.height = w.userData.h; r.userData.k = w.userData.k; } else r.userData.k = 0; r.intensity = r.userData.k ? winScale : 0; });
+  dirty = true;
+}
 
 function curtain(axis, c, inward, a, b, top = 2.55) {
   const w = L(b - a), n = axis === 'h' ? [0, inward] : [inward, 0];
@@ -1426,7 +1439,7 @@ plc.addEventListener('unlock', () => { $('cross').classList.add('hidden'); if (m
 plc.addEventListener('lock', () => { $('cross').classList.remove('hidden'); setHelp(HELP.walk); });
 
 /* ---------------- guided tour ---------------- */
-let tour = null; const DWELL = 5.6, tmpCam = new THREE.PerspectiveCamera();
+let tour = null; const DWELL = 4.6, tmpCam = new THREE.PerspectiveCamera();
 const yawTo = (dx, dz) => Math.atan2(-dx, -dz);
 const angDiff = (a, b) => { let d = b - a; while (d > PI) d -= 2 * PI; while (d < -PI) d += 2 * PI; return d; };
 const ease = k => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
@@ -1460,7 +1473,7 @@ function nextStop() { if (tour && tour.phase === 'dwell') tour.t = DWELL; }
 function tourUpdate(dt) {
   const st = TOUR[tour.i];
   if (tour.phase === 'move') {
-    const remain = tour.len - tour.s, v = 0.95 * Math.max(0.16, Math.min(1, 0.25 + tour.s / 0.9, remain / 1.2));
+    const remain = tour.len - tour.s, v = 1.2 * Math.max(0.16, Math.min(1, 0.25 + tour.s / 0.9, remain / 1.2));
     tour.s = Math.min(tour.len, tour.s + v * dt);
     const p = tour.curve.getPointAt(tour.s / tour.len), q = tour.curve.getPointAt(Math.min(1, (tour.s + 0.9) / tour.len));
     cam.position.copy(p);
@@ -1793,11 +1806,11 @@ function applyTime(t) {
   stars.material.opacity = smooth(-4, -12, el);
   // skylight through windows: cool by day, amber at golden hour, gone at night
   const wc = C(0xe4eeff).lerp(C(0xffc890), golden);
-  for (const l of winLights) { l.color.copy(wc); l.intensity = 2.3 * day * (1 - 0.3 * golden); }
+  winScale = 2.3 * day * (1 - 0.3 * golden); for (const l of winLights) { l.color.copy(wc); l.intensity = l.userData.k ? winScale : 0; }
   lmDay = day * (1 - 0.35 * golden) + 0.04; syncLMK();
   // lamps & ceiling lights fade up through dusk
   const lampF = 0.35 + 2.4 * night + 0.5 * golden;
-  for (const l of lights) l.intensity = l.userData.base * lampK * lampF;
+  lampScale = lampK * lampF; for (const l of lights) l.intensity = l.userData.base * lampScale;
   M.shade.emissiveIntensity = 0.35 + 1.6 * night + 0.3 * golden; M.can.emissiveIntensity = 0.5 + 3 * night; M.bulb.emissiveIntensity = 2.5 + 4 * night;
   if (globeMat) globeMat.emissiveIntensity = 0.8 + 2.4 * night; M.led.emissiveIntensity = 1.6 + 2 * night;
   GLOW.lamp.opacity = 0.06 + 0.42 * night + 0.1 * golden; GLOW.can.opacity = 0.45 * night; GLOW.flame.opacity = 0.55 + 0.45 * night;
@@ -1933,6 +1946,8 @@ const rPass = new RenderPass(scene, cam), aoPass = new GTAOPass(scene, cam, inne
 aoPass.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1.4, thickness: 1.2, scale: 1.15, samples: 8, distanceFallOff: 1, screenSpaceRadius: false });
 aoPass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 6 });
 aoPass.blendIntensity = 0.85;
+// AO is soft by nature: compute it (and its normal/depth pre-pass) at half resolution, a quarter of the pixels
+const aoSetSize = aoPass.setSize.bind(aoPass); aoPass.setSize = (w, h) => aoSetSize(Math.max(1, Math.ceil(w / 2)), Math.max(1, Math.ceil(h / 2)));
 // glow sprites and thin glass must not cast occlusion: hide them while the AO pass draws its normals and depth
 const aoSkip = []; let aoSkipReady = false;
 const aoRender = aoPass.render.bind(aoPass);
@@ -1957,11 +1972,12 @@ let dpr = Math.min(devicePixelRatio, isTouch ? 1.3 : 1.5); const maxDpr = dpr; l
 renderer.setPixelRatio(dpr);
 function tick() {
   requestAnimationFrame(tick);
-  const dt = Math.min(clock.getDelta(), 0.05);
+  const dt = Math.min(clock.getDelta(), 0.1);
   // ease the clock toward the slider so every lighting change glides
   if (Math.abs(timeTarget - timeNow) > 0.002) { timeNow += (timeTarget - timeNow) * Math.min(1, dt * 5); applyTime(timeNow); dirty = true; probeTimer = 0; }
   else if (probeDirty) { probeTimer += dt; if (probeTimer > 0.35) { probeDirty = false; updateProbe(); dirty = true; } }
   if (mode !== fxMode) { fxMode = mode; lookProxy.quaternion.copy(cam.quaternion); vel.set(0, 0, 0); }
+  assignLights(fly ? flyCam.position : (mode === 'walk' || mode === 'tour') ? cam.position : orbit.target);
   if (fly) flyUpdate(dt);
   if (mode === 'tour') { if (tour && !fly) tourUpdate(dt); dirty = true; }
   else if (mode === 'walk') {
