@@ -191,7 +191,7 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 .rv-sh button{flex:none;width:128px;padding:0;border:1px solid rgba(231,207,155,.25);background:#000;position:relative;cursor:pointer;border-radius:6px;overflow:hidden}
 .rv-sh img{width:100%;height:66px;object-fit:cover;display:block;opacity:.6}.rv-sh button[aria-current="true"]{border-color:#e7cf9b}.rv-sh button[aria-current="true"] img{opacity:1}
 .rv-sh span{position:absolute;left:7px;bottom:5px;color:#fff;font:600 10px var(--display);letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 3px #000}
-.tv{position:fixed;inset:0;z-index:2147483600;background:#24201c}.tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tv{position:fixed;inset:0;z-index:2147483600;background:#24201c;opacity:0;transition:opacity .6s ease}.tv.in{opacity:1}.tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .8s ease}.tv iframe.ld{opacity:1}
 .tv-x{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:2;background:rgba(20,16,12,.78);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:9px 16px;font:600 13px var(--display)}
 .card .acts .tour{flex-basis:100%;background:#1f1b17;border-color:#1f1b17}
 .rv-note{color:#8b8a84;font-size:11px;margin-top:8px}
@@ -1162,10 +1162,10 @@ document.getElementById('ipWin').onclick=()=>{if(dh)enterRoom(bestRoom())};
 document.getElementById('cIn').onclick=()=>enterInterior(selected);
 // walkable furnished tour of the A unit (13-16F layout), opened over the model; the model stops rendering while it is open
 var tvOpen=false;const tv=document.getElementById('tv'),tvF=document.getElementById('tvF');
-function openTour(u){if(!u||tvOpen)return;tvF.src='tour-a.html?unit='+u.floor+'A&st='+u.st;tv.hidden=false;tvOpen=true}
+function openTour(u){if(!u||tvOpen)return;tvF.classList.remove('ld');tvF.onload=()=>{if(tvF.src.indexOf('tour-a')>=0)tvF.classList.add('ld')};tvF.src='tour-a.html?unit='+u.floor+'A&st='+u.st;tv.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>tv.classList.add('in')));setTimeout(()=>{tvOpen=true},650)}
 document.getElementById('cTour').onclick=()=>openTour(selected);
 document.getElementById('ipTour').onclick=()=>{if(dh)openTour(dh.u)};
-document.getElementById('tvX').onclick=()=>{tv.hidden=true;tvF.src='about:blank';tvOpen=false};
+document.getElementById('tvX').onclick=()=>{tvOpen=false;tv.classList.remove('in');setTimeout(()=>{tv.hidden=true;tvF.src='about:blank';tvF.classList.remove('ld')},600)};
 const _v=new THREE.Vector3();
 function interiorTick(now){if(clipAnim){Object.keys(clipAnim).forEach(k=>{const a=clipAnim[k],t=Math.min(1,(now-a.s)/1100),e=1-Math.pow(1-t,3);
       planes[k].constant=a.to>=1e3?(t>=1?1e4:a.from+(118-a.from)*e):a.from+(a.to-a.from)*e;if(t>=1)delete clipAnim[k]});if(!Object.keys(clipAnim).length)clipAnim=null}
