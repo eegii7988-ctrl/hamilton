@@ -1841,9 +1841,11 @@ if (REAL) (async () => {
   await Promise.all(Object.entries(SET).map(async ([name, spots]) => {
     let gltf; try { gltf = await loader.loadAsync(base + name + '.glb'); } catch (e) {
       // hosts that don't serve .glb get a base64 text copy instead
-      try { const b = atob((await (await fetch(base + name + '.glb.txt')).text()).trim()); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); gltf = await loader.parseAsync(u.buffer, base); }
+      try { const b64 = (await (await fetch(base + name + '.glb.txt')).text()).trim(); const buf = await (await fetch('data:application/octet-stream;base64,' + b64)).arrayBuffer(); gltf = await loader.parseAsync(buf, base); }
       catch (e2) { console.warn('model', name, e2); return; } }
     gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; if (o.material) o.material.envMapIntensity = 0.9; } });
+    // compile shaders off the main thread before the model appears, so walking doesn't hitch
+    try { await renderer.compileAsync(gltf.scene, cam, scene); } catch (e) { }
     spots.forEach(([px, py, ry, y = 0, sc = [1, 1, 1], col = true, only], i) => {
       const g = i ? gltf.scene.clone(true) : gltf.scene; g.scale.set(...sc);
       place(g, px, py, ry, col); g.position.y = y; g.updateMatrixWorld(true);
@@ -1865,11 +1867,11 @@ orbit.addEventListener('change', () => { dirty = true; });
 addEventListener('pointerdown', () => { dirty = true; }); addEventListener('touchmove', () => { dirty = true; }, { passive: true });
 /* ---------------- realism: ambient occlusion in corners and under furniture, soft glow from windows and lamps ----------------
    HDR target with 4x MSAA keeps edges clean; the whole chain switches off on slow machines (or with ?fx=0) */
-const fxRT = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 4 });
+const fxRT = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 2 });
 const composer = new EffectComposer(renderer, fxRT);
 const rPass = new RenderPass(scene, cam), aoPass = new GTAOPass(scene, cam, innerWidth, innerHeight);
-aoPass.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1.4, thickness: 1.2, scale: 1.15, samples: 12, distanceFallOff: 1, screenSpaceRadius: false });
-aoPass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+aoPass.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1.4, thickness: 1.2, scale: 1.15, samples: 8, distanceFallOff: 1, screenSpaceRadius: false });
+aoPass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 6 });
 aoPass.blendIntensity = 0.85;
 // glow sprites and thin glass must not cast occlusion: hide them while the AO pass draws its normals and depth
 const aoSkip = []; let aoSkipReady = false;
@@ -1881,7 +1883,7 @@ aoPass.render = (...a) => {
 };
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.14, 0.5, 1.0);
 composer.addPass(rPass); composer.addPass(aoPass); composer.addPass(bloom); composer.addPass(new OutputPass());
-let fxOn = Q.get('fx') !== '0', slowT = 0;
+let fxOn = Q.get('fx') === '1' || (Q.get('fx') !== '0' && !matchMedia('(pointer: coarse)').matches), slowT = 0;
 // thin glass can return NaN in a float target (invisible on the 8-bit canvas, but it blacks out whole windows here): clamp it
 for (const m of [M.glass, M.showerGlass, M.glassware]) m.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace(/}\s*$/, '\tif (any(isnan(gl_FragColor)) || any(isinf(gl_FragColor))) gl_FragColor = vec4(1.0, 1.0, 1.0, 0.0);\n}'); };
 function fxSize() { const w = innerWidth, h = innerHeight; composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
@@ -1930,11 +1932,11 @@ function tick() {
   fAcc += dt; fN++; sinceUp += dt;
   if (fAcc > 1.2) {
     const fps = fN / fAcc;
-    if (fps < 40 && dpr > 0.85) { dpr = Math.max(0.85, dpr - 0.15); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
-    else if (fps < 24 && fxOn && (slowT += fAcc) > 3) { fxOn = false; dirty = true; }
+    if (fps < 34 && fxOn && (slowT += fAcc) > 2) { fxOn = false; dirty = true; }
+    else if (fps < 40 && dpr > 0.85) { dpr = Math.max(0.85, dpr - 0.15); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
     else if (fps < 40 && dpr > 0.7) { dpr = Math.max(0.7, dpr - 0.15); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
     else if (fps > 56 && dpr < maxDpr && sinceUp > 5) { dpr = Math.min(maxDpr, dpr + 0.1); renderer.setPixelRatio(dpr); fxSize(); sinceUp = 0; }
-    if (fps >= 24) slowT = 0;
+    if (fps >= 34) slowT = 0;
     fAcc = 0; fN = 0;
   }
 }
