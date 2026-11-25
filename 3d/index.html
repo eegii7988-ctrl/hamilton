@@ -167,6 +167,7 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 .ip-hint{font-size:11px;color:var(--muted)}.ipanel:not(.room) .ip-hint.r,.ipanel.room .ip-hint.d{display:none}
 #ipBack{background:var(--accent);border-color:var(--accent);color:#fff}
 .ipanel.room #ipWin{display:none}
+#ipTour{background:#1f1b17;border-color:#1f1b17;color:#fff;padding:9px 16px;font-size:13.5px}
 
 /* real surroundings overlay (drone footage) */
 .rv{position:fixed;inset:0;z-index:2147483600;background:#05070d;display:flex;flex-direction:column}
@@ -190,6 +191,9 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 .rv-sh button{flex:none;width:128px;padding:0;border:1px solid rgba(231,207,155,.25);background:#000;position:relative;cursor:pointer;border-radius:6px;overflow:hidden}
 .rv-sh img{width:100%;height:66px;object-fit:cover;display:block;opacity:.6}.rv-sh button[aria-current="true"]{border-color:#e7cf9b}.rv-sh button[aria-current="true"] img{opacity:1}
 .rv-sh span{position:absolute;left:7px;bottom:5px;color:#fff;font:600 10px var(--display);letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 3px #000}
+.tv{position:fixed;inset:0;z-index:2147483600;background:#24201c}.tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tv-x{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:2;background:rgba(20,16,12,.78);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:9px 16px;font:600 13px var(--display)}
+.card .acts .tour{flex-basis:100%;background:#1f1b17;border-color:#1f1b17}
 .rv-note{color:#8b8a84;font-size:11px;margin-top:8px}
 </style>
 
@@ -230,7 +234,7 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
   <h2><span id="cTitle">7A</span><span class="pill" id="cStatus">Сул</span><button class="x" id="cClose" aria-label="Хаах">×</button></h2>
   <div class="kv"><div><b id="cArea">74.72</b><span>м² талбай</span></div><div><b id="cBed">2</b><span id="cBedL">унтлагын өрөө</span></div><div><b id="cFloor">7</b><span>давхар</span></div></div>
   <canvas id="cPlan" width="640" height="460" aria-label="Байрны план"></canvas>
-  <div class="acts"><button id="cIn" class="primary">Айлыг үзэх</button><button id="cView" class="primary">Цонхоор харах</button><button id="cShare" class="ic" aria-label="Холбоос хуулах" title="Энэ айлын холбоосыг хуулах">🔗</button><button id="cFloorPlan" hidden>Давхрын план</button></div>
+  <div class="acts"><button id="cTour" class="primary tour" hidden>▶ 3D аялал</button><button id="cIn" class="primary">Айлыг үзэх</button><button id="cView" class="primary">Цонхоор харах</button><button id="cShare" class="ic" aria-label="Холбоос хуулах" title="Энэ айлын холбоосыг хуулах">🔗</button><button id="cFloorPlan" hidden>Давхрын план</button></div>
 </div>
 <div class="hub" id="hub" hidden></div>
 <aside class="sales" id="sales" hidden aria-label="Борлуулалт"></aside>
@@ -242,10 +246,10 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
   <div class="wv-sun" id="wvSun"></div></div>
 <div class="tags" id="tags" hidden></div>
 <div class="ipanel" id="ipanel" hidden>
-  <div class="ip-top"><button id="ipBack" hidden>← Буцах</button><h3 id="ipTitle"></h3><div class="seg ip-tabs" id="ipTabs"><button data-tab="3d">3D план</button><button data-tab="win">Дотор алхах</button><button data-tab="2d">2D план</button></div><button id="ipWin" hidden></button>
+  <div class="ip-top"><button id="ipBack" hidden>← Буцах</button><h3 id="ipTitle"></h3><button id="ipTour" class="ip-tour" hidden>▶ 3D аялал</button><div class="seg ip-tabs" id="ipTabs"><button data-tab="3d">3D план</button><button data-tab="win">Дотор алхах</button><button data-tab="2d">2D план</button></div><button id="ipWin" hidden></button>
     <div class="ip-fin" role="group" aria-label="Засал">Засал <button data-fin="light">Цайвар</button><button data-fin="wood">Мод</button><button data-fin="dark">Бараан</button></div></div>
   <div class="ip-rooms" id="ipRooms"></div>
-  <div class="ip-hint d">Өрөөний шошго дээр дарвал тухайн өрөөнд орно. Чирж эргүүлнэ.</div>
+  <div class="ip-hint d">Чирж эргүүлнэ. Доорх өрөөний товчоор өрөөнд орно, ▶ 3D аялал товчоор айлаар алхаж үзнэ.</div>
   <div class="ip-hint r">Шалан дээр дарж алхана · W A S D эсвэл сумаар явна · чирж эргэн тойрноо харна.</div>
 </div>
 <nav class="floors" aria-label="Давхар сонгох"><div class="fl-title">Давхар</div><div class="fl-list" id="flList"></div></nav>
@@ -256,12 +260,14 @@ body.present .bar,body.present .crumbs,body.present .sales,body.present .card,bo
 </div>
 <div class="plan2d" id="plan2d" hidden><canvas id="p2c" width="800" height="600" aria-label="Айлын 2D план"></canvas></div>
 <div class="toast" id="toast" hidden></div>
+<div class="tv" id="tv" hidden role="dialog" aria-label="3D аялал"><iframe id="tvF" title="3D аялал" allow="fullscreen; autoplay"></iframe><button class="tv-x" id="tvX">✕ Загвар руу буцах</button></div>
 <div id="hmm" hidden><canvas id="hmmc" width="440" height="440" aria-label="Айлын жижиг зураг"></canvas><small>Зураг дээр дарж очно</small></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 (function(){
+function hasTour(u){return !!u&&u.cat==='res'&&u.id==='A'&&u.floor>=13&&u.floor<=16}
 const PI=Math.PI, PODIUM_H=26.2, PODIUM_LV=[5.2,9.4,13.6,17.8,22.0];
 const stage=document.getElementById('stage');
 const renderer=new THREE.WebGLRenderer({antialias:true});
@@ -888,7 +894,7 @@ function applyFilter(){if(!cat)return;let n=0;const list=[];
   list.sort((a,b)=>b.floor-a.floor||String(a.id).localeCompare(String(b.id)));
   const el=document.getElementById('spList');
   el.innerHTML=list.slice(0,300).map((u,i)=>`<button data-i="${units.indexOf(u)}"${u===selected?' aria-current="true"':''}><i style="background:${STATUS[u.st].css}"></i><b>${cat==='res'?u.floor+u.id:u.floor+' · '+u.id}</b><span>${u.area?u.area.toFixed(1)+' м²':'—'}</span><span>${cat==='res'?u.second[0]+' өрөө':(cat==='off'?'Оффис':(u.second[0]||''))}</span></button>`).join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const u=units[+b.dataset.i];select(u);focusUnit(u)})}
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const u=units[+b.dataset.i];if(hasTour(u)){select(u);enterInterior(u)}else{select(u);focusUnit(u)}})}
 function focusUnit(u){const [x0,x1,z0,z1]=u.bbox,c=new THREE.Vector3((x0+x1)/2,u.y+1.5,(z0+z1)/2),T=TW[u.cat]||{x:0,z:0};
   const d=new THREE.Vector3(c.x-T.x,0,c.z-T.z);if(d.lengthSq()<1)d.set(0,0,1);d.normalize();if(u.cat==='res'&&d.x>.5){d.x=.5;d.z+=d.z<0?-.5:.5;d.normalize()}if(u.cat==='off'&&d.x<-.5){d.x=-.5;d.z+=d.z<0?-.5:.5;d.normalize()}
   flyTo(c.clone().add(d.multiplyScalar(72)).add(new THREE.Vector3(0,8,0)),c)}
@@ -940,7 +946,7 @@ function select(u){if(selected)selected.mesh.material.emissiveIntensity=0;select
   document.getElementById('cArea').textContent=u.area?u.area.toFixed(2):'—';
   document.getElementById('cBed').textContent=u.second[0];document.getElementById('cBedL').textContent=u.second[1];
   document.getElementById('cBed').style.fontSize=typeof u.second[0]==='number'?'':'12.5px';
-  document.getElementById('cFloor').textContent=u.floor;document.getElementById('cIn').hidden=u.cat==='com';document.getElementById('cView').hidden=false;document.getElementById('cIn').textContent=u.cat==='off'?'Оффисыг үзэх':'Айлыг үзэх';
+  document.getElementById('cFloor').textContent=u.floor;document.getElementById('cIn').hidden=u.cat==='com';document.getElementById('cTour').hidden=!hasTour(u);document.getElementById('cView').hidden=false;document.getElementById('cIn').textContent=u.cat==='off'?'Оффисыг үзэх':'Айлыг үзэх';
   const cv=document.getElementById('cPlan'),cx=cv.getContext('2d'),img=planImgOf(u.plan),R=u.rect;
   const draw=()=>{const iw=img.naturalWidth,ih=img.naturalHeight,pad=1.5,[x0,x1,z0,z1]=u.bbox;
     const sx=(x0-pad-R[0])/(R[1]-R[0])*iw,sy=(z0-pad-R[2])/(R[3]-R[2])*ih,sw=(x1-x0+2*pad)/(R[1]-R[0])*iw,sh=(z1-z0+2*pad)/(R[3]-R[2])*ih;
@@ -953,7 +959,7 @@ const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();let downAt=null;
 renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY]});
 renderer.domElement.addEventListener('pointerup',e=>{if(!unitMode||!downAt||windowView||dh)return;if(Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>6)return;
   const r=renderer.domElement.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(ndc,camera);
-  const hit=ray.intersectObjects(units.filter(u=>u.mesh.visible&&u.match!==false).map(u=>u.mesh),false)[0];select(hit?hit.object.userData.unit:null)});
+  const hit=ray.intersectObjects(units.filter(u=>u.mesh.visible&&u.match!==false).map(u=>u.mesh),false)[0];{const hu=hit?hit.object.userData.unit:null;select(hu);if(hasTour(hu))enterInterior(hu)}});
 // window view: from the unit's nearest facade, looking out
 let windowView=null;const wvExit=document.getElementById('wvExit');
 // sides of the unit's tower, nearest facade first; each side = [distance, nx, nz, x, z]
@@ -1121,12 +1127,12 @@ function enterInterior(u,room){if(dh)leaveInterior(true);
   dh=buildDH(u);dh.save=save;
   document.querySelector('.bar').hidden=true;document.querySelector('.floors').hidden=true;document.querySelector('.info').hidden=true;
   if(typeof hub!=='undefined'){hub.hidden=true;SP.hidden=true;tip.hidden=true}
-  ipanel.hidden=false;ipTitle.textContent=u.title+' · '+(u.area?u.area.toFixed(1)+' м²':'');
+  ipanel.hidden=false;ipTitle.textContent=u.title+' · '+(u.area?u.area.toFixed(1)+' м²':'');document.getElementById('ipTour').hidden=!hasTour(u);
   controls.autoRotate=false;spin.setAttribute('aria-pressed','false');
   if(room)enterRoom(room===true?bestRoom():room);else dollhouseView()}
 function dollhouseView(){const [x0,x1,z0,z1]=dh.u.bbox,T=dh.T,off=slideOut(true),c=new THREE.Vector3((x0+x1)/2,dh.y,(z0+z1)/2).add(off);
   clipTo(dh.u.cat==='res'?'res':'off',dh.u.y-.05);ghost(true);cutPlane.constant=dh.y+off.y+1.3;dh.otherM.visible=false;
-  dh.stage='dh';dh.ceil.visible=false;tagsEl.hidden=false;ipanel.classList.remove('room');
+  dh.stage='dh';dh.ceil.visible=false;tagsEl.hidden=true;ipanel.classList.remove('room');
   const dir=new THREE.Vector3(c.x-T.x,0,c.z-T.z);if(dir.lengthSq()<1)dir.set(0,0,1);dir.normalize();
   const span=Math.max(x1-x0,z1-z0);controls.minDistance=4;controls.maxDistance=90;controls.enablePan=true;controls.maxPolarAngle=PI*.47;controls.minPolarAngle=0;
   camera.near=.3;camera.fov=innerWidth<640?55:40;camera.updateProjectionMatrix();
@@ -1154,6 +1160,12 @@ document.getElementById('ipBack').onclick=()=>{if(dh&&dh.stage==='room')dollhous
 document.querySelectorAll('[data-fin]').forEach(b=>b.onclick=()=>applyFin(b.dataset.fin));
 document.getElementById('ipWin').onclick=()=>{if(dh)enterRoom(bestRoom())};
 document.getElementById('cIn').onclick=()=>enterInterior(selected);
+// walkable furnished tour of the A unit (13-16F layout), opened over the model; the model stops rendering while it is open
+var tvOpen=false;const tv=document.getElementById('tv'),tvF=document.getElementById('tvF');
+function openTour(u){if(!u||tvOpen)return;tvF.src='tour-a.html?unit='+u.floor+'A&st='+u.st;tv.hidden=false;tvOpen=true}
+document.getElementById('cTour').onclick=()=>openTour(selected);
+document.getElementById('ipTour').onclick=()=>{if(dh)openTour(dh.u)};
+document.getElementById('tvX').onclick=()=>{tv.hidden=true;tvF.src='about:blank';tvOpen=false};
 const _v=new THREE.Vector3();
 function interiorTick(now){if(clipAnim){Object.keys(clipAnim).forEach(k=>{const a=clipAnim[k],t=Math.min(1,(now-a.s)/1100),e=1-Math.pow(1-t,3);
       planes[k].constant=a.to>=1e3?(t>=1?1e4:a.from+(118-a.from)*e):a.from+(a.to-a.from)*e;if(t>=1)delete clipAnim[k]});if(!Object.keys(clipAnim).length)clipAnim=null}
@@ -1197,7 +1209,7 @@ function show2d(){const u=dh.u,img=planImgOf(u.plan),R=u.rect;tagsEl.hidden=true
     const sx=(x0-pad-R[0])/(R[1]-R[0])*iw,sy=(z0-pad-R[2])/(R[3]-R[2])*ih,sw=(x1-x0+2*pad)/(R[1]-R[0])*iw,sh=(z1-z0+2*pad)/(R[3]-R[2])*ih;
     p2c.width=Math.round(sw*1.2);p2c.height=Math.round(sh*1.2);cx.fillStyle='#fff';cx.fillRect(0,0,p2c.width,p2c.height);cx.drawImage(img,sx,sy,sw,sh,0,0,p2c.width,p2c.height)};
   img.complete&&img.naturalWidth?draw():img.onload=draw}
-function hide2d(){if(plan2d.hidden)return;plan2d.hidden=true;ipanel.classList.remove('p2d');if(dh&&dh.stage==='dh')tagsEl.hidden=false}
+function hide2d(){if(plan2d.hidden)return;plan2d.hidden=true;ipanel.classList.remove('p2d');if(dh&&dh.stage==='dh')tagsEl.hidden=true}
 plan2d.onclick=e=>{if(e.target===plan2d)setTab('3d')};
 // presenter mode: bigger controls, full screen, back to the turning building after 2 idle minutes
 let lastInput=performance.now(),idleReset=false;
@@ -1319,7 +1331,7 @@ document.getElementById('rvX').onclick=close;addEventListener('keydown',e=>{if(e
 const b=document.getElementById('bReal');if(b)b.addEventListener('click',e=>{e.preventDefault();open()});
 })();
 
-(function loop(now){requestAnimationFrame(loop);perfTick(now);
+(function loop(now){requestAnimationFrame(loop);if(tvOpen)return;perfTick(now);
   if(tween){const k=Math.min(1,(now-tween.s)/800),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     camera.position.lerpVectors(tween.p0,tween.p1,e);controls.target.lerpVectors(tween.t0,tween.t1,e);if(k>=1)tween=null}
   drawLED(now/1000);if(trafficTick)trafficTick(now);interiorTick(now);hoverTick();floorTagTick();navTick(now);walkTick(now);hmmTick();introTick(now);controls.update();wvTick();renderer.render(scene,camera)})(performance.now());
