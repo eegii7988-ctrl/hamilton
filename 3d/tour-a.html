@@ -177,7 +177,7 @@ window.TOUR_CONFIG = {
     <button class="icon mobile-only" id="bMore" title="Тохиргоо">⚙</button>
   </div>
   <div id="panel">
-    <div class="card" id="styles" title="Хэв маяг (1 · 2 · 3)">
+    <div class="card" id="styles" title="Хэв маяг" hidden style="display:none">
       <button data-s="modern">Орчин үеийн</button><button data-s="scandi">Скандинав</button><button data-s="lux">Тансаг дулаан</button>
     </div>
     <div class="card" id="sun">
@@ -1655,7 +1655,7 @@ function free(x, z) { for (const c of colliders) if (x > c.x0 - R && x < c.x1 + 
 /* =====================================================================
    STYLE SWITCH — same home, three designer looks
    ===================================================================== */
-const STYLE_KEYS = ['modern', 'scandi', 'lux'];
+const STYLE_KEYS = ['modern']; // Scandi and Warm luxe stay defined below but are no longer offered
 const F = (c, sheen = 0.35, sr = 0.8) => ({ color: c, sheen, sheenRoughness: sr });       // fabric
 const V = (c) => ({ color: c, sheen: 1, sheenRoughness: 0.35 });                           // velvet
 const STYLES = {
@@ -1759,7 +1759,7 @@ function applyFloor(key) {
 if (REAL) (async () => {
   hold();
   const L = new THREE.TextureLoader(), get = async (n, srgb) => { const t = await L.loadAsync('models/' + n + '.jpg'); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = maxAniso; if (srgb) t.colorSpace = THREE.SRGBColorSpace; return t; };
-  for (const [name, nor] of [['wood_floor', 'nor_dx'], ['herringbone_parquet', 'nor_gl']]) {
+  for (const [name, nor] of [['wood_floor', 'nor_dx']]) {
     try { const [d, n, r] = await Promise.all([get(name + '_diff', true), get(name + '_' + nor), get(name + '_rough')]); floorTex[name] = { d, n, r }; }
     catch (e) { console.warn('floor tex', name, e); }
   }
