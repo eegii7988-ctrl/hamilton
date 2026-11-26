@@ -1973,6 +1973,8 @@ function lmHook(c) {
 }
 function syncLMK() { if (!lmPairs) return; bakeU.value = Math.min(1, Math.max(0, (lmDay - 0.04) * 1.1)); for (const [, c] of lmPairs) c.lightMapIntensity = LM_GAIN * Math.PI * LM_R; for (const c of lmRugs) c.lightMapIntensity = LM_GAIN * Math.PI * LM_R; lmvK.value = LM_GAIN * LM_VK * Math.PI * LM_R;
   // furniture is still lit live: walls no longer take the live sun, so soften it a little to sit with the baked rooms
+  // baked light already holds the soft corner shadows, so the screen-space AO pass (half the frame cost) rests by day: walking stays at full sharpness
+  if (lmPairs.length) try { aoPass.enabled = bakeU.value < 0.5 || Q.get('ao') === '1'; } catch (e) {}
   if (lmPairs.length) { const k = 1 - LM_FURN * bakeU.value; sun.intensity *= k; scene.environmentIntensity *= k; hemi.intensity *= k; }
   dirty = true; }
 function syncLM() { if (!lmPairs) return; for (const [s, c] of lmPairs) { const lm = c.lightMap; c.copy(s); c.lightMap = lm; lmHook(c); c.needsUpdate = true; } applyTime(timeNow); }
@@ -2072,7 +2074,7 @@ orbit.addEventListener('change', () => { dirty = true; });
 addEventListener('pointerdown', () => { dirty = true; }); addEventListener('touchmove', () => { dirty = true; }, { passive: true });
 /* ---------------- realism: ambient occlusion in corners and under furniture, soft glow from windows and lamps ----------------
    HDR target with 4x MSAA keeps edges clean; the whole chain switches off on slow machines (or with ?fx=0) */
-const fxRT = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 2 });
+const fxRT = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 4 });
 const composer = new EffectComposer(renderer, fxRT);
 // standing still: the picture keeps refining, 32 sub-pixel shifted frames blended together for clean, render-like edges.
 // While moving it is a plain single render, so walking stays as fast as before.
