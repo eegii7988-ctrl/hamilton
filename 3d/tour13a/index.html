@@ -385,6 +385,7 @@ function arrive() { document.body.classList.add('embed'); $('intro').classList.a
     setTimeout(() => { stage.classList.remove('arrive'); const h = $('hint'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 3500); }, 2100); };
   if (img && img.complete && img.naturalWidth) run(); else { img && img.addEventListener('load', run, { once: true }); setTimeout(run, 2500); } }
 fromHash();
+if (Q.get('shot')) goCode(Q.get('shot'));
 if (Q.get('embed')) arrive();
 </script>
 
