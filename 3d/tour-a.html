@@ -18,7 +18,7 @@ window.TOUR_CONFIG = {
   phone:   '',                     // Your phone, e.g. '+976 9911 2233'
   area:    75.4,                   // Official floor area in m² (null = measured from the plan)
   style:   'modern',               // Opening look: 'modern' | 'scandi' | 'lux'
-  startTime: 15.5,                 // Opening time of day (5.5 – 23)
+  startTime: 19.2,                 // Opening time of day (5.5 – 23): dusk, as on the interior concept boards
   planUpFaces: 0,                  // Compass direction the top of the plan faces (0 N, 90 E, 180 S, 270 W)
   music: true                      // Soft background music on by default
 };
@@ -800,7 +800,8 @@ ground.rotation.x = -PI / 2; ground.userData.noAO = true;
   for (let i = 0; i < 230; i++) {
     const a = rr(0, PI * 2), d = rr(60, 185);
     const tall = rnd() < 0.16 && d > 115, w = tall ? rr(14, 22) : rr(10, 34), dd = tall ? rr(14, 20) : rr(10, 26);
-    const h = tall ? rr(45, 80) : d < 100 ? rr(9, 30) : rr(12, 40);
+    let h = tall ? rr(45, 80) : d < 100 ? rr(9, 30) : rr(12, 40);
+    if (Math.abs(Math.atan2(Math.sin(a + PI / 2), Math.cos(a + PI / 2))) < 0.75) h = Math.min(h, 12 + d * 0.1); // the living-room view (north) looks out over the rooftops to the sea and hills
     add(Math.cos(a) * d, Math.sin(a) * d, w, dd, Math.round(h / 3) * 3, rr(-0.35, 0.35) + (rnd() < 0.5 ? 0 : PI / 2));
   }
   const cityMat = std({ map: facadeTex[0], emissiveMap: facadeTex[1], emissive: 0xffffff, emissiveIntensity: 0, vertexColors: true, roughness: 0.8 });
@@ -822,11 +823,15 @@ let hills;
 // sky dome
 const sky = new THREE.Mesh(new THREE.SphereGeometry(190, 32, 16), new THREE.ShaderMaterial({
   side: THREE.BackSide, depthWrite: false, fog: false,
-  uniforms: { top: { value: new THREE.Color(0x7fa8d6) }, hor: { value: new THREE.Color(0xf2e7d4) }, bot: { value: new THREE.Color(0xd6dccb) } },
+  uniforms: { top: { value: new THREE.Color(0x7fa8d6) }, hor: { value: new THREE.Color(0xf2e7d4) }, bot: { value: new THREE.Color(0xd6dccb) }, pano: { value: null }, panoK: { value: 0 }, panoB: { value: 1 } },
   vertexShader: 'varying vec3 vP; void main(){ vP=normalize(position); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-  fragmentShader: 'uniform vec3 top,hor,bot; varying vec3 vP; void main(){ float h=vP.y; vec3 c = h>0. ? mix(hor,top,pow(h,0.55)) : mix(hor,bot,pow(-h,0.4)); gl_FragColor=vec4(c,1.); }'
+  // dusk: a real photographed sky over a city, sea and mountains (Poly Haven 'signal_hill_dawn', CC0; upper 60% of the panorama) fades in over the gradient
+  fragmentShader: 'uniform vec3 top,hor,bot; uniform sampler2D pano; uniform float panoK,panoB; varying vec3 vP; void main(){ float h=vP.y; vec3 c = h>0. ? mix(hor,top,pow(h,0.55)) : mix(hor,bot,pow(-h,0.4));'
+    + ' if (panoK > 0.001) { float u = fract(atan(vP.x, -vP.z) / 6.2831853 + 0.62), v = (1.5707963 - asin(clamp(h + 0.035, -1., 1.))) / 3.1415927 / 0.6; vec3 p = texture2D(pano, vec2(u, 1. - min(v, 0.995))).rgb; p = pow(p, vec3(2.2)) * panoB; c = mix(c, p, panoK); }'
+    + ' gl_FragColor=vec4(c,1.); }'
 }));
 sky.userData.noAO = true; scene.add(sky);
+new THREE.TextureLoader().load('models/sky_dusk.jpg', t => { t.colorSpace = THREE.NoColorSpace; t.wrapS = THREE.RepeatWrapping; t.anisotropy = 4; sky.material.uniforms.pano.value = t; try { applyTime(timeNow); } catch (e) {} dirty = true; });
 
 /* ---------------- windows & doors ---------------- */
 // Only the lights nearest the viewer are live: a fixed pool is re-aimed as you move, so every pixel shades a few lights instead of all
@@ -1256,21 +1261,21 @@ function pleat(w, h, folds, dep, mat, x, z, seed, o) {
   geo.computeVertexNormals(); return mesh(geo, mat, x, 0.012 + h / 2, z, scene, o);
 }
 const lvRug = rug(575, 335, 2.5, 3.2, 'living');
-{ const len = 3.0, dep = 1.0, sofa = place(lvSectional(len, dep, 1.9, 1.0, M.lvSofa), 440, 325, PI / 2), zb = -dep / 2 + 0.16 + 0.22;
+{ const len = 3.0, dep = 1.0, sofa = fb('lv_sofa', place(lvSectional(len, dep, 1.9, 1.0, M.lvSofa), 440, 325, PI / 2)), zb = -dep / 2 + 0.16 + 0.22; // drawn stand-in; the real model (lv_sofa.glb) replaces it
   lvPillow(sofa, 0.5, 0.5, M.lvOlive, -1.08, 0.66, zb, 0.1); lvPillow(sofa, 0.46, 0.46, M.lvCream, -0.66, 0.64, zb + 0.02, -0.06);
   lvPillow(sofa, 0.56, 0.3, M.lvTaupeF, -0.12, 0.58, zb + 0.06, 0.03, 0.3); lvPillow(sofa, 0.52, 0.52, M.lvCream, 1.0, 0.66, zb, -0.5);
   lvPillow(sofa, 0.48, 0.48, M.lvOlive, len / 2 - 0.4, 0.65, 0.25, -PI / 2 + 0.08); lvPillow(sofa, 0.44, 0.44, M.lvCream, len / 2 - 0.4, 0.63, 0.7, -PI / 2 - 0.05);
   // knitted throw folded over the seat and hanging off the front
   tailor(sofa, 0.5, 0.025, 0.62, 0.01, 0.004, M.lvThrow, -len / 2 + 0.55, 0.433, 0.1); tailor(sofa, 0.5, 0.3, 0.025, 0.01, 0.004, M.lvThrow, -len / 2 + 0.55, 0.29, dep / 2 + 0.014); }
-(function coffee() { const g = new THREE.Group(); // fluted oak drum with a polished light-marble top
-  cyl(g, 0.43, 0.43, 0.035, M.bronze, 0, 0.0175, 0, 64); mesh(fluted(0.47, 0.33, 36, 0.009), M.oak, 0, 0.035 + 0.165, 0, g);
-  cyl(g, 0.522, 0.515, 0.045, M.lvMarble, 0, 0.3875, 0, 96);
-  const t = 0.41; books(g, -0.2, t, 0.08, 0.35, 2); jarCandle(g, 0.12, t, 0.22); jarCandle(g, 0.22, t, 0.12);
+(function coffee() { const g = new THREE.Group(), tb = new THREE.Group(); g.add(tb); fb('lv_table', tb); // fluted oak drum with a polished light-marble top (stand-in for lv_table.glb, same 47 cm height)
+  cyl(tb, 0.43, 0.43, 0.035, M.bronze, 0, 0.0175, 0, 64); mesh(fluted(0.47, 0.39, 36, 0.009), M.oak, 0, 0.035 + 0.195, 0, tb);
+  cyl(tb, 0.5, 0.495, 0.045, M.lvMarble, 0, 0.4475, 0, 96);
+  const t = 0.473; books(g, -0.2, t, 0.08, 0.35, 2); jarCandle(g, 0.12, t, 0.22); jarCandle(g, 0.22, t, 0.12);
   lathe(g, [[0, 0], [0.07, 0], [0.085, 0.1], [0.07, 0.17], [0.072, 0.18]], M.glassware, 0.02, t, -0.15, 24, { cast: false });
   const heads = [[0, 0.3, 0], [0.09, 0.26, 0.05], [-0.08, 0.26, 0.06], [0.05, 0.25, -0.09], [-0.07, 0.27, -0.07], [0.12, 0.22, -0.02]]; // white hydrangea: domed heads of tiny florets
   leafCloud(g, 240, M.flowerA, (i, d) => { const [hx, hy, hz] = heads[i % 6], u = rr(0, 7), v = rr(0, 1.3), r = 0.07; d.position.set(0.02 + hx + Math.cos(u) * Math.sin(v) * r, t + hy + Math.cos(v) * r * 0.8, -0.15 + hz + Math.sin(u) * Math.sin(v) * r); d.scale.setScalar(rr(0.014, 0.02)); d.scale.y *= 0.6; d.rotation.set(rr(0, 3), rr(0, 3), 0); });
   leafCloud(g, 16, M.leaf2, (i, d) => { const a = i * 0.4; d.position.set(0.02 + Math.cos(a) * 0.09, t + 0.2, -0.15 + Math.sin(a) * 0.09); d.scale.set(0.04, 0.008, 0.02); d.rotation.set(0.3, -a, 0.2); }, false);
-  place(g, 594, 352, 0); })();
+  place(g, 600, 360, 0); })();
 (function sideTable() { const g = new THREE.Group(); lathe(g, [[0, 0], [0.24, 0], [0.24, 0.025], [0, 0.025]], M.bronze, 0, 0.53, 0, 48); cyl(g, 0.025, 0.025, 0.52, M.bronze, 0, 0.265, 0, 16); cyl(g, 0.17, 0.17, 0.015, M.bronze, 0, 0.008, 0, 40);
   lamp(g, 0, 0.555, 0.02, 1.15); place(g, 612, 192, 0); })();
 // lighting: recessed 3000K downlights that shine down (spots in the bake, so no rings on the ceiling) and a low warm fill; no ceiling disc
@@ -1288,22 +1293,22 @@ bulbLight(447, 200, 1.6, 1.8);
   pbox(747.5, 752, 152, 476, top - 0.008, top - 0.002, M.ledWarm, scene, { cast: false });
   const tz = 345, tw = 166, ty = 1.0;
   pbox(748, 749, tz - tw / 2 + 4, tz + tw / 2 - 4, ty + 0.04, ty + 0.91, M.ledWarm, scene, { cast: false });   // backlight strip (hidden behind the set)
-  softGlow(L(tw) + 0.75, 1.6, X(748.95), ty + 0.475, Z(tz), -PI / 2, 0.16, 0.75);                             // its spill on the slats
-  softGlow(L(476 - 152), 0.7, X(748.95), top - 0.35, Z(314), -PI / 2, 0.02, 0.45, true);                      // cove wash fading down the slats
+  softGlow(L(tw) + 0.75, 1.6, X(748.95), ty + 0.475, Z(tz), -PI / 2, 0.16, 1.0);                             // its spill on the slats
+  softGlow(L(476 - 152), 0.9, X(748.95), top - 0.45, Z(314), -PI / 2, 0.02, 0.7, true);                      // cove wash fading down the slats
   mesh(new RoundedBoxGeometry(0.03, 0.95, L(tw), 2, 0.004), M.black, X(746.5), ty + 0.475, Z(tz));            // slim set, eased edges
   pbox(744.85, 745.0, tz - tw / 2 + 0.6, tz + tw / 2 - 0.6, ty + 0.006, ty + 0.944, M.lvScreen, scene, { cast: false });
   // floating handleless console, matte taupe: carcass, four push-latch doors with 3 mm shadow gaps, a separate top with a reveal, LED underneath
-  const c0 = 230, c1 = 470, y0 = 0.24, y1 = 0.6;
-  pbox(708.5, 749.4, c0, c1, y0, y1, M.taupeMatte); pcol(707, 755, c0, c1);
-  pbox(709, 749.4, c0 + 0.5, c1 - 0.5, y1, y1 + 0.004, M.dark, scene, { cast: false });
-  mesh(new RoundedBoxGeometry(0.42, 0.018, L(c1 - c0), 2, 0.004), M.taupeMatte, X(728.4), y1 + 0.004 + 0.009, Z((c0 + c1) / 2));
-  for (let i = 0; i < 4; i++) { const a = c0 + (c1 - c0) * i / 4, b = a + (c1 - c0) / 4; mesh(new RoundedBoxGeometry(0.018, y1 - y0 - 0.006, L(b - a) - 0.003, 2, 0.003), M.taupeMatte, X(707.6), (y0 + y1) / 2, Z((a + b) / 2)); }
+  const c0 = 255, c1 = 435, y0 = 0.24, y1 = 0.574, con = fb('lv_console', new THREE.Group()); scene.add(con); // drawn stand-in for lv_console.glb (1.8 m)
+  pbox(708.5, 749.4, c0, c1, y0, y1, M.taupeMatte, con); pcol(704, 755, c0, c1);
+  pbox(709, 749.4, c0 + 0.5, c1 - 0.5, y1, y1 + 0.004, M.dark, con, { cast: false });
+  mesh(new RoundedBoxGeometry(0.42, 0.018, L(c1 - c0), 2, 0.004), M.taupeMatte, X(728.4), y1 + 0.004 + 0.009, Z((c0 + c1) / 2), con);
+  for (let i = 0; i < 4; i++) { const a = c0 + (c1 - c0) * i / 4, b = a + (c1 - c0) / 4; mesh(new RoundedBoxGeometry(0.018, y1 - y0 - 0.006, L(b - a) - 0.003, 2, 0.003), M.taupeMatte, X(707.6), (y0 + y1) / 2, Z((a + b) / 2), con); }
   pbox(712, 745, c0 + 3, c1 - 3, y0 - 0.008, y0 - 0.002, M.ledWarm, scene, { cast: false });
-  { const fl = softGlow(L(c1 - c0) + 0.3, 0.75, X(732), 0.004, Z(350), 0, 0.12, 0.6); fl.rotation.set(-PI / 2, 0, PI / 2); } // console light pooled on the floor
-  const y = y1 + 0.022; books(scene, X(726), y, Z(405), PI / 2, 2);
-  lathe(scene, [[0, 0], [0.05, 0], [0.09, 0.03], [0.1, 0.06], [0.095, 0.062], [0.08, 0.035], [0.045, 0.006], [0, 0.006]], M.bronze, X(728), y, Z(380), 32);
-  lathe(scene, [[0, 0], [0.05, 0], [0.075, 0.07], [0.06, 0.2], [0.03, 0.26], [0.034, 0.27]], M.lvCeramic, X(730), y, Z(272), 28);
-  branchVase(scene, X(730), y, Z(458), 0.42, M.glassware); lamp(scene, X(728), y, Z(245), 0.85); }
+  { const fl = softGlow(L(c1 - c0) + 0.3, 0.8, X(732), 0.004, Z(350), 0, 0.12, 0.9); fl.rotation.set(-PI / 2, 0, PI / 2); } // console light pooled on the floor
+  const y = y1 + 0.002; books(scene, X(726), y, Z(410), PI / 2, 2);
+  lathe(scene, [[0, 0], [0.05, 0], [0.09, 0.03], [0.1, 0.06], [0.095, 0.062], [0.08, 0.035], [0.045, 0.006], [0, 0.006]], M.bronze, X(728), y, Z(382), 32);
+  lathe(scene, [[0, 0], [0.05, 0], [0.075, 0.07], [0.06, 0.2], [0.03, 0.26], [0.034, 0.27]], M.lvCeramic, X(730), y, Z(292), 28);
+  branchVase(scene, X(730), y, Z(427), 0.42, M.glassware); lamp(scene, X(728), y, Z(268), 0.85); }
 fb('potted_plant_01', place(plant(1.6, M.potWhite), 722, 195, 0, false));
 // double drapes from the cove: sheers drawn part-way over the glass, taupe blackout panels stacked at the sides
 { const h = H - 0.12 - 0.024, zs = Z(151) + 0.055, zb = Z(151) + 0.13;
@@ -1540,7 +1545,7 @@ const arrow = mesh(new THREE.ConeGeometry(0.18, 0.5, 16), std({ color: 0xd2553a,
 cyl(marker, 0.06, 0.06, EYE, std({ color: 0xd2553a, transparent: true, opacity: 0.5 }), 0, EYE / 2, 0, 12, { cast: false });
 
 const $ = id => document.getElementById(id);
-const CFG = Object.assign({ project: '[Төслийн нэр]', address: '[Хаяг]', price: '[Үнэ]', agent: '[Таны нэр]', phone: '[Утасны дугаар]', area: null, style: 'modern', startTime: 15.5, planUpFaces: 270, music: true }, window.TOUR_CONFIG || {});
+const CFG = Object.assign({ project: '[Төслийн нэр]', address: '[Хаяг]', price: '[Үнэ]', agent: '[Таны нэр]', phone: '[Утасны дугаар]', area: null, style: 'modern', startTime: 19.2, planUpFaces: 270, music: true }, window.TOUR_CONFIG || {});
 { const U = new URLSearchParams(location.search); for (const k of ['project', 'address', 'price', 'agent', 'phone']) if (U.get(k)) CFG[k] = U.get(k); }
 const isTouch = matchMedia('(pointer: coarse)').matches;
 let mode = 'init';
@@ -2139,7 +2144,8 @@ function applyTime(t) {
   const lampF = 0.35 + 2.4 * night + 0.5 * golden;
   lampScale = lampK * lampF; for (const l of lights) l.intensity = l.userData.base * lampScale;
   M.shade.emissiveIntensity = 0.35 + 1.6 * night + 0.3 * golden; M.can.emissiveIntensity = 0.5 + 3 * night; M.bulb.emissiveIntensity = 2.5 + 4 * night;
-  if (globeMat) globeMat.emissiveIntensity = 0.8 + 2.4 * night; M.led.emissiveIntensity = 1.6 + 2 * night; M.ledWarm.emissiveIntensity = 0.9 + 1.4 * night + 0.3 * golden; for (const m of ledGlows) m.material.opacity = 0.35 + 0.6 * night + 0.25 * golden;
+  if (globeMat) globeMat.emissiveIntensity = 0.8 + 2.4 * night; M.led.emissiveIntensity = 1.6 + 2 * night; M.ledWarm.emissiveIntensity = 1.1 + 2.2 * night + 0.9 * golden; for (const m of ledGlows) m.material.opacity = Math.min(1, 0.35 + 0.65 * night + 0.6 * golden);
+  { const pk = sky.material.uniforms.pano.value ? Math.min(1, smooth(10, 1, el) * smooth(-14, -3, el) * 1.0) : 0; sky.material.uniforms.panoK.value = pk; sky.material.uniforms.panoB.value = 0.35 + 0.65 * smooth(-10, 2, el); hills.material.transparent = pk > 0; hills.material.opacity = 1 - pk; }
   GLOW.lamp.opacity = 0.06 + 0.42 * night + 0.1 * golden; GLOW.can.opacity = 0.45 * night; GLOW.flame.opacity = 0.55 + 0.45 * night;
   // night turns the glass into a soft mirror of the room
   M.glass.opacity = 0.04 + 0.38 * night; M.glass.envMapIntensity = 0.25 + 1.35 * night;
@@ -2340,13 +2346,17 @@ if (REAL) (async () => {
     potted_plant_02: [[300, 135, 0.7, 0, [1.25, 1.25, 1.25], false]],
     potted_plant_04: [[70, 372, 0, 0, [1.6, 1.6, 1.6], false]],
     mid_century_lounge_chair: [[165, 860, PI / 2 + 0.35, 0, [0.9, 0.9, 0.9]]],
+    // living room, models supplied by the owner: chaise toward the window (mirrored), table on the rug, console hung under the TV
+    lv_sofa: [[390, 325, PI / 2, 0, [-1, 1, 1]]],
+    lv_table: [[600, 310, 0, 0, [1, 1, 1]]], // model origin is its back edge: centre lands at 600, 360
+    lv_console: [[749, 345, -PI / 2, 0.24, [1, 1, 1], false]],
   };
   await Promise.all(Object.entries(SET).map(async ([name, spots]) => {
     let gltf; try { const r = await fetch(base + name + '.glb'); if (!r.ok || (r.headers.get('content-type') || '').includes('text/html')) throw new Error(r.status); gltf = await loader.parseAsync(await r.arrayBuffer(), base); } catch (e) {
       // hosts that don't serve .glb get a base64 text copy instead
       try { const r = await fetch(base + name + '.glb.txt'); if (!r.ok) throw new Error(r.status); gltf = await loader.parseAsync(b64buf((await r.text()).trim()), base); }
       catch (e2) { console.warn('model', name, e2); return; } }
-    gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; if (o.material) o.material.envMapIntensity = 0.9; if (o.material && o.material.name === 'potted_plant_01_pot') o.material = M.potWhite; } }); // white planters, as on the reference
+    gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; if (o.material) o.material.envMapIntensity = 0.9; if (o.material && o.material.name === 'potted_plant_01_pot') o.material = M.potWhite; if (name === 'lv_sofa' && o.material) o.material.color.set(0xf4e9d8); if ((name === 'lv_sofa' || name === 'lv_table') && o.material) o.material.side = THREE.DoubleSide; if (name === 'lv_table' && o.material) { o.material.color.setScalar(1.18); o.material.roughness = 0.55; } } }); // white planters, as on the reference
     // compile shaders off the main thread before the model appears, so walking doesn't hitch
     try { await renderer.compileAsync(gltf.scene, cam, scene); } catch (e) { }
     const only0 = spots[0][6];
