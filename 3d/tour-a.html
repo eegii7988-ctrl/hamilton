@@ -2084,7 +2084,13 @@ rPass.render = (r, w, rd, dt) => {
   if (rPass.accumulate) return taaRender(r, w, rd, dt);
   rPass.accumulateIndex = -1; r.setRenderTarget(w); r.clear(); r.render(scene, rPass.camera);
 };
-let stillN = 0; const STILL_MAX = 34;
+let stillN = 0; const STILL_MAX = 36;
+const camSnapM = new THREE.Matrix4(), camSnapP = new THREE.Matrix4(); let camSnapC = null;
+function camMoved(c) {
+  c.updateMatrixWorld();
+  const moved = c !== camSnapC || !c.matrixWorld.equals(camSnapM) || !c.projectionMatrix.equals(camSnapP);
+  camSnapC = c; camSnapM.copy(c.matrixWorld); camSnapP.copy(c.projectionMatrix); return moved;
+}
 const aoPass = new GTAOPass(scene, cam, innerWidth, innerHeight);
 aoPass.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1.4, thickness: 1.2, scale: 1.15, samples: 8, distanceFallOff: 1, screenSpaceRadius: false });
 aoPass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 6 });
@@ -2145,13 +2151,16 @@ function tick() {
     cam.position.y = EYE + Math.sin(bob) * 0.011 * Math.min(1, speed / 1.4);
   } else if (orbit.update()) dirty = true;
   if (mode === 'walk' || mode === 'tour') { const rm = roomAt(cam.position.x, cam.position.z); if (rm !== lastRoom) { $('room').textContent = '📍 ' + rm; lastRoom = rm; } }
+  const rc = fly ? flyCam : (mode === 'walk' || mode === 'tour') ? cam : dollCam;
+  // any camera change at all (even a tiny drift that did not flag a redraw) restarts the refinement, so frames from two
+  // different viewpoints are never blended into a smeared, doubled edge
+  if (camMoved(rc)) dirty = true;
   if (!dirty) {
     // nothing moved: spend the idle frames refining the still picture
-    if (fxOn && !veilUp && !fly && stillN < STILL_MAX) { stillN++; rPass.accumulate = stillN > 1; const rc = (mode === 'walk' || mode === 'tour') ? cam : dollCam; rPass.camera = rc; aoPass.camera = rc; composer.render(dt); }
+    if (fxOn && !veilUp && !fly && stillN < STILL_MAX) { stillN++; rPass.accumulate = stillN > 3; rPass.camera = rc; aoPass.camera = rc; composer.render(dt); }
     return;
   }
   dirty = false; stillN = 0; rPass.accumulate = false;
-  const rc = fly ? flyCam : (mode === 'walk' || mode === 'tour') ? cam : dollCam;
   if (fxOn) { rPass.camera = rc; aoPass.camera = rc; composer.render(dt); } else renderer.render(scene, rc);
   // adaptive resolution (only measured while actually rendering)
   // quality only adapts on real, steady walking: never while loading, compiling or flying (those slow frames are one-offs)
