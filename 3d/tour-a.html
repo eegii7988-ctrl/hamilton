@@ -387,30 +387,28 @@ const quartzTex = tex(512, 512, (g, s) => {
   blotch(g, s, s, 40, 0.05, '170,165,160', 10, 50);
 }, 1.4);
 function rugTex(base, accent, style) {
-  return tex(512, 512, (g, s) => {
+  // quiet, woven-looking rugs: heathered wool with tone-on-tone detail (the accent is always softened toward the base)
+  return tex(1024, 1024, (g, s) => {
+    const cb = new THREE.Color(base), ca = new THREE.Color(accent), soft = cb.clone().lerp(ca, 0.4), css = c => '#' + c.getHexString();
     g.fillStyle = base; g.fillRect(0, 0, s, s);
-    g.strokeStyle = accent; g.fillStyle = accent;
-    if (style === 'border') { g.lineWidth = 10; g.strokeRect(26, 26, s - 52, s - 52); g.lineWidth = 3; g.strokeRect(46, 46, s - 92, s - 92); }
-    if (style === 'stripe') { for (let i = 0; i < 9; i++) g.fillRect(0, 30 + i * 52, s, i % 3 === 0 ? 10 : 4); }
-    if (style === 'diamond') {
-      g.lineWidth = 3; g.globalAlpha = 0.6;
-      for (let i = -s; i < s * 2; i += 64) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + s, s); g.stroke(); g.beginPath(); g.moveTo(i, s); g.lineTo(i + s, 0); g.stroke(); }
-      g.globalAlpha = 1; g.lineWidth = 14; g.strokeRect(10, 10, s - 20, s - 20);
+    for (let i = 0; i < 26000; i++) { // heather: short fibres, light and dark
+      const x = rr(0, s), y = rr(0, s), l = rr(3, 9), d = rnd() < 0.5;
+      g.strokeStyle = d ? `rgba(0,0,0,${rr(0.02, 0.07)})` : `rgba(255,255,255,${rr(0.03, 0.09)})`; g.lineWidth = rr(0.6, 1.4);
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x + rr(-1.5, 1.5), y + l); g.stroke();
     }
-    if (style === 'medallion') {
-      g.lineWidth = 16; g.strokeRect(14, 14, s - 28, s - 28); g.lineWidth = 4; g.strokeRect(42, 42, s - 84, s - 84);
-      for (let i = 56; i < s - 50; i += 26) for (const [x, y] of [[i, 28], [i, s - 28], [28, i], [s - 28, i]]) { g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill(); }
-      const c = s / 2;
-      for (let k = 0; k < 5; k++) { const r = 160 - k * 30; g.globalAlpha = k % 2 ? 0.45 : 0.9; g.beginPath(); g.moveTo(c, c - r * 1.2); g.lineTo(c + r, c); g.lineTo(c, c + r * 1.2); g.lineTo(c - r, c); g.closePath(); if (k % 2) g.fill(); else { g.lineWidth = 6; g.stroke(); } }
-      g.globalAlpha = 0.55; for (const [x, y] of [[92, 92], [s - 92, 92], [92, s - 92], [s - 92, s - 92]]) { g.beginPath(); g.arc(x, y, 30, 0, 7); g.fill(); }
-      g.globalAlpha = 1;
+    g.strokeStyle = css(soft); g.fillStyle = css(soft);
+    if (style === 'medallion') { // vintage wash: a faded field pattern and borders, as if sun-worn
+      g.globalAlpha = 0.5; g.lineWidth = 34; g.strokeRect(40, 40, s - 80, s - 80); g.lineWidth = 6; g.strokeRect(92, 92, s - 184, s - 184);
+      g.globalAlpha = 0.16; for (let y = 130; y < s - 120; y += 46) for (let x = 130 + ((y / 46) % 2) * 23; x < s - 120; x += 46) { g.beginPath(); g.moveTo(x, y - 14); g.lineTo(x + 10, y); g.lineTo(x, y + 14); g.lineTo(x - 10, y); g.closePath(); g.fill(); }
+      g.globalAlpha = 0.22; const c = s / 2; g.beginPath(); g.ellipse(c, c, 150, 220, 0, 0, 7); g.lineWidth = 10; g.stroke();
+      g.globalAlpha = 1; for (let i = 0; i < 26; i++) { const x = rr(0, s), y = rr(0, s), r = rr(60, 200), gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(255,250,240,${rr(0.05, 0.14)})`); gr.addColorStop(1, 'rgba(255,250,240,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r); }
+    } else if (style === 'diamond' || style === 'stripe') { // berber: a fine woven lattice and a wide quiet band
+      g.globalAlpha = 0.13; g.lineWidth = 1.5;
+      for (let i = -s; i < 2 * s; i += 22) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + s, s); g.stroke(); g.beginPath(); g.moveTo(i, s); g.lineTo(i + s, 0); g.stroke(); }
+      g.globalAlpha = 0.28; g.fillRect(0, 70, s, 26); g.fillRect(0, s - 96, s, 26); g.globalAlpha = 1;
+    } else { // plain wool with a hairline inset border
+      g.globalAlpha = 0.45; g.lineWidth = 3; g.strokeRect(54, 54, s - 108, s - 108); g.globalAlpha = 0.18; g.lineWidth = 18; g.strokeRect(9, 9, s - 18, s - 18); g.globalAlpha = 1;
     }
-    if (style === 'geo') {
-      g.lineWidth = 7; g.globalAlpha = 0.85;
-      for (let i = 0; i < 7; i++) { if (rnd() < 0.5) { g.beginPath(); g.arc(rr(70, s - 70), rr(70, s - 70), rr(40, 130), 0, PI); g.stroke(); } else g.strokeRect(rr(24, s - 220), rr(24, s - 220), rr(80, 190), rr(80, 190)); }
-      g.globalAlpha = 1; g.lineWidth = 12; g.strokeRect(8, 8, s - 16, s - 16);
-    }
-    speckle(g, s, s, 9000, 0.12, '0,0,0', 0.6, 1.8); speckle(g, s, s, 5000, 0.12, '255,255,255', 0.6, 1.8);
   }, 0);
 }
 // Stone counters: veined marble or terrazzo
@@ -678,14 +676,82 @@ function can(px, py) { glowAt(ceil, X(px), H - 0.03, Z(py), 0.32, 'can'); const 
 
 // the apartment sits on the 14th floor: city far below, sky all around
 const FLOOR_Y = -44;
-const ground = mesh(new THREE.PlaneGeometry(600, 600), M.grass, 0, FLOOR_Y, 0, scene, { cast: false });
-ground.rotation.x = -PI / 2; grassTex.repeat.set(600 / 3, 600 / 3);
-{ const cityMat = std({ color: 0xcdc6bb, roughness: 0.95 }), cityMat2 = std({ color: 0xa9b0b5, roughness: 0.7 });
-  const box = new THREE.BoxGeometry(1, 1, 1); seed = 41;
-  for (let i = 0; i < 90; i++) {
-    const a = rr(0, PI * 2), d = rr(55, 170), w = rr(12, 34), dd = rr(12, 30), h = rr(8, 38);
-    const m = new THREE.Mesh(box, i % 3 ? cityMat : cityMat2); m.scale.set(w, h, dd); m.position.set(Math.cos(a) * d, FLOOR_Y + h / 2, Math.sin(a) * d); m.rotation.y = rr(-0.3, 0.3); scene.add(m);
+// ---- the city below: textured blocks with real window grids, a street grid on the ground, distant hills; windows light up at night ----
+const cityLit = [];  // materials whose emissive follows nightfall
+const facadeTex = (() => { // one 12 m × 12 m façade tile: 4 bays × 4 floors; texel (0,0) region stays plain wall for roofs
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  const e = document.createElement('canvas'); e.width = e.height = 512; const ge = e.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 512); ge.fillStyle = '#000'; ge.fillRect(0, 0, 512, 512);
+  g.fillStyle = 'rgba(0,0,0,0.06)'; for (let fl = 0; fl < 8; fl++) g.fillRect(0, fl * 64 + 56, 512, 6); // floor slabs
+  for (let fl = 0; fl < 8; fl++) for (let b = 0; b < 8; b++) {
+    const x = b * 64 + 18, y = fl * 64 + 16, w = 28, h = 32; if (fl >= 6 && b < 2) continue; // keep the roof sample clean
+    const k = rr(0, 1); g.fillStyle = `rgb(${74 + k * 34 | 0},${84 + k * 34 | 0},${96 + k * 36 | 0})`; g.fillRect(x, y, w, h);
+    g.fillStyle = 'rgba(255,255,255,0.22)'; g.fillRect(x, y, w, 3); g.fillStyle = 'rgba(0,0,0,0.3)'; g.fillRect(x + w / 2 - 1, y, 2, h);
+    if (rnd() < 0.24) { const warm = rnd() < 0.82; ge.fillStyle = warm ? `rgb(255,${178 + rr(0, 40) | 0},${100 + rr(0, 50) | 0})` : 'rgb(170,200,250)'; ge.globalAlpha = rr(0.35, 0.85); ge.fillRect(x + 2, y + 2, w - 4, h - 4); ge.globalAlpha = 1; }
   }
+  const t = new THREE.CanvasTexture(c), te = new THREE.CanvasTexture(e);
+  for (const x of [t, te]) { x.wrapS = x.wrapT = THREE.RepeatWrapping; x.colorSpace = THREE.SRGBColorSpace; x.anisotropy = maxAniso; }
+  return [t, te];
+})();
+const streetTex = (() => { // 150 m of city: blocks, roads with lane marks, courtyards and a little green
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  const e = document.createElement('canvas'); e.width = e.height = 512; const ge = e.getContext('2d');
+  g.fillStyle = '#5d5d5c'; g.fillRect(0, 0, 512, 512); ge.fillStyle = '#000'; ge.fillRect(0, 0, 512, 512);
+  const cell = 128;
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+    const x = i * cell + 14, y = j * cell + 14, s = cell - 28;
+    g.fillStyle = ['#9c968c', '#a8a196', '#8f8b85', '#b0a796'][(i + j * 3) % 4]; g.fillRect(x, y, s, s);
+    if ((i * 7 + j * 3) % 5 === 0) { g.fillStyle = '#6f7a56'; g.fillRect(x + 10, y + 10, s - 20, s - 20); }
+    else { g.fillStyle = 'rgba(70,66,60,0.35)'; g.fillRect(x + 8, y + 8, s * 0.45, s * 0.35); g.fillRect(x + s * 0.55, y + s * 0.5, s * 0.38, s * 0.42); }
+  }
+  g.strokeStyle = 'rgba(230,225,210,0.55)'; g.setLineDash([6, 8]); g.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) { g.beginPath(); g.moveTo(k * cell, 0); g.lineTo(k * cell, 512); g.stroke(); g.beginPath(); g.moveTo(0, k * cell); g.lineTo(512, k * cell); g.stroke(); }
+  ge.fillStyle = 'rgb(255,170,80)'; // sodium street lights along every road
+  for (let k = 0; k <= 4; k++) for (let s = 0; s < 512; s += 16) { ge.globalAlpha = 0.9; ge.fillRect(k * cell - 9, s, 3, 3); ge.fillRect(k * cell + 6, s + 8, 3, 3); ge.fillRect(s, k * cell - 9, 3, 3); ge.fillRect(s + 8, k * cell + 6, 3, 3); }
+  ge.globalAlpha = 0.25; ge.fillStyle = 'rgb(255,190,120)'; for (let k = 0; k <= 4; k++) { ge.fillRect(k * cell - 10, 0, 20, 512); ge.fillRect(0, k * cell - 10, 512, 20); }
+  const t = new THREE.CanvasTexture(c), te = new THREE.CanvasTexture(e);
+  for (const x of [t, te]) { x.wrapS = x.wrapT = THREE.RepeatWrapping; x.colorSpace = THREE.SRGBColorSpace; x.anisotropy = maxAniso; x.repeat.set(4, 4); }
+  return [t, te];
+})();
+const groundMat = std({ map: streetTex[0], emissiveMap: streetTex[1], emissive: 0xffffff, emissiveIntensity: 0, roughness: 0.95 }); cityLit.push([groundMat, 0.9]);
+const ground = mesh(new THREE.PlaneGeometry(600, 600), groundMat, 0, FLOOR_Y, 0, scene, { cast: false });
+ground.rotation.x = -PI / 2; ground.userData.noAO = true;
+{ // every building in one mesh: façade UVs scaled to real size so windows stay 3 m apart, tint per building in vertex colour
+  const geos = []; seed = 41;
+  const tints = [0xe9e1d3, 0xd8d2c8, 0xc9c4bd, 0xb7a58e, 0xd6c3a5, 0x9fb0bd, 0xeeeae2, 0xa79a8c];
+  const add = (x, z, w, d, h, ry) => {
+    const b = new THREE.BoxGeometry(w, h, d), uv = b.attributes.uv, n = b.attributes.normal;
+    for (let i = 0; i < uv.count; i++) {
+      const ny = Math.abs(n.getY(i)) > 0.5, nx = Math.abs(n.getX(i)) > 0.5;
+      if (ny) uv.setXY(i, 0.01 + uv.getX(i) * 0.2, 0.77 + uv.getY(i) * 0.2); // roofs sample the plain corner
+      else uv.setXY(i, uv.getX(i) * (nx ? d : w) / 24, uv.getY(i) * h / 24);
+    }
+    const col = new THREE.Color(tints[(rnd() * tints.length) | 0]).multiplyScalar(rr(0.85, 1.05)), cols = new Float32Array(uv.count * 3);
+    for (let i = 0; i < uv.count; i++) cols.set([col.r, col.g, col.b], i * 3);
+    b.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+    b.rotateY(ry); b.translate(x, FLOOR_Y + h / 2, z); geos.push(b);
+  };
+  for (let i = 0; i < 230; i++) {
+    const a = rr(0, PI * 2), d = rr(60, 185);
+    const tall = rnd() < 0.16 && d > 115, w = tall ? rr(14, 22) : rr(10, 34), dd = tall ? rr(14, 20) : rr(10, 26);
+    const h = tall ? rr(45, 80) : d < 100 ? rr(9, 30) : rr(12, 40);
+    add(Math.cos(a) * d, Math.sin(a) * d, w, dd, Math.round(h / 3) * 3, rr(-0.35, 0.35) + (rnd() < 0.5 ? 0 : PI / 2));
+  }
+  const cityMat = std({ map: facadeTex[0], emissiveMap: facadeTex[1], emissive: 0xffffff, emissiveIntensity: 0, vertexColors: true, roughness: 0.8 });
+  cityLit.push([cityMat, 1.1]);
+  const city = new THREE.Mesh(mergeGeometries(geos, false), cityMat); city.receiveShadow = false; city.castShadow = false; city.userData.noAO = true; scene.add(city);
+  geos.forEach(g => g.dispose());
+}
+let hills;
+{ // hills on the horizon (Ulaanbaatar sits in a valley): a ring of soft ridges that fade into the haze
+  const N = 160, pos = [], idx = [];
+  for (let i = 0; i <= N; i++) {
+    const a = i / N * PI * 2, r = 182, hgt = 14 + 10 * Math.sin(a * 3 + 1) + 6 * Math.sin(a * 7 + 2) + 3 * Math.sin(a * 17) + (Math.cos(a) > 0.3 ? 12 * Math.cos(a) : 0);
+    pos.push(Math.cos(a) * r, FLOOR_Y, Math.sin(a) * r, Math.cos(a) * r, FLOOR_Y + 36 + hgt * 0.55, Math.sin(a) * r);
+    if (i < N) { const k = i * 2; idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+  hills = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x8c95a0, side: THREE.DoubleSide, fog: false, toneMapped: false })); hills.renderOrder = -1; hills.userData.noAO = true; scene.add(hills);
 }
 // sky dome
 const sky = new THREE.Mesh(new THREE.SphereGeometry(190, 32, 16), new THREE.ShaderMaterial({
@@ -694,7 +760,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(190, 32, 16), new THREE.Shad
   vertexShader: 'varying vec3 vP; void main(){ vP=normalize(position); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
   fragmentShader: 'uniform vec3 top,hor,bot; varying vec3 vP; void main(){ float h=vP.y; vec3 c = h>0. ? mix(hor,top,pow(h,0.55)) : mix(hor,bot,pow(-h,0.4)); gl_FragColor=vec4(c,1.); }'
 }));
-scene.add(sky);
+sky.userData.noAO = true; scene.add(sky);
 
 /* ---------------- windows & doors ---------------- */
 // Only the lights nearest the viewer are live: a fixed pool is re-aimed as you move, so every pixel shades a few lights instead of all
@@ -1004,12 +1070,12 @@ const hold = () => { pend++; }, release = () => { if (--pend <= 0) liftVeil(); }
 setTimeout(liftVeil, 9000); setTimeout(() => { if (pend <= 0) liftVeil(); }, 400);
 /* ---------------- LIVING (A-2) ---------------- */
 rug(575, 320, 2.4, 3.0, 'living');
-{ const sofaW = place(sofa(2.3, 0.95, M.sofaB), 447, 320, PI / 2); if (REAL) { const ks = ['modern', 'scandi', 'lux']; styleOnly.push([sofaW, ks]); fb('sofa_03', sofaW, ks); }
+{ const sofaW = place(sofa(2.0, 0.86, M.sofaB), 440, 320, PI / 2); if (REAL) { const ks = ['modern', 'scandi', 'lux']; styleOnly.push([sofaW, ks]); fb('sofa_03', sofaW, ks); }
 pillow(sofaW, M.acc1, -0.78, 0.62, -0.18, 0.15); pillow(sofaW, M.acc3, 0.78, 0.62, -0.18, -0.15);
 rbx(sofaW, 0.55, 0.035, 0.62, 0.015, M.throw2, 0.55, 0.485, 0.12); bx(sofaW, 0.55, 0.32, 0.025, M.throw2, 0.55, 0.34, 0.445); }
 (function coffee() { const g = new THREE.Group(); rbx(g, 0.8, 0.05, 1.3, 0.02, M.oak, 0, 0.38, 0); for (const s of [-1, 1]) bx(g, 0.7, 0.33, 0.06, M.walnut, 0, 0.18, s * 0.5);
   bx(g, 0.24, 0.06, 0.3, M.book3, 0.1, 0.435, -0.25); bx(g, 0.2, 0.04, 0.26, M.book2, 0.1, 0.485, -0.25);
-  const b = mesh(new THREE.SphereGeometry(0.13, 24, 12, 0, PI * 2, PI / 2, PI / 2), M.potWhite, -0.05, 0.53, 0.25, g); b.material.side = THREE.DoubleSide; fb('modern_coffee_table_01', place(g, 605, 320, 0)); })();
+  const b = mesh(new THREE.SphereGeometry(0.13, 24, 12, 0, PI * 2, PI / 2, PI / 2), M.potWhite, -0.05, 0.53, 0.25, g); b.material.side = THREE.DoubleSide; g.scale.setScalar(0.85); fb('modern_coffee_table_01', place(g, 590, 320, 0)); })();
 (function sideTable() { const g = new THREE.Group(); cyl(g, 0.2, 0.2, 0.03, M.walnut, 0, 0.55, 0, 32); cyl(g, 0.03, 0.03, 0.54, M.black, 0, 0.27, 0, 10); cyl(g, 0.14, 0.14, 0.02, M.black, 0, 0.01, 0, 24); lamp(g, 0, 0.565, 0, 1); place(g, 447, 178, 0); })();
 bulbLight(447, 178, 1.25, 4);
 // media wall on the bedroom-2 partition (face x = 755)
@@ -1019,14 +1085,14 @@ pbox(745.5, 749, 320 - 74, 320 + 74, 0.98, 1.8, M.screen);
 pbox(703, 749, 215, 425, 0.2, 0.6, M.oak); pcol(703, 755, 215, 425);
 for (const z of [268, 320, 372]) pbox(702, 703.5, z - 0.6, z + 0.6, 0.22, 0.58, M.dark, scene, { cast: false });
 pbox(712, 738, 236, 246, 0.6, 0.62, M.book1); cyl(scene, 0.05, 0.07, 0.22, M.potWhite, X(726), 0.71, Z(405));
-fb('potted_plant_01', place(plant(1.7), 725, 180, 0, false));
+fb('potted_plant_01', place(plant(1.4), 725, 180, 0, false));
 curtain('h', 138.5, 1, 395, 655);
 
 /* ---------------- DINING ---------------- */
-(function table() { const g = new THREE.Group(); bx(g, 1.6, 0.045, 0.9, M.oak, 0, 0.74, 0);
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) bx(g, 0.07, 0.7, 0.07, M.black, sx * 0.7, 0.36, sz * 0.36);
+(function table() { const g = new THREE.Group(); bx(g, 1.4, 0.04, 0.85, M.oak, 0, 0.74, 0);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) bx(g, 0.06, 0.7, 0.06, M.black, sx * 0.62, 0.36, sz * 0.34);
   place(g, 530, 560, 0); })();
-[[485, 500, 0], [575, 500, 0], [485, 620, PI], [575, 620, PI]].forEach(c => { const ch = place(chair(M.chairFab), c[0], c[1], c[2], false); if (REAL) { const ks = ['modern', 'scandi', 'lux']; styleOnly.push([ch, ks]); fb('dining_chair_02', ch, ks); } });
+[[490, 508, 0], [570, 508, 0], [490, 612, PI], [570, 612, PI]].forEach(c => { const ch = place(chair(M.chairFab), c[0], c[1], c[2], false); if (REAL) { const ks = ['modern', 'scandi', 'lux']; styleOnly.push([ch, ks]); fb('dining_chair_02', ch, ks); } });
 rug(530, 560, 2.5, 1.95, 'dining');
 pendant(500, 560, 1.85, 'dome'); pendant(560, 560, 1.85, 'dome'); bulbLight(530, 560, 1.7, 6);
 art(X(520), 1.65, Z(679) - 0.001, PI, 1.2, 0.8, ['#b8714f', '#d9b48f', '#6f8b84', '#2f3b45']);
@@ -1086,19 +1152,19 @@ rug(180, 250, 1.6, 1.5, 'outdoor', -0.03);
 lantern(scene, X(95), Z(300)); lantern(scene, X(240), Z(128), 0.6);
 
 /* ---------------- MASTER BEDROOM (A-4) ---------------- */
-const kingW = 1.8, kingL = 2.08, mbZ = 694 + (kingL / 2 + 0.1) / S;
-rug(430, 845, 2.4, 3.0, 'primary');
+const kingW = 1.6, kingL = 2.0, mbZ = 694 + (kingL / 2 + 0.1) / S;
+rug(430, 830, 2.0, 2.7, 'primary');
 place(bed(kingW, kingL, M.head1, M.throw1, M.acc1), 430, mbZ, 0);
 for (const s of [-1, 1]) place(nightstand(), 430 + s * (kingW / 2 + 0.32) / S, 694 + 0.27 / S, 0);
 bulbLight(430, 860, 2.2, 5);
 art(X(430), 1.75, Z(694) + 0.001, 0, 1.4, 0.55, ['#cbbca3', '#7c8590', '#e9e1d2']);
-place(dresser(1.5), 450, 1016 - 0.25 / S, PI);
+place(dresser(1.2), 450, 1016 - 0.25 / S, PI);
 art(X(450), 1.6, Z(1016) - 0.001, PI, 0.9, 0.65, ['#8a9488', '#d9c7aa', '#3d4a52', '#b8714f']);
 vaseFlowers(scene, X(400), 0.86, Z(990), 0.3); jarCandle(scene, X(505), 0.86, Z(990));
-fb('mid_century_lounge_chair', place(sofa(0.82, 0.82, M.accChair, 1), 160, 860, PI / 2 + 0.35));
+fb('mid_century_lounge_chair', place(sofa(0.72, 0.74, M.accChair, 1), 165, 860, PI / 2 + 0.35));
 (() => { const g = new THREE.Group(); cyl(g, 0.15, 0.15, 0.03, M.black, 0, 0.015, 0); cyl(g, 0.012, 0.012, 1.45, M.brass, 0, 0.74, 0, 8); mesh(new THREE.CylinderGeometry(0.17, 0.21, 0.28, 28, 1, true), M.shade, 0, 1.55, 0, g, { cast: false }); glowAt(g, 0, 1.55, 0, 1.0); place(g, 120, 960, 0, false); })();
 curtain('v', 67.5, 1, 747, 957);
-fb('potted_plant_01', place(plant(1.4, M.potWhite), 240, 975, 0, false));
+fb('potted_plant_01', place(plant(1.15, M.potWhite), 240, 975, 0, false));
 
 /* ---------------- MASTER BATH (A-5): toilet · vanity · bath, as drawn ---------------- */
 place(toilet(), 544 + 0.34 / S, 1135, PI / 2);
@@ -1123,7 +1189,7 @@ towelStack(scene, X(625), 0.84, Z(1175), 0, 2); bottle(scene, X(695), 0.852, Z(1
 bulbLight(660, 1110, 2.3, 4);
 
 /* ---------------- BEDROOM 2 (A-6) ---------------- */
-const qW = 1.6, qL = 2.05, b2x = 1095 - (qL / 2 + 0.1) / S;
+const qW = 1.4, qL = 2.0, b2x = 1095 - (qL / 2 + 0.1) / S;
 rug(b2x - 20, 330, 2.3, 3.0, 'bed2').rotation.y = PI / 2;
 place(bed(qW, qL, M.head2, M.throw2, M.acc2), b2x, 330, -PI / 2);
 for (const s of [-1, 1]) place(nightstand(), 1095 - 0.27 / S, 330 + s * (qW / 2 + 0.32) / S, -PI / 2);
@@ -1808,7 +1874,9 @@ function applyTime(t) {
   scene.fog.color.copy(u.hor.value);
   hemi.color.copy(u.top.value).lerp(WHITE, 0.4); hemi.groundColor.copy(u.bot.value); hemi.intensity = 0.05 + 0.14 * day;
   scene.environmentIntensity = 0.05 + 0.2 * day;
-  stars.material.opacity = smooth(-4, -12, el);
+  stars.material.opacity = 0.35 * smooth(-4, -12, el);
+  for (const [m, k] of cityLit) m.emissiveIntensity = k * smooth(1, -7, el);
+  hills.material.color.copy(u.hor.value).lerp(C(0x5f6b78), 0.22 - 0.08 * night); // ridges a shade darker than the haze behind them
   // skylight through windows: cool by day, amber at golden hour, gone at night
   const wc = C(0xe4eeff).lerp(C(0xffc890), golden);
   winScale = 2.3 * day * (1 - 0.3 * golden); for (const l of winLights) { l.color.copy(wc); l.intensity = l.userData.k ? winScale : 0; }
@@ -1909,10 +1977,10 @@ if (REAL) (async () => {
   hold();
   const loader = new GLTFLoader(), base = 'models/';
   const SET = {
-    modern_coffee_table_01: [[605, 320, 0]],
+    modern_coffee_table_01: [[590, 320, 0, 0, [0.85, 0.85, 0.85]]],
     modern_arm_chair_01: [[130, 320, PI * 0.55], [225, 175, PI * 0.15]],
-    potted_plant_01: [[725, 180, 0.4, 0, [1.15, 1.15, 1.15], false], [240, 975, 1.2, 0, [1, 1, 1], false]],
-    potted_plant_04: [[600, 290, 0, 0.39, [1.2, 1.2, 1.2], false]],
+    potted_plant_01: [[725, 180, 0.4, 0, [0.95, 0.95, 0.95], false], [240, 975, 1.2, 0, [0.82, 0.82, 0.82], false]],
+    potted_plant_04: [[585, 292, 0, 0.335, [1.05, 1.05, 1.05], false]],
   };
   await Promise.all(Object.entries(SET).map(async ([name, spots]) => {
     let gltf; try { const r = await fetch(base + name + '.glb'); if (!r.ok || (r.headers.get('content-type') || '').includes('text/html')) throw new Error(r.status); gltf = await loader.parseAsync(await r.arrayBuffer(), base); } catch (e) {
@@ -1959,7 +2027,7 @@ const aoSetSize = aoPass.setSize.bind(aoPass); aoPass.setSize = (w, h) => aoSetS
 const aoSkip = []; let aoSkipReady = false;
 const aoRender = aoPass.render.bind(aoPass);
 aoPass.render = (...a) => {
-  if (!aoSkipReady) { scene.traverse(o => { if (o.isSprite || o.isPoints || (o.material && !Array.isArray(o.material) && o.material.transparent && o.material.opacity < 0.6) || (o.material && o.material.blending === THREE.AdditiveBlending)) aoSkip.push(o); }); aoSkipReady = true; }
+  if (!aoSkipReady) { scene.traverse(o => { if (o.isSprite || o.isPoints || o.userData.noAO || (o.material && !Array.isArray(o.material) && o.material.transparent && o.material.opacity < 0.6) || (o.material && o.material.blending === THREE.AdditiveBlending)) aoSkip.push(o); }); aoSkipReady = true; }
   const was = aoSkip.map(o => o.visible); aoSkip.forEach(o => o.visible = false);
   try { aoRender(...a); } finally { aoSkip.forEach((o, i) => o.visible = was[i]); }
 };
