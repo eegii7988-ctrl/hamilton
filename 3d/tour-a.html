@@ -137,7 +137,7 @@ window.TOUR_CONFIG = {
   @keyframes vp{50%{opacity:.35}}
   #xfade{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;opacity:0}
   #xfade.on{opacity:1}
-  #xfade.go{opacity:0;transition:opacity .7s ease}
+  #xfade.go{opacity:0;transition:opacity .38s ease-out}
 </style>
 <script type="importmap">
 {"imports":{
@@ -1469,8 +1469,9 @@ const xf = $('xfade');
 function xfade(fn) {
   try {
     const rc = fly ? flyCam : (mode === 'walk' || mode === 'tour') ? cam : dollCam;
+    stillN = 0; rPass.accumulate = false;
     if (fxOn) { rPass.camera = rc; aoPass.camera = rc; composer.render(0); } else renderer.render(scene, rc);
-    const w = Math.round(innerWidth * 0.75), h = Math.round(innerHeight * 0.75); xf.width = w; xf.height = h;
+    const w = renderer.domElement.width, h = renderer.domElement.height; xf.width = w; xf.height = h;
     xf.getContext('2d').drawImage(renderer.domElement, 0, 0, w, h);
     xf.className = 'on'; fn(); dirty = true;
     requestAnimationFrame(() => requestAnimationFrame(() => { xf.className = 'go'; }));
@@ -1955,19 +1956,21 @@ function lmHook(c) {
     sh.uniforms.uBake = bakeU; sh.uniforms.uLmvK = lmvK;
     if (v) sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec3 lmc; varying vec3 vLmc;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLmc = lmc;');
     sh.fragmentShader = 'uniform float uBake, uLmvK;\n' + (v ? 'varying vec3 vLmc;\n' : '') + sh.fragmentShader
-      .replace('#include <lights_fragment_maps>', `#if defined( RE_IndirectDiffuse )
+      .replace('#include <lights_fragment_maps>', `float lmBk = uBake;
+#if defined( RE_IndirectDiffuse )
   #ifdef USE_LIGHTMAP
     vec3 lmS = texture2D( lightMap, vLightMapUv ).rgb;
-    irradiance = mix( irradiance, lmS * lmS * lightMapIntensity, uBake );
+    lmBk = uBake * smoothstep( 0.02, 0.07, max( lmS.r, max( lmS.g, lmS.b ) ) ); // texels the bake could not see (inside walls) fall back to live light
+    irradiance = mix( irradiance, lmS * lmS * lightMapIntensity, lmBk );
   #endif
   #ifdef LMV
     irradiance = mix( irradiance, vLmc * vLmc * uLmvK, uBake );
   #endif
   #if defined( USE_ENVMAP ) && defined( STANDARD ) && defined( ENVMAP_TYPE_CUBE_UV )
-    iblIrradiance += getIBLIrradiance( geometryNormal ) * ( 1.0 - uBake );
+    iblIrradiance += getIBLIrradiance( geometryNormal ) * ( 1.0 - lmBk );
   #endif
 #endif`)
-      .replace('#include <aomap_fragment>', 'reflectedLight.directDiffuse *= 1.0 - uBake;\n#include <aomap_fragment>');
+      .replace('#include <aomap_fragment>', 'reflectedLight.directDiffuse *= 1.0 - lmBk;\n#include <aomap_fragment>');
   };
   c.customProgramCacheKey = () => v ? 'lmfullv' : 'lmfull';
 }
@@ -2021,9 +2024,11 @@ function applyLMV() {
   scene.traverse(o => {
     if (!o.isMesh || o.isInstancedMesh || lmvDone.has(o) || Array.isArray(o.material) || !o.material.isMeshStandardMaterial) return;
     const d = lmvData.get(lmKey(o)); if (!d || d.length < LMV_MINV * 3) return; { const r = o.geometry.boundingSphere.radius * o.matrixWorld.getMaxScaleOnAxis(); if (d.length / 3 < LMV_DENS * r * r) return; } // coarse boxes would show the vertex triangles: they stay live-lit
+    if (Object.values(M).includes(o.material)) return; // only the detailed real models: drawn box furniture showed banding
     lmvDone.add(o); n++;
     const g = o.geometry.clone(); g.setAttribute('lmc', new THREE.BufferAttribute(d, 3, true)); o.geometry = g;
-    const src = o.material; let c = lmvClone.get(src);
+    const src = o.material;
+    let c = lmvClone.get(src);
     if (!c) { c = src.clone(); lmvClone.set(src, c); lmvMats.add(c); lmHook(c); if (Object.values(M).includes(src)) lmPairs.push([src, c]); }
     o.material = c;
   });
