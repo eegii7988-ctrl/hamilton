@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hamilton 13А</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: a dark gallery stage for the dusk photographs, with the architect's 13A drawing beside it as the map; each shot pins its camera on the plan. Single dark look on purpose, so the evening images glow. */
+:root {
+  --ground: #16120f;
+  --panel: #211b16;
+  --line: #3a3027;
+  --ivory: #f1e9dc;
+  --muted: #b3a593;
+  --bronze: #c79a62;
+  --sheet: #f4efe6;
+  --display: "Cormorant Garamond", "Times New Roman", serif;
+  --ui: "Manrope", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--ground); color: var(--ivory); }
+body { font-family: var(--ui); font-size: 14px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 28px; }
+.wrap { max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: 0.01em; line-height: 1.1; }
+.brand span { color: var(--muted); font-size: 13px; }
+.badge { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bronze); border: 1px solid color-mix(in srgb, var(--bronze) 45%, transparent); padding: 3px 10px; border-radius: 99px; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 980px) { .main { grid-template-columns: minmax(0, 1fr); } }
+
+/* stage */
+.stage { position: relative; aspect-ratio: 16 / 9; max-height: 76vh; width: 100%; max-width: 100%; overflow: hidden; border-radius: 6px; background: #0d0b09; touch-action: pan-y; }
+.layer { position: absolute; inset: 0; opacity: 0; }
+.layer.on { opacity: 1; z-index: 1; }
+/* walking through: the old view pushes forward toward the doorway and dissolves, the new one settles in */
+.layer.leave { opacity: 1; z-index: 2; animation: walk-out var(--dur, 1.1s) cubic-bezier(.45,0,.25,1) forwards; }
+.layer.enter { animation: walk-in var(--dur, 1.1s) cubic-bezier(.2,.6,.3,1) forwards; }
+@keyframes walk-out { 0% { transform: scale(1); opacity: 1; filter: blur(0); } 70% { opacity: .9; } 100% { transform: scale(var(--zoom, 1.6)); opacity: 0; filter: blur(5px) brightness(1.1); } }
+@keyframes walk-in { 0% { transform: scale(1.14); opacity: 0; } 45% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.layer .back { display: none; position: absolute; inset: -40px; background-size: cover; background-position: center; filter: blur(28px) brightness(0.45); }
+.kb { position: absolute; inset: 0; }
+.layer img { position: absolute; left: 0; top: 0; max-width: none; object-fit: fill; transition: transform 0.45s cubic-bezier(.2,.7,.3,1); will-change: transform; user-select: none; -webkit-user-drag: none; }
+.stage { cursor: grab; touch-action: none; }
+.stage.dragging { cursor: grabbing; }
+.stage.dragging .layer img, .stage.dragging .spot { transition: none; }
+.spot { transition: left .45s cubic-bezier(.2,.7,.3,1), top .45s cubic-bezier(.2,.7,.3,1); }
+.hint { position: absolute; left: 50%; bottom: 22%; transform: translateX(-50%); z-index: 4; pointer-events: none; background: rgba(22,18,15,.7); backdrop-filter: blur(6px); color: var(--ivory); font: 600 13px var(--ui); padding: 8px 16px; border-radius: 99px; opacity: 0; transition: opacity .6s; white-space: nowrap; }
+.hint.show { opacity: 1; }
+@keyframes drift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.06) translate(-1.5%, -1%); } }
+@keyframes drift-small { from { transform: scale(1); } to { transform: scale(1.03); } }
+@media (prefers-reduced-motion: reduce) { .kb, .layer.leave, .layer.enter { animation: none; } .layer.leave { opacity: 0; } .layer img { transition: none; } }
+
+.caption { z-index: 3; position: absolute; left: 0; right: 0; bottom: 0; padding: 48px 20px 16px; background: linear-gradient(to top, rgba(14,11,9,0.85), rgba(14,11,9,0)); display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; pointer-events: none; }
+.caption h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(24px, 3vw, 36px); line-height: 1.05; text-wrap: balance; }
+.caption p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.caption .count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.nav { z-index: 3; position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(241,233,220,0.25); background: rgba(22,18,15,0.45); color: var(--ivory); font-size: 20px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(6px); }
+.nav:hover { background: rgba(22,18,15,0.7); }
+.nav.prev { left: 12px; } .nav.next { right: 12px; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--bronze); outline-offset: 2px; }
+.tools { position: absolute; top: 12px; right: 12px; z-index: 3; display: flex; gap: 6px; }
+.full { border: 1px solid rgba(241,233,220,0.25); background: rgba(22,18,15,0.45); color: var(--ivory); border-radius: 99px; padding: 6px 12px; font: 500 12px var(--ui); cursor: pointer; backdrop-filter: blur(6px); }
+
+/* shots of the current room */
+.shots { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.shot { flex: 0 0 auto; width: 132px; border: 1px solid var(--line); background: var(--panel); border-radius: 4px; padding: 0; cursor: pointer; color: var(--muted); text-align: left; overflow: hidden; }
+.shot img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.shot span { display: block; padding: 5px 8px; font-size: 11.5px; line-height: 1.3; }
+.shot[aria-current="true"] { border-color: var(--bronze); color: var(--ivory); }
+
+/* side panel */
+aside { display: none; }
+.sheet { position: relative; background: var(--sheet); border-radius: 6px; overflow: hidden; }
+.sheet img { display: block; width: 100%; height: auto; opacity: 0.92; }
+.sheet svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pin { position: absolute; transform: translate(-50%, -50%); border: 0; border-radius: 99px; padding: 3px 9px; font: 600 11px var(--ui); letter-spacing: 0.02em; background: rgba(33,27,22,0.82); color: var(--ivory); cursor: pointer; white-space: nowrap; }
+.pin:hover { background: #3b2e22; }
+.pin[aria-current="true"] { background: var(--bronze); color: #1d150e; }
+.north { position: absolute; top: 8px; right: 10px; font: 600 11px var(--ui); color: #4a3d30; }
+.legend { color: var(--muted); font-size: 12px; margin: 0; }
+
+.rooms { display: none; }
+.room { border: 1px solid var(--line); background: var(--panel); color: var(--ivory); border-radius: 4px; padding: 8px 10px; text-align: left; cursor: pointer; font: 500 13px var(--ui); display: flex; justify-content: space-between; gap: 8px; }
+.room:last-child:nth-child(odd) { grid-column: span 2; }
+.room small { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 400; }
+.room[aria-current="true"] { border-color: var(--bronze); background: #2c241c; }
+.about { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px; }
+.about h3 { margin: 0 0 4px; font-family: var(--display); font-size: 22px; font-weight: 600; }
+.about p { margin: 0; color: var(--muted); max-width: 62ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; font-size: 12.5px; }
+.facts b { color: var(--ivory); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) { .nav { display: none; } .full { padding: 4px 10px; } }
+.spots { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.spot { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--ivory); font: 600 12.5px var(--ui); opacity: 0; animation: spot-in .5s ease forwards; animation-delay: var(--d, .9s); }
+.spot i { position: relative; width: 18px; height: 18px; border-radius: 50%; background: var(--bronze); box-shadow: 0 0 0 3px rgba(241,233,220,.85); flex: none; }
+.spot i::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(241,233,220,.7); animation: ping 2.2s ease-out infinite; }
+.spot b { background: rgba(22,18,15,.72); backdrop-filter: blur(6px); padding: 5px 10px; border-radius: 99px; white-space: nowrap; font-weight: 600; }
+.spot:hover b, .spot:focus-visible b { background: var(--bronze); color: #1d150e; }
+.spot { transform: translate(-9px, -50%); }
+.spot.left { flex-direction: row-reverse; transform: translate(calc(-100% + 9px), -50%); }
+@keyframes spot-in { to { opacity: 1; } }
+@keyframes ping { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+@media (max-width: 600px) { .spot b { font-size: 11px; padding: 4px 8px; } .spot i { width: 14px; height: 14px; } }
+@media (prefers-reduced-motion: reduce) { .spot i::after { animation: none; } .spot { animation-delay: 0s; } }
+.stage.arrive .spots { opacity: 0; }
+.spots { transition: opacity .6s ease; }
+.stage.arrive .layer.on { animation: arrive 2s cubic-bezier(.16,.7,.2,1) both; }
+@keyframes arrive { 0% { transform: scale(1.7); filter: blur(14px) brightness(1.9); opacity: 0; } 35% { opacity: 1; } 100% { transform: none; filter: none; opacity: 1; } }
+.flashin { position: fixed; inset: 0; z-index: 50; pointer-events: none; background: radial-gradient(ellipse at center, #fff6e8, #f1dcc0 70%, #e2c49e); transition: opacity 1.4s ease; }
+.flashin.out { opacity: 0; }
+body.embed .badge { visibility: hidden; }
+.welcome { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 6; text-align: center; pointer-events: none; opacity: 0; }
+.welcome b { display: block; font-family: var(--display); font-weight: 600; font-size: clamp(30px, 5vw, 58px); line-height: 1.05; text-shadow: 0 2px 24px rgba(0,0,0,.55); }
+.welcome span { font-size: 13px; letter-spacing: .28em; text-transform: uppercase; color: var(--ivory); text-shadow: 0 1px 10px rgba(0,0,0,.7); }
+.welcome.show { animation: welcome 3.6s ease .9s both; }
+@keyframes welcome { 0% { opacity: 0; transform: translate(-50%, -40%); } 25%, 70% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -56%); } }
+.intro { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; text-align: center; background: radial-gradient(ellipse at center, rgba(14,11,9,.35), rgba(14,11,9,.8)); transition: opacity .8s ease; }
+.stage:has(.intro:not(.gone)) .spots { display: none; }
+@media (max-width: 600px) { .stage { aspect-ratio: 4 / 3; } .caption { padding: 36px 14px 10px; } .caption h2 { font-size: 22px; } .caption p { display: none; } }
+.intro.gone { opacity: 0; pointer-events: none; }
+.intro h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 600; font-size: clamp(30px, 5vw, 56px); line-height: 1.05; }
+.intro p { margin: 0 0 18px; color: var(--muted); }
+.enter-btn { border: 0; border-radius: 99px; background: var(--bronze); color: #1d150e; font: 600 15px var(--ui); padding: 12px 28px; cursor: pointer; }
+footer { color: var(--muted); font-size: 12px; max-width: 80ch; }
+</style>
+
+</head><body>
+<div class="wrap">
+  <header>
+    <div class="brand"><h1>Hamilton Residence · 13А</h1><span>75.4 м² · 2 унтлагын өрөө · 13–16-р давхар</span></div>
+    <span class="badge">Дизайны санаа</span>
+  </header>
+
+  <div class="main">
+    <section style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div class="stage" id="stage" aria-label="Өрөөний зураг">
+        <div class="layer on" id="la"><div class="back"></div><div class="kb"><img alt=""></div></div>
+        <div class="layer" id="lb"><div class="back"></div><div class="kb"><img alt=""></div></div>
+        <div class="spots" id="spots"></div><div class="hint" id="hint">↔ Чирж эргэн тойрноо харна уу</div>
+        <div class="welcome" id="welcome"><span>Hamilton Residence</span><b id="wUnit">13А</b></div>
+        <div class="intro" id="intro"><div><h2>13А байранд тавтай морил</h2><p>Үүднээс орж, зураг дээрх цэгүүдийг дарж өрөө өрөөгөөр алхаарай.</p><button class="enter-btn" id="enter">Орох</button></div></div>
+        <div class="caption"><div><h2 id="cName"></h2><p id="cView"></p></div><span class="count" id="cCount"></span></div>
+        <button class="nav prev" id="prev" aria-label="Өмнөх зураг">‹</button>
+        <button class="nav next" id="next" aria-label="Дараагийн зураг">›</button>
+        <div class="tools"><button class="full" id="backb" hidden>← Буцах</button><button class="full" id="play">▶ Аялал</button><button class="full" id="full">Бүтэн дэлгэц</button></div>
+      </div>
+      <div class="shots" id="shots"></div>
+      <div class="about"><h3 id="aName"></h3><p id="aText"></p><div class="facts" id="aFacts"></div></div>
+    </section>
+
+    <aside>
+      <div class="sheet" id="sheet">
+        <img src="img/plan.png" alt="13А байрны план" width="926" height="984">
+        <svg viewBox="0 0 926 984" aria-hidden="true"><g id="cam"></g></svg>
+        <span class="north">Хойд ↑</span>
+      </div>
+      <p class="legend">План дээрх өрөөний нэр дээр дарж зургийг нь үзнэ. Хүрэн сум нь тухайн зургийг хаанаас, аль зүг рүү харж авсныг заана.</p>
+      <div class="rooms" id="rooms"></div>
+    </aside>
+  </div>
+
+  <footer>Зургууд нь интерьерийн дизайны санааг харуулна. Тавилга, засал чимэглэл гэрээнд ороогүй бол үнэд багтахгүй. Өрөөний хэмжээ, цонх, хаалганы байрлал нь 13А-гийн зураг төслийн дагуу.</footer>
+</div>
+
+<script>
+// x, y: position on the 926 x 984 plan drawing; a: viewing direction in degrees, 0 = north (up), 90 = east
+const ROOMS = [
+  { id: 'living', name: 'Зочны өрөө', area: 26.5, pin: [430, 190],
+    text: 'Хойд талдаа шалнаас тааз хүртэл цонхтой, хоолны хэсэг, гал тогоотойгоо нээлттэй. Царс ламелтай TV хана, тагт руу гарах хаалгатай.',
+    facts: [['Цонх', 'хойд зүг, шалнаас тааз хүртэл'], ['Таазны өндөр', '2.8 м']],
+    shots: [['1A', 'Цонх руу', 430, 470, 0], ['1B', 'TV хана руу', 360, 200, 90], ['1C', 'Буйдан ба тагт', 480, 450, -10]] },
+  { id: 'dining', name: 'Хоолны хэсэг', area: null, pin: [440, 440],
+    text: 'Зочны өрөөний төвд, 6 хүний гантиг ширээтэй. Баруун талдаа гал тогоо, хойд талдаа цонх.',
+    facts: [['Талбай', 'зочны өрөөнд багтсан'], ['Суудал', '6 хүн']],
+    shots: [['2A', 'Гал тогоо руу', 560, 450, 270], ['2B', 'Цонх руу', 260, 470, 15]] },
+  { id: 'kitchen', name: 'Гал тогоо', area: 6.44, pin: [140, 420],
+    text: 'Г хэлбэрийн тавцан, цонхны доор угаалтуур, урд хананд плит, шарах шүүгээ, хойд буланд хөргөгч.',
+    facts: [['Цонх', 'баруун зүг'], ['Тавцан', 'Г хэлбэр']],
+    shots: [['3A', 'Цонх руу', 330, 430, 270], ['3B', 'Зочны өрөө рүү', 130, 460, 50]] },
+  { id: 'balcony', name: 'Тагт', area: 4.64, pin: [110, 170],
+    text: 'Барилгын буланд, муруй шилэн фасадтай. Зочны өрөөнөөс нэг хаалгаар гарна. Тооцооны талбай 50% буюу 2.32 м².',
+    facts: [['Фасад', 'муруй шил'], ['Харагдац', 'хот, уул']],
+    shots: [['4A', 'Тагт руу', 250, 170, 280], ['4B', 'Зочны өрөө рүү', 90, 200, 80]] },
+  { id: 'master', name: 'Мастер унтлагын өрөө', area: 17.65, pin: [250, 640],
+    text: 'Баруун хананд урт цонхтой, суулгасан хувцасны шүүгээтэй, хувийн угаалгын өрөөтэй.',
+    facts: [['Цонх', 'баруун зүг'], ['Угаалгын өрөө', 'хувийн']],
+    shots: [['5A', 'Цонх руу', 460, 640, 270], ['5B', 'Хаалга руу', 80, 640, 90]] },
+  { id: 'mbath', name: 'Мастер угаалгын өрөө', area: 3.93, pin: [530, 890],
+    text: 'Шүршүүртэй ванн, хананд өлгөдөг суултуур, дүүжин угаалтуур. Унтлагын өрөөнөөсөө шууд ордог.',
+    facts: [['Ванн', 'шүршүүртэй'], ['Шал, хана', 'чулуун хавтан']],
+    shots: [['6A', 'Ерөнхий', 470, 850, 160], ['6B', 'Угаалтуур', 490, 880, 200]] },
+  { id: 'bed2', name: 'Унтлагын өрөө', area: 10.65, pin: [720, 230],
+    text: 'Хойд талдаа цонхтой, суулгасан хувцасны шүүгээтэй хоёр дахь унтлагын өрөө. Энд хүүхдийн өрөө болгож харуулав.',
+    facts: [['Цонх', 'хойд зүг'], ['Шүүгээ', 'суулгасан']],
+    shots: [['7A', 'Цонх руу', 690, 320, 0], ['7B', 'Хаалга руу', 700, 130, 180]] },
+  { id: 'bath', name: 'Угаалгын өрөө', area: 3.98, pin: [790, 455],
+    text: 'Шилэн шүршүүр, хананд өлгөдөг суултуур, угаалгын машины зайтай нийтийн угаалгын өрөө.',
+    facts: [['Шүршүүр', 'шилэн хаалттай'], ['Машины зай', 'бий']],
+    shots: [['8A', 'Ерөнхий', 725, 460, 90], ['8B', 'Шүршүүр', 790, 480, 120]] },
+  { id: 'entry', name: 'Үүдний хэсэг', area: 3.91, pin: [610, 680],
+    text: 'Тольтой консол, хувцасны өлгүүртэй орцны хэсэг. Эндээс хоолны хэсэг, зочны өрөө рүү шууд нээгдэнэ.',
+    facts: [['Хаалга', 'зүүн талд'], ['Хадгалах', 'консол, өлгүүр']],
+    shots: [['9A', 'Орцноос', 700, 650, 290], ['9B', 'Зочны өрөөнөөс үүд рүү', 430, 250, 145]] },
+];
+// doorways and directions marked on each photo: [x %, y %, label, photo it leads to]
+const SPOTS = {
+  '9A': [[55, 50, 'Зочны өрөө', '1A'], [72, 34, 'TV хана', '1B'], [84, 56, 'Хоолны хэсэг', '2A'], [32, 46, 'Мастер унтлагын өрөө', '5A', 'left']],
+  '9B': [[50, 42, 'Орох хаалга', '9A'], [37, 52, 'Хоолны хэсэг', '2A'], [78, 46, 'Гал тогоо', '3A']],
+  '1A': [[7, 46, 'Тагт', '4A'], [82, 38, 'TV хана', '1B'], [26, 70, 'Хоолны хэсэг', '2A']],
+  '1B': [[10, 40, 'Цонх руу', '1A'], [73, 40, 'Унтлагын өрөө', '7A'], [83, 47, 'Угаалгын өрөө', '8A'], [92, 64, 'Хоолны хэсэг', '2A', 'left'], [88, 31, 'Мастер унтлагын өрөө', '5A', 'left'], [80, 56, 'Үүдний хэсэг', '9A', 'left']],
+  '1C': [[8, 46, 'Тагт', '4A'], [85, 38, 'TV хана', '1B', 'left']],
+  '2A': [[46, 44, 'Гал тогоо', '3A'], [87, 44, 'Тагт', '4A', 'left'], [11, 50, 'Мастер унтлагын өрөө', '5A'], [93, 66, 'Зочны өрөө', '1A', 'left']],
+  '2B': [[42, 50, 'Зочны өрөө', '1A'], [67, 44, 'TV хана', '1B'], [81, 46, 'Унтлагын өрөө', '7A', 'left'], [9, 62, 'Гал тогоо', '3A']],
+  '3A': [[50, 86, 'Эргэж харах', '3B']],
+  '3B': [[30, 50, 'Зочны өрөө', '1A'], [50, 66, 'Хоолны хэсэг', '2A'], [81, 40, 'Унтлагын өрөө', '7A', 'left']],
+  '4A': [[12, 52, 'Зочны өрөө рүү эргэх', '4B']],
+  '4B': [[52, 45, 'Зочны өрөө', '1B']],
+  '5A': [[50, 88, 'Эргэж харах', '5B']],
+  '5B': [[70, 46, 'Гарах', '9A', 'left'], [92, 32, 'Мастер угаалгын өрөө', '6A', 'left']],
+  '6A': [[66, 56, 'Угаалтуур', '6B', 'left'], [50, 92, 'Унтлагын өрөө', '5B']],
+  '6B': [[50, 92, 'Буцах', '6A']],
+  '7A': [[50, 88, 'Эргэж харах', '7B']],
+  '7B': [[67, 42, 'Гарах', '2B', 'left']],
+  '8A': [[78, 50, 'Шүршүүр', '8B', 'left'], [50, 92, 'Гарах', '1B']],
+  '8B': [[50, 92, 'Буцах', '8A']],
+};
+const $ = id => document.getElementById(id);
+const src = c => 'img/' + c + '.jpg';
+let r = 0, s = 0, front = $('la'), back = $('lb');
+
+// plan pins and room list
+const sheet = $('sheet'), roomsEl = $('rooms');
+ROOMS.forEach((room, i) => {
+  const p = document.createElement('button'); p.className = 'pin'; p.textContent = room.name.replace('Мастер ', 'М. ');
+  p.style.left = (room.pin[0] / 926 * 100) + '%'; p.style.top = (room.pin[1] / 984 * 100) + '%';
+  p.onclick = () => go(i, 0); sheet.appendChild(p); room.pinEl = p;
+  const b = document.createElement('button'); b.className = 'room';
+  b.innerHTML = '<span>' + room.name + '</span><small>' + (room.area ? room.area.toFixed(2).replace(/0$/, '') + ' м²' : 'зочны өрөөнд') + '</small>';
+  b.onclick = () => go(i, 0); roomsEl.appendChild(b); room.btn = b;
+});
+
+let busy = 0;
+function show(code, move) {
+  const img = back.querySelector('img'), bk = back.querySelector('.back');
+  const pre = new Image(); pre.src = src(code); const token = ++busy;
+  const swap = () => {
+    if (token !== busy) return;
+    img.src = pre.src; bk.style.backgroundImage = 'url(' + pre.src + ')';
+    back.classList.toggle('tall', pre.naturalHeight > pre.naturalWidth);
+    const out = front, inn = back;
+    [out, inn].forEach(l => l.classList.remove('leave', 'enter'));
+    if (move) {
+      out.style.transformOrigin = move.fx + '% 55%';
+      out.style.setProperty('--zoom', move.zoom); out.style.setProperty('--dur', move.dur + 's'); inn.style.setProperty('--dur', move.dur + 's');
+      void out.offsetWidth;
+      out.classList.add('leave'); inn.classList.add('enter');
+      setTimeout(() => out.classList.remove('leave'), move.dur * 1000 + 50);
+    }
+    natural[code] = [pre.naturalWidth || 16, pre.naturalHeight || 9]; cur = code; pan.tx = 0; pan.ty = 0; layout(img, code); applyPan();
+    inn.classList.add('on'); out.classList.remove('on'); [front, back] = [inn, out];
+  };
+  if (pre.complete) swap(); else { pre.onload = swap; pre.onerror = swap; }
+}
+
+let last = null;
+function render() {
+  const room = ROOMS[r], [code, view, x, y, a] = room.shots[s];
+  let move = null;
+  if (last && last.code !== code) {
+    // where is the new camera, seen from the old one? zoom toward that side of the old picture
+    const b = Math.atan2(x - last.x, -(y - last.y)) * 180 / Math.PI, rel = ((b - last.a + 540) % 360) - 180;
+    const ahead = Math.abs(rel) < 80, dist = Math.hypot(x - last.x, y - last.y);
+    const sameRoom = last.r === r;
+    move = { fx: ahead ? Math.max(15, Math.min(85, 50 + rel / 70 * 35)) : 50,
+             zoom: sameRoom ? 1.25 : ahead ? Math.min(2.1, 1.45 + dist / 900) : 1.3,
+             dur: sameRoom ? 0.85 : ahead ? 1.35 : 1.0 };
+  }
+  last = { code, x, y, a, r };
+  show(code, move);
+  drawSpots(code, move ? move.dur : 0);
+  $('backb').hidden = hist.length === 0;
+  $('cName').textContent = room.name; $('cView').textContent = view;
+  const all = ROOMS.flatMap(q => q.shots), idx = all.indexOf(room.shots[s]) + 1;
+  $('cCount').textContent = idx + ' / ' + all.length;
+  $('aName').textContent = room.name; $('aText').textContent = room.text;
+  $('aFacts').innerHTML = (room.area ? '<span>Талбай <b>' + room.area + ' м²</b></span>' : '') + room.facts.map(([k, v]) => '<span>' + k + ' <b>' + v + '</b></span>').join('');
+  ROOMS.forEach((q, i) => { q.pinEl.setAttribute('aria-current', i === r); q.btn.setAttribute('aria-current', i === r); });
+  // camera marker: a view cone pointing the way the photo looks
+  const rad = (a - 90) * Math.PI / 180, L = 110, w = 0.42;
+  const p1 = [x + L * Math.cos(rad - w), y + L * Math.sin(rad - w)], p2 = [x + L * Math.cos(rad + w), y + L * Math.sin(rad + w)];
+  $('cam').innerHTML = '<path d="M' + x + ' ' + y + ' L' + p1 + ' A' + L + ' ' + L + ' 0 0 1 ' + p2 + ' Z" fill="#c79a62" fill-opacity="0.32" stroke="#a5743f" stroke-width="2"/>'
+    + '<circle cx="' + x + '" cy="' + y + '" r="11" fill="#a5743f" stroke="#f4efe6" stroke-width="3"/>';
+  const sh = $('shots'); sh.innerHTML = '';
+  room.shots.forEach(([c, v], j) => {
+    const b = document.createElement('button'); b.className = 'shot'; b.setAttribute('aria-current', j === s);
+    b.innerHTML = '<img src="' + src(c) + '" alt="" loading="lazy"><span>' + v + '</span>';
+    b.onclick = () => go(r, j); sh.appendChild(b);
+  });
+  // warm the next image
+  const n = next(1); new Image().src = src(ROOMS[n[0]].shots[n[1]][0]);
+  if (location.hash.slice(1) !== room.id) history.replaceState(null, '', '#' + room.id);
+}
+function next(d) {
+  let rr = r, ss = s + d;
+  if (ss >= ROOMS[rr].shots.length) { rr = (rr + 1) % ROOMS.length; ss = 0; }
+  if (ss < 0) { rr = (rr - 1 + ROOMS.length) % ROOMS.length; ss = ROOMS[rr].shots.length - 1; }
+  return [rr, ss];
+}
+const hist = [];
+function go(i, j, remember = true) { if (remember && (i !== r || j !== s) && last) { hist.push([r, s]); if (hist.length > 50) hist.shift(); } r = i; s = j; render(); }
+function goCode(c) { ROOMS.forEach((q, i) => q.shots.forEach((sh, j) => { if (sh[0] === c) go(i, j); })); }
+$('backb').onclick = () => { const h = hist.pop(); if (h) go(h[0], h[1], false); };
+let natural = {}, cur = null, spotEls = [];
+const pan = { tx: 0, ty: 0 };
+// the photo is shown larger than the frame, so dragging moves the view around the room
+function geo(code) {
+  const st = stage.getBoundingClientRect(), n = natural[code] || [16, 9], tallImg = n[1] > n[0];
+  const sc = Math.max(st.width / n[0], st.height / n[1]) * (tallImg ? 1.0 : 1.4);
+  const w = n[0] * sc, h = n[1] * sc;
+  return { st, w, h, ox: (st.width - w) / 2, oy: (st.height - h) / 2, mx: Math.max(0, (w - st.width) / 2), my: Math.max(0, (h - st.height) / 2) };
+}
+function layout(img, code) { const g = geo(code); img.style.width = g.w + 'px'; img.style.height = g.h + 'px'; img.style.left = g.ox + 'px'; img.style.top = g.oy + 'px'; }
+function applyPan() {
+  if (!cur) return; const g = geo(cur);
+  pan.tx = Math.max(-g.mx, Math.min(g.mx, pan.tx)); pan.ty = Math.max(-g.my, Math.min(g.my, pan.ty));
+  front.querySelector('img').style.transform = 'translate(' + pan.tx + 'px,' + pan.ty + 'px)';
+  spotEls.forEach(({ el, x, y }) => {
+    const px = g.ox + g.w * x / 100 + pan.tx, py = g.oy + g.h * y / 100 + pan.ty;
+    const cx = Math.max(g.st.width * 0.05, Math.min(g.st.width * 0.95, px)), cy = Math.max(g.st.height * 0.1, Math.min(g.st.height * 0.88, py));
+    el.style.left = cx + 'px'; el.style.top = cy + 'px'; el.classList.toggle('left', cx > g.st.width * 0.58);
+  });
+}
+function drawSpots(code, delay) {
+  const box = $('spots'); box.innerHTML = ''; spotEls = [];
+  const narrow = stage.getBoundingClientRect().width < 600;
+  (SPOTS[code] || []).forEach(([x, y, label, to]) => {
+    const b = document.createElement('button'); b.className = 'spot';
+    b.style.setProperty('--d', (delay ? delay * 0.75 : 0.2) + 's');
+    b.innerHTML = '<i></i><b>' + (narrow ? label.replace('Мастер ', 'М. ') : label) + '</b>';
+    b.addEventListener('pointerdown', e => e.stopPropagation());
+    b.onclick = e => { e.stopPropagation(); if (timer) stopPlay(); goCode(to); };
+    box.appendChild(b); spotEls.push({ el: b, x, y });
+  });
+  if (cur === code) applyPan();
+}
+addEventListener('resize', () => { if (cur) { layout(front.querySelector('img'), cur); applyPan(); } });
+$('next').onclick = () => go(...next(1));
+$('prev').onclick = () => go(...next(-1));
+addEventListener('keydown', e => { if (e.key === 'ArrowRight') go(...next(1)); if (e.key === 'ArrowLeft') go(...next(-1)); });
+
+// drag (mouse or finger) to look around inside the photo
+const stage = $('stage');
+let drag = null;
+stage.addEventListener('pointerdown', e => {
+  if (e.target.closest('button')) return;
+  drag = { x: e.clientX, y: e.clientY, tx: pan.tx, ty: pan.ty, moved: false }; stage.setPointerCapture(e.pointerId);
+  if (timer) stopPlay();
+});
+stage.addEventListener('pointermove', e => {
+  if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved && Math.hypot(dx, dy) > 4) { drag.moved = true; stage.classList.add('dragging'); $('hint').classList.remove('show'); }
+  if (drag.moved) { pan.tx = drag.tx + dx; pan.ty = drag.ty + dy; applyPan(); }
+});
+const endDrag = () => { drag = null; stage.classList.remove('dragging'); };
+stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
+let timer = null;
+function stopPlay() { clearInterval(timer); timer = null; $('play').textContent = '▶ Аялал'; }
+$('play').onclick = () => { if (timer) return stopPlay(); $('play').textContent = '❚❚ Зогсоох'; go(...next(1)); timer = setInterval(() => go(...next(1)), 5200); };
+['prev', 'next', 'shots', 'rooms', 'sheet'].forEach(id => $(id).addEventListener('pointerdown', () => timer && stopPlay()));
+$('full').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : stage.requestFullscreen().catch(() => {}); } catch (e) {} };
+
+function fromHash() { const i = ROOMS.findIndex(q => q.id === location.hash.slice(1)); if (i >= 0 && i !== ROOMS.length - 1) $('intro').classList.add('gone'); go(i < 0 ? ROOMS.length - 1 : i, 0, false); }
+$('enter').onclick = () => { $('intro').classList.add('gone'); const h = $('hint'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 3500); };
+addEventListener('hashchange', () => { const i = ROOMS.findIndex(q => q.id === location.hash.slice(1)); if (i >= 0 && i !== r) go(i, 0); });
+// embedded from the 3D sales model: ?embed=1&unit=14A skips the intro and plays a step-inside arrival at the front door
+const Q = new URLSearchParams(location.search);
+if (Q.get('unit')) { const u = Q.get('unit').replace(/A$/i, 'А'); document.querySelector('.brand h1').textContent = 'Hamilton Residence · ' + u; $('wUnit').textContent = u + ' байранд тавтай морил'; document.title = 'Hamilton ' + u; }
+function arrive() { document.body.classList.add('embed'); $('intro').classList.add('gone');
+  const fl = document.createElement('div'); fl.className = 'flashin'; document.body.appendChild(fl);
+  const img = document.querySelector('.layer.on img'); let done = false;
+  const run = () => { if (done) return; done = true; stage.classList.add('arrive'); $('welcome').classList.add('show'); requestAnimationFrame(() => fl.classList.add('out')); setTimeout(() => fl.remove(), 1600);
+    setTimeout(() => { stage.classList.remove('arrive'); const h = $('hint'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 3500); }, 2100); };
+  if (img && img.complete && img.naturalWidth) run(); else { img && img.addEventListener('load', run, { once: true }); setTimeout(run, 2500); } }
+fromHash();
+if (Q.get('shot')) goCode(Q.get('shot'));
+if (Q.get('embed')) arrive();
+</script>
+
+</body></html>
