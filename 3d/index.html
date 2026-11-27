@@ -1022,6 +1022,7 @@ const IM={floor:new THREE.MeshStandardMaterial({map:plankTex,roughness:.55}),til
   cap:new THREE.MeshStandardMaterial({color:0x2e2621,roughness:.7}),bronze:new THREE.MeshStandardMaterial({color:0x6b4a2c,roughness:.35,metalness:.6}),
   leaf:new THREE.MeshStandardMaterial({color:0x5f7a4a,roughness:.9,flatShading:true}),pot:new THREE.MeshStandardMaterial({color:0xd8cfc2,roughness:.7}),
   stone:new THREE.MeshStandardMaterial({color:0xcfc4b5,roughness:.45}),glow:new THREE.MeshBasicMaterial({color:0xffe2b0}),
+  duvet:new THREE.MeshStandardMaterial({color:0x8a7763,roughness:.95}),throwM:new THREE.MeshStandardMaterial({color:0x4a3527,roughness:.9}),
   ceil:new THREE.MeshStandardMaterial({color:0xa8a8a5,roughness:.95,side:THREE.DoubleSide,emissive:0x9a9893,emissiveIntensity:.6})};
 Object.values(IM).forEach(m=>{if(m!==IM.glass)m.envMapIntensity=.3});IM.woodC=IM.wood.clone();IM.slatC=IM.wood.clone();IM.screenC=IM.screen.clone();
 function applyFin(k){fin=k;const F=FIN[k];const k2=.74;IM.floor.color.set(F.floor).multiplyScalar(k2);IM.wall.color.set(F.wall).multiplyScalar(k2);IM.fab.color.set(F.fab).multiplyScalar(k2);IM.wood.color.set(F.wood).multiplyScalar(k2);if(IM.woodC){IM.woodC.color.copy(IM.wood.color);IM.slatC.color.copy(IM.wood.color)}IM.tile.color.set(F.tile).multiplyScalar(k2);IM.acc.color.set(F.acc).multiplyScalar(k2);
@@ -1118,7 +1119,7 @@ function furnishA(grp,u,y){const B=(x0,x1,z0,z1,h0,h1,mat,sh)=>{const r=plaRect(
   B(45,108,292,345,0,2.15,IM.woodC);B(150,195,468,496,.92,.93,IM.metal);B(108,142,466,500,.92,.93,IM.screen);P(225,315,.7);
   // master bedroom: headboard on the north wall, window to the west, wardrobe on the east wall
   B(180,430,595,745,0,.012,IM.acc,false);B(212,388,530,543,0,1.15,IM.wood);B(222,378,543,712,.1,.38,IM.wood);B(226,374,546,708,.38,.56,IM.fab);
-  B(222,378,600,712,.52,.63,IM.fab);B(220,380,668,698,.63,.67,IM.acc);B(236,296,549,576,.56,.72,IM.fab);B(304,364,549,576,.56,.72,IM.fab);
+  B(222,378,596,712,.52,.64,IM.duvet);B(219,381,664,700,.64,.68,IM.throwM);B(258,342,700,744,0,.45,IM.throwM);B(236,296,549,576,.56,.72,IM.fab);B(304,364,549,576,.56,.72,IM.fab);
   [[176,212],[388,424]].forEach(([a,b])=>{B(a,b,540,576,0,.5,IM.wood);C((a+b)/2,558,9,.5,.82,IM.glow,16)});B(468,518,560,758,0,2.2,IM.woodC);P(80,555);
   // bedroom 2: headboard on the east wall, desk under the north window, wardrobe by the door
   B(680,850,150,265,0,.012,IM.acc,false);B(866,880,135,265,0,1,IM.wood);B(712,866,145,257,.1,.35,IM.wood);B(716,864,149,253,.35,.52,IM.fab);B(712,820,145,257,.48,.58,IM.acc);
